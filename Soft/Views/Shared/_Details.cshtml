@@ -1,0 +1,23 @@
+@using RecipeMvc.Core
+@using RecipeMvc.Facade
+@model EntityView
+
+@{
+    ViewData["Title"] = "Details";
+    var title = TypeHelper.DisplayName(Model, "Index");
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>@title</h4>
+    <hr />
+    <dl class="row">
+           @RenderBody()
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

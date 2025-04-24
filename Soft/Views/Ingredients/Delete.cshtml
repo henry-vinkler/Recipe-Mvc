@@ -1,0 +1,11 @@
+@using RecipeMvc.Facade
+@model IngredientView
+
+
+@{
+    Layout = "~/Views/Shared/_Delete.cshtml";
+}
+
+@{
+    await Html.RenderPartialAsync("_ShowIngredient", Model);
+}
