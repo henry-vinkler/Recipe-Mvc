@@ -1,0 +1,9 @@
+@using RecipeMvc.Facade
+@model IngredientView
+
+@{
+    Layout = "~/Views/Shared/_Create.cshtml";
+}
+
+@{await Html.RenderPartialAsync("_EditIngredient", Model);}
+
