@@ -2,10 +2,10 @@
 namespace RecipeMvc.Domain;
 public class Recipe(RecipeData? d) : Entity<RecipeData>(d)
 {
-    public int AuthorId { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public string ImagePath { get; set; }
-    public float Calories { get; set; }
-    public string Tags { get; set; }
+    public int AuthorId => Data.AuthorId;
+    public string Title => Data.Title;
+    public string Description => Data.Description;
+    public string ImagePath => Data.ImagePath;
+    public float Calories => Data.Calories;
+    public string Tags => Data.Tags;
 }
