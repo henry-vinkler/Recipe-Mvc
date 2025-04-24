@@ -1,4 +1,4 @@
-﻿namespace MvcTunnikontroll.Tests;
+﻿namespace RecipeMvc.Tests;
 
 [TestClass] public sealed class UnitTests: BaseTests {
     private object? x;

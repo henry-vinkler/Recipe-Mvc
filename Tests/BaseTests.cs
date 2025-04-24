@@ -1,4 +1,4 @@
-namespace MvcTunnikontroll.Tests;
+namespace RecipeMvc.Tests;
 public abstract class BaseTests {
     protected const int repeatCount = 1000;
     protected void equal<T>(T? x, T? y, string? msg = null) => Assert.AreEqual(x, y, msg);

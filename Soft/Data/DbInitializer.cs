@@ -1,5 +1,3 @@
-using RecipeMvc.Data;
-
 namespace RecipeMvc.Soft.Data;
 
 public class DbInitializer

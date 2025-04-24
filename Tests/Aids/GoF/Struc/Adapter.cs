@@ -1,6 +1,4 @@
-using MvcTunnikontroll.Aids.GoF.Struc;
-using MvcTunnikontroll.Tests;
-
-namespace MvcTunnikontroll.Tests.Aids.GoF.Struc;
+using RecipeMvc.Aids.GoF.Struc;
+namespace RecipeMvc.Tests.Aids.GoF.Struc;
 
 [TestClass] public class AdapterTests : ClassTests<Adapter, object> { }

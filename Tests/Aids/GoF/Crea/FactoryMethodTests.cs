@@ -1,8 +1,5 @@
-using MvcTunnikontroll.Aids.GoF.Crea;
-using MvcTunnikontroll.Tests;
-using MvcTunnikontroll.Tests.Aids;
-
-namespace MvcTunnikontroll.Tests.Aids.GoF.Crea;
+using RecipeMvc.Aids.GoF.Crea;
+namespace RecipeMvc.Tests.Aids.GoF.Crea;
 
 [TestClass] public sealed class FactoryMethodTests : BaseTests {
     [TestMethod] public void CreateTest(){

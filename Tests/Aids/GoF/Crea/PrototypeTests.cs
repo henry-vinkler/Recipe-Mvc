@@ -1,7 +1,5 @@
-using MvcTunnikontroll.Aids.GoF.Crea;
-using MvcTunnikontroll.Tests;
-
-namespace MvcTunnikontroll.Tests.Aids.GoF.Crea;
+using RecipeMvc.Aids.GoF.Crea;
+namespace RecipeMvc.Tests.Aids.GoF.Crea;
 
 internal class OtherTestClass {
     public int? Value { get; set; }

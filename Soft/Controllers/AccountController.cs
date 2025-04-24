@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RecipeMvc.Soft.Data;
 using RecipeMvc.Facade;
-using RecipeMvc.Domain;
 using RecipeMvc.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;

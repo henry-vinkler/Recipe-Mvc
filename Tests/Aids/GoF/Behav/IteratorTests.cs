@@ -1,6 +1,4 @@
-using MvcTunnikontroll.Aids.GoF.Behav;
-using MvcTunnikontroll.Tests;
-namespace MvcTunnikontroll.Tests.Aids.GoF.Behav;
-
+namespace RecipeMvc.Tests.Aids.GoF.Behav;
+using RecipeMvc.Aids.GoF.Behav;
 [TestClass] public class IteratorTests: ClassTests<Iterator, object> {}
 

@@ -1,7 +1,5 @@
-using MvcTunnikontroll.Aids;
-using MvcTunnikontroll.Tests;
-
-namespace MvcTunnikontroll.Tests.Aids;
+using RecipeMvc.Aids;
+namespace RecipeMvc.Tests.Aids;
 
 internal class CopyTestClass1 { 
     public int Id { get; set; }

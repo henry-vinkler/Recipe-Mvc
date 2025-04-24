@@ -1,7 +1,5 @@
-using MvcTunnikontroll.Aids.GoF.Behav;
-using MvcTunnikontroll.Tests;
-namespace MvcTunnikontroll.Tests.Aids.GoF.Behav;
-
+namespace RecipeMvc.Tests.Aids.GoF.Behav;
+using RecipeMvc.Aids.GoF.Behav;
 [TestClass] public class RoundingStrategyTests: BaseTests {
     const double x = 14.451;
     const double y = -14.451;

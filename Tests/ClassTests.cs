@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace MvcTunnikontroll.Tests;
+namespace RecipeMvc.Tests;
 
 public abstract class ClassTests<TClass, TBaseClass> : BaseClassTests<TClass, TBaseClass> 
     where TClass : class, new() 
