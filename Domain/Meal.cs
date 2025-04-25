@@ -1,11 +1,11 @@
 using System;
+using RecipeMvc.Data;
 
-namespace RecipeMvc.Data;
+namespace RecipeMvc.Domain;
 
-public sealed class MealData: EntityData<MealData>
+public class Meal(MealData? d): Entity<MealData>(d)
 {
     public int UserId { get; set; }
     public string? Name { get; set; }
     public string? Description { get; set; }
-    
 }
