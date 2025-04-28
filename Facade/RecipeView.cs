@@ -1,6 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace RecipeMvc.Facade;
+[DisplayName("Recipe")]
 public class RecipeView : EntityView
 {
     public int AuthorId { get; set; }
