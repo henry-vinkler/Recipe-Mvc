@@ -1,0 +1,10 @@
+﻿@using RecipeMvc.Facade
+@model ShoppingListIngredientView
+
+@{
+    Layout = "~/Views/Shared/_Create.cshtml";
+}
+
+@{
+    await Html.RenderPartialAsync("_EditShoppingListIngredient", Model);
+}
