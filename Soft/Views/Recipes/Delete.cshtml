@@ -1,0 +1,11 @@
+﻿@using RecipeMvc.Facade
+@model RecipeView
+
+
+@{
+    Layout = "~/Views/Shared/_Delete.cshtml";
+}
+
+@{
+    await Html.RenderPartialAsync("_ShowRecipe", Model);
+}
