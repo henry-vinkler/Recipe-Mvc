@@ -235,6 +235,26 @@ namespace RecipeMvc.Soft.Migrations
                     b.ToTable("Ingredients");
                 });
 
+            modelBuilder.Entity("RecipeMvc.Data.MealData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Meal");
+                });
+
             modelBuilder.Entity("RecipeMvc.Data.RecipeData", b =>
                 {
                     b.Property<int>("Id")
@@ -266,6 +286,30 @@ namespace RecipeMvc.Soft.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Recipes");
+                });
+
+            modelBuilder.Entity("RecipeMvc.Data.ShoppingListIngredientData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IngredientID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsChecked")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Quantity")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ShoppingListID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShoppingListIngredients");
                 });
 
             modelBuilder.Entity("RecipeMvc.Data.UserAccountData", b =>

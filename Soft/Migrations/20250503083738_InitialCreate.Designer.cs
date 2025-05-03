@@ -11,14 +11,14 @@ using RecipeMvc.Soft.Data;
 namespace RecipeMvc.Soft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250424023945_Initialize")]
-    partial class Initialize
+    [Migration("20250503083738_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.3");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.4");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -236,6 +236,83 @@ namespace RecipeMvc.Soft.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Ingredients");
+                });
+
+            modelBuilder.Entity("RecipeMvc.Data.MealData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Meal");
+                });
+
+            modelBuilder.Entity("RecipeMvc.Data.RecipeData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<float>("Calories")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tags")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Recipes");
+                });
+
+            modelBuilder.Entity("RecipeMvc.Data.ShoppingListIngredientData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IngredientID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsChecked")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Quantity")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ShoppingListID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShoppingListIngredients");
                 });
 
             modelBuilder.Entity("RecipeMvc.Data.UserAccountData", b =>

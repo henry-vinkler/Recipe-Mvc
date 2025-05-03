@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace RecipeMvc.Soft.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialize : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -62,6 +63,55 @@ namespace RecipeMvc.Soft.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ingredients", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Meal",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Meal", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Recipes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    AuthorId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    ImagePath = table.Column<string>(type: "TEXT", nullable: false),
+                    Calories = table.Column<float>(type: "REAL", nullable: false),
+                    Tags = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Recipes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShoppingListIngredients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ShoppingListID = table.Column<int>(type: "INTEGER", nullable: false),
+                    IngredientID = table.Column<int>(type: "INTEGER", nullable: false),
+                    Quantity = table.Column<string>(type: "TEXT", nullable: false),
+                    IsChecked = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShoppingListIngredients", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -245,6 +295,15 @@ namespace RecipeMvc.Soft.Migrations
 
             migrationBuilder.DropTable(
                 name: "Ingredients");
+
+            migrationBuilder.DropTable(
+                name: "Meal");
+
+            migrationBuilder.DropTable(
+                name: "Recipes");
+
+            migrationBuilder.DropTable(
+                name: "ShoppingListIngredients");
 
             migrationBuilder.DropTable(
                 name: "UserAccounts");
