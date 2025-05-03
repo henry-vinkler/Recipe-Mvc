@@ -1,4 +1,4 @@
-using RecipeMvc.Domain.Enums;
+using RecipeMvc.Aids.Enums;
 using RecipeMvc.Data;
 
 namespace RecipeMvc.Domain
