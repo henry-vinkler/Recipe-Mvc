@@ -1,5 +1,3 @@
-using System;
-
 namespace RecipeMvc.Data;
 
 public sealed class MealData: EntityData<MealData>

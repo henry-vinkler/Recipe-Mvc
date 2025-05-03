@@ -1,4 +1,3 @@
-using System;
 using RecipeMvc.Data;
 
 namespace RecipeMvc.Domain;
