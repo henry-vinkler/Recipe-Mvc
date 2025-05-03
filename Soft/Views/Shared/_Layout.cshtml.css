@@ -48,7 +48,7 @@ button.accept-policy {
 }
 /* Toiduteemaline roheline palett */
 .food-navbar {
-  background-color: #4CAF50;
+  background-color: #9ea58d;
 }
 .food-navbar .navbar-brand,
 .food-navbar .nav-link {
@@ -69,7 +69,7 @@ button.accept-policy {
 }
 
 .footer-food {
-  background-color: #1B5E20;
+  background-color: #9ea58d;
   color:            #f1f1f1;
 }
 .footer-food a {
