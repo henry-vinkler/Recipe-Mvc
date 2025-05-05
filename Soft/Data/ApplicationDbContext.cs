@@ -12,4 +12,6 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<MealData> Meal { get; set; } = default!;
     public DbSet<RecipeData> Recipes { get; set; } = default!;
     public DbSet<ShoppingListIngredientData> ShoppingListIngredients { get; set; } = default!;
+    public DbSet<RecipeIngredientData> RecipeIngredients { get; set; } = default!;
+    public DbSet<FavouritesData> Favourites { get; set; } = default!;
 }
