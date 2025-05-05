@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -50,6 +51,20 @@ namespace RecipeMvc.Soft.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Favourites",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    RecipeId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Favourites", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Ingredients",
                 columns: table => new
                 {
@@ -77,6 +92,21 @@ namespace RecipeMvc.Soft.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Meal", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RecipeIngredients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    RecipeId = table.Column<int>(type: "INTEGER", nullable: false),
+                    IngredientId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Quantity = table.Column<float>(type: "REAL", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RecipeIngredients", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -293,10 +323,16 @@ namespace RecipeMvc.Soft.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Favourites");
+
+            migrationBuilder.DropTable(
                 name: "Ingredients");
 
             migrationBuilder.DropTable(
                 name: "Meal");
+
+            migrationBuilder.DropTable(
+                name: "RecipeIngredients");
 
             migrationBuilder.DropTable(
                 name: "Recipes");
