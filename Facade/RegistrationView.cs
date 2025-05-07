@@ -32,5 +32,6 @@ public class RegistrationView
     [DataType(DataType.Password)]
     public string ConfirmPassword { get; set; }
 
+
 }
 

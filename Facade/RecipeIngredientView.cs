@@ -12,7 +12,7 @@ public class RecipeIngredientView : EntityView {
     public int IngredientId { get; set; }
 
     [DisplayName("Name")]
-    public int IngredientName { get; set; }
+    public string? IngredientName { get; set; }
 
 
     [DisplayName("Quantity")]
