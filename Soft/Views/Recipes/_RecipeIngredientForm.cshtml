@@ -1,0 +1,13 @@
+﻿@model RecipeIngredientView
+
+<form asp-action="AddIngredient" method="post" class="form-inline">
+    <input type="hidden" asp-for="RecipeId" />
+
+    <select asp-for="IngredientId" asp-items="ViewBag.IngredientList" class="form-control">
+        <option value="">-- Choose --</option>
+    </select>
+
+    <input asp-for="Quantity" class="form-control ml-2" placeholder="Qty" />
+
+    <button class="btn btn-primary ml-2">Add</button>
+</form>

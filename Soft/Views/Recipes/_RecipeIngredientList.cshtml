@@ -1,0 +1,19 @@
+﻿@model IList<RecipeIngredientView>
+<table class="table">
+    <tr><th>Name</th><th>Qty</th><th>Unit</th><th></th></tr>
+    @foreach (var ing in Model)
+    {
+        <tr>
+            <td>@ing.IngredientName</td>
+            <td>@ing.Quantity</td>
+            <td>@ing.Unit</td>
+            <td>
+                <form asp-action="RemoveIngredient" method="post">
+                    <input type="hidden" name="recipeId" value="@ing.RecipeId" />
+                    <input type="hidden" name="ingredientId" value="@ing.IngredientId" />
+                    <button class="btn btn-sm btn-danger">×</button>
+                </form>
+            </td>
+        </tr>
+    }
+</table>

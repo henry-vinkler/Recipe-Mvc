@@ -9,3 +9,15 @@
     await Html.RenderPartialAsync("_EditRecipe", Model);
 }
 
+<hr />
+
+<h3>Ingredients</h3>
+
+@await Html.PartialAsync(
+        "_RecipeIngredientList",
+        Model.Ingredients )
+
+
+@await Html.PartialAsync(
+        "_RecipeIngredientForm",
+        new RecipeIngredientView { RecipeId = Model.Id } )
