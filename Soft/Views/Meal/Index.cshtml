@@ -1,9 +1,52 @@
-@model IEnumerable<MealView>
+@* @model IEnumerable<MealView>
 @using RecipeMvc.Core.Editors
+@using RecipeMvc.Domain
 @using RecipeMvc.Facade
 
 @{
     Layout = "~/Views/Shared/_Index.cshtml";
 }
 
-@Html.ShowTable(Model)
+@Html.ShowTable(Model) *@
+@model IEnumerable<RecipeMvc.Data.MealWeek>
+@using RecipeMvc.Aids.Enums
+
+@{
+    ViewData["Title"] = "Weekly Meal Plan";
+    var days = Enum.GetValues(typeof(Days)).Cast<Days>();
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table table-bordered">
+    <thead class="table-success">
+        <tr>
+            <th>Päev</th>
+            <th>Retseptid</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var day in days)
+        {
+            <tr>
+                <td><strong>@day</strong></td>
+                <td>
+                    @{
+                        var recipesForDay = Model
+                            .Where(mw => mw.Week.Day == day)
+                            .Select(mw => mw.Meal?.Recipe)
+                            .Where(r => r != null)
+                            .Distinct();
+
+                        foreach (var recipe in recipesForDay!)
+                        {
+                            <a href="@Url.Action("Details", "Recipe", new { id = recipe.Id })">@recipe.Title</a><br />
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
