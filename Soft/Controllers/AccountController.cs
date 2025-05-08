@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 
 namespace RecipeMvc.Soft.Controllers
 {
@@ -23,14 +24,17 @@ namespace RecipeMvc.Soft.Controllers
         {
             if (ModelState.IsValid)
             {
+                var passwordHasher = new PasswordHasher<UserAccountData>();
+
                 UserAccountData account = new()
                 {
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     Email = model.Email,
-                    Username = model.Username,
-                    Password = model.Password
+                    Username = model.Username
                 };
+
+                account.Password = passwordHasher.HashPassword(account, model.Password);
 
                 try
                 {
@@ -59,20 +63,31 @@ namespace RecipeMvc.Soft.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _context.UserAccounts.Where(u => u.Username == model.UsernameOrEmail || u.Email == model.UsernameOrEmail && u.Password == model.Password).FirstOrDefault();
+                var user = _context.UserAccounts
+                    .FirstOrDefault(u => u.Username == model.UsernameOrEmail || u.Email == model.UsernameOrEmail);
 
                 if (user != null)
                 {
-                    var claims = new List<Claim>
-                    {
-                        new(ClaimTypes.Name, user.FirstName),
-                        new("Name", user.FirstName),
-                        new(ClaimTypes.Role, "User"),
-                    };
+                    var passwordHasher = new PasswordHasher<UserAccountData>();
+                    var result = passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);
 
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                    return RedirectToAction("SecurePage", "Account");
+                    if (result == PasswordVerificationResult.Success)
+                    {
+                        var claims = new List<Claim>
+                        {
+                            new(ClaimTypes.Name, user.FirstName),
+                            new("Name", user.FirstName),
+                            new(ClaimTypes.Role, "User"),
+                        };
+
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+                        return RedirectToAction("SecurePage", "Account");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Invalid username/email or password.");
+                    }
                 }
                 else
                 {
