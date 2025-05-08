@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Shopping List";
+}
+
+<h1>Shopping List</h1>
+
+<!-- Favorites Table -->
+<h2>Favorites</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Recipe Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Placeholder for favorites data -->
+        <!-- TODO: Replace with actual data once the Favorite class is added -->
+        @* Example row for demonstration purposes *@
+        <tr>
+            <td>Example Favorite Recipe</td>
+            <td><button class="custom-add-button">Add to List</button></td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Added Recipes Table -->
+<h2>Added Recipes</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Recipe Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Placeholder for added recipes -->
+        @* Example row for demonstration purposes *@
+        <tr>
+            <td>Example Added Recipe</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Create List From Mealweek Button -->
+<div class="mt-3">
+    <form method="post" asp-action="CreateListFromMealweek">
+        <button type="submit" class="custom-create-button">Create List From Mealweek</button>
+    </form>
+</div>
