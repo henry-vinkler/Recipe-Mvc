@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RecipeMvc.Soft.Data;
+using RecipeMvc.Models;
 
 internal class Program {
     private static void Main(string[] args) {
@@ -18,10 +19,13 @@ internal class Program {
         builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
         var app = builder.Build();
 
-        if (app.Environment.IsDevelopment()) {
-            app.UseMigrationsEndPoint();
-            SeedData(app);
-        } else {
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            SeedData.Initialize(services);
+        }
+
+        if (!app.Environment.IsDevelopment()) {
             app.UseExceptionHandler("/Home/Error");
             app.UseHsts();
         }
@@ -42,7 +46,7 @@ internal class Program {
         app.Run();
     }
 
-    private static void SeedData(WebApplication app) {
+    /*private static void SeedData(WebApplication app) {
         Task.Run(async () => {
             IServiceProvider? services = null;
             try {
@@ -55,6 +59,6 @@ internal class Program {
                 logger?.LogError(e, "An error occurred while seeding the database.");
             }
         });
-    }
+    }*/
 }
 

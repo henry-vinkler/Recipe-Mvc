@@ -8,4 +8,7 @@ public class Recipe(RecipeData? d) : Entity<RecipeData>(d)
     public string ImagePath => Data.ImagePath;
     public float Calories => Data.Calories;
     public string Tags => Data.Tags;
+    /*internal List<RecipeAuthor> movieRoles = [];
+    public List<UserAccount?> Persons => movieRoles?
+        .Where(r => r.Person is not null).Select(r => r.Person).ToList() ?? [];*/
 }
