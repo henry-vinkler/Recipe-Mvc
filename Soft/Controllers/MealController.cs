@@ -8,7 +8,7 @@ using RecipeMvc.Soft.Data;
 namespace RecipeMvc.Soft.Controllers;
 
 public class MealController(ApplicationDbContext c)
-    : BaseController<Meal, MealData, MealView>(c, new MealViewFactory(), d => new(d))
+    : BaseController<Meal, MealPlanData, MealView>(c, new MealViewFactory(), d => new(d))
 {
     public async Task<IActionResult> GetRecipes()
     {

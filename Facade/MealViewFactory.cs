@@ -3,9 +3,9 @@ using RecipeMvc.Domain;
 
 namespace RecipeMvc.Facade;
 
-public sealed class MealViewFactory : AbstractViewFactory<MealData, MealView>
+public sealed class MealViewFactory : AbstractViewFactory<MealPlanData, MealView>
 {
-    public override MealView CreateView(MealData? d)
+    public override MealView CreateView(MealPlanData? d)
     {
         if (d == null) return new MealView();
 
@@ -16,9 +16,9 @@ public sealed class MealViewFactory : AbstractViewFactory<MealData, MealView>
         return v;
     }
 
-    public override MealData CreateData(MealView? v)
+    public override MealPlanData CreateData(MealView? v)
     {
-        if (v == null) return new MealData();
+        if (v == null) return new MealPlanData();
 
         var d = base.CreateData(v);
         d.RecipeId = v.SelectedRecipeId ?? 0;

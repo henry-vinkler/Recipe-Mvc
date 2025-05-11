@@ -5,7 +5,7 @@ namespace RecipeMvc.Data;
 public sealed class MealWeek : EntityData<MealWeek>
 {
     public int MealId { get; set; }
-    public MealData? Meal { get; set; }
+    public MealPlanData? Meal { get; set; }
 
     public int WeekDataId { get; set; }
     public WeekData? Week { get; set; }

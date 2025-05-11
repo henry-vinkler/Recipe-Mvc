@@ -11,17 +11,17 @@ public class ApplicationDbContext : IdentityDbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
     public DbSet<IngredientData> Ingredients { get; set; } = default!;
     public DbSet<UserAccountData> UserAccounts { get; set; } = default!;
-    public DbSet<MealData> Meal { get; set; } = default!;//Nädala toit
+    public DbSet<MealPlanData> Meal { get; set; } = default!;//Nädala toit
     public DbSet<WeekData> Weeks { get; set; }= default!;//Nädala toit
-    public DbSet<MealData> MealWeeks { get; set; }= default!;//Nädala toit
+    public DbSet<MealPlanData> MealWeeks { get; set; }= default!;//Nädala toit
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<MealData>()
+        modelBuilder.Entity<MealPlanData>()
             .HasOne(m => m.Recipe)
             .WithOne()
-            .HasForeignKey<MealData>(m => m.RecipeId)
+            .HasForeignKey<MealPlanData>(m => m.RecipeId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 
