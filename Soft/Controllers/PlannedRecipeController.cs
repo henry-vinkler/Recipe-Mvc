@@ -17,7 +17,7 @@ public class PlannedRecipeController(ApplicationDbContext db)
 
         var planned = await db.PlannedRecipes
             .Where(p => p.MealPlanId == plan.Id)
-            .Include(p => p.RecipeId)
+            .Include(p => p.Recipe)
             .ToListAsync();
 
         var viewModels = planned.Select(p => new PlannedRecipeView

@@ -1,0 +1,11 @@
+@model IEnumerable<PlannedRecipeView>
+@using RecipeMvc.Core.Editors
+@using RecipeMvc.Domain
+@using RecipeMvc.Facade
+
+@{
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+
+@Html.ShowTable(Model)
+
