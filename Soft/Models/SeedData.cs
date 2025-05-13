@@ -23,7 +23,7 @@ public static class SeedData {
 
             context.Recipes.AddRange(
                 new RecipeData {
-                    AuthorId = 1,
+                    AuthorId = user.Id,
                     Title = "Delicious pasta with tomato sauce",
                     Description = "Ready in 25 minutes. It’s a simple yet satisfying meal that brings warmth to every bite.",
                     ImagePath = "pasta.jpg",
@@ -31,7 +31,7 @@ public static class SeedData {
                     Tags = "Italian, Pasta"
                 },
                 new RecipeData {
-                    AuthorId = 2,
+                    AuthorId = user.Id,
                     Title = "Fresh salad with vegetables",
                     Description = "Ready in 10 minutes. It’s refreshing, healthy, and perfect as a side or a light main course.",
                     ImagePath = "salad.jpg",
@@ -39,7 +39,7 @@ public static class SeedData {
                     Tags = "Healthy, Salad"
                 },
                 new RecipeData {
-                    AuthorId = 3,
+                    AuthorId = user.Id,
                     Title = "Cheesy pizza with pepperoni",
                     Description = "Ready in 30 minutes. Ideal for sharing—or not!",
                     ImagePath = "pizza.jpg",
@@ -47,7 +47,7 @@ public static class SeedData {
                     Tags = "Italian, Pizza"
                 },
                 new RecipeData {
-                    AuthorId = 4,
+                    AuthorId = user.Id,
                     Title = "Juicy burger with fries",
                     Description = "Ready in 35 minutes. It’s indulgent, satisfying, and packed with bold, comforting flavors.",
                     ImagePath = "burger.jpg",
