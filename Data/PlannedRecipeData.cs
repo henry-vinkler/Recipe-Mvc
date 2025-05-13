@@ -8,5 +8,7 @@ public sealed class PlannedRecipeData : EntityData<PlannedRecipeData>
 {
     public int MealPlanId { get; set; }
     public int RecipeId { get; set; }
-    public MealType meal { get; set; } // see on justkui 1 toit
+    public MealType MealType { get; set; } // see on justkui 1 toit
+    public RecipeData? Recipe { get; set; }
+
 }
