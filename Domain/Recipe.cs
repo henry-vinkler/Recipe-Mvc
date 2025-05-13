@@ -4,10 +4,12 @@ namespace RecipeMvc.Domain;
 public class Recipe(RecipeData? d) : Entity<RecipeData>(d)
 {
     public int AuthorId => Data.AuthorId;
-    public UserAccountData Author => Data.Author;
+    public UserAccount Author => author;
+    internal UserAccount author;
     public string Title => Data.Title;
     public string Description => Data.Description;
     public string ImagePath => Data.ImagePath;
     public float Calories => Data.Calories;
     public string Tags => Data.Tags;
+    public string AuthorUsername => author.Username;
 }

@@ -4,7 +4,8 @@ using System.ComponentModel.DataAnnotations;
 namespace RecipeMvc.Facade;
 [DisplayName("Recipe")]
 public class RecipeView : EntityView {
-    public int AuthorId { get; set; }
+    [Display(Name = "Author")] public int AuthorId { get; set; }
+    [Display(Name = "Author")] public string AuthorUsername { get; set; }
     [StringLength(60, MinimumLength = 3)] [Required(ErrorMessage = "Title is required.")]
     public string Title { get; set; }
     [StringLength(200, MinimumLength = 3)] [Required(ErrorMessage = "Add a description.")]
