@@ -40,7 +40,7 @@ public class PlannedRecipeController(ApplicationDbContext db)
         var plan = await db.MealPlans.FirstOrDefaultAsync(p => p.DateOfMeal == date);
         if (plan == null)
         {
-            plan = new MealPlanData { DateOfMeal = date, UserId = 1 }; // <--- vali loogika
+            plan = new PlannedRecipeData { DateOfMeal = date, UserId = 1 }; // <--- vali loogika
             db.MealPlans.Add(plan);
             await db.SaveChangesAsync();
         }

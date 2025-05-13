@@ -1,10 +1,10 @@
 @using RecipeMvc.Facade
-@model MealView
+@model MealPlanView
 
 @{
     Layout = "~/Views/Shared/_details.cshtml";
 }
 
 @{
-    await Html.RenderPartialAsync("_ShowIngredient", Model);
+    await Html.RenderPartialAsync("_ShowMeal", Model);
 }

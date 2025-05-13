@@ -1,4 +1,6 @@
-@model IEnumerable<RecipeMvc.Facade.PlannedRecipeView>
+@using RecipeMvc.Domain
+
+@model IEnumerable<PlannedRecipeView>
 @{
     ViewData["Title"] = "Päeva toitumiskava";
     var date = (DateTime)ViewBag.Date;
@@ -20,7 +22,7 @@
         </div>
         <div class="col">
             <select name="mealType" class="form-select">
-                @foreach (var type in Enum.GetValues(typeof(RecipeMvc.Aids.Enums.MealType)))
+                @foreach (var type in Enum.GetValues(typeof(RecipeMvc.Aids.MealType)))
                 {
                     <option value="@type">@type</option>
                 }

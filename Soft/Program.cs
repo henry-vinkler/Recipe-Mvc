@@ -49,7 +49,9 @@ internal partial class Program {
                 using var scope = app.Services.CreateScope();
                 services = scope.ServiceProvider;
                 var db = services.GetRequiredService<ApplicationDbContext>();
-                await new DbInitializer(db).Initialize();
+                var initializer = new DbInitializer(db);
+                initializer.Initialize();
+                await initializer.Initialize(10);;
             } catch (Exception e) {
                 var logger = services?.GetRequiredService<ILogger<Program>>();
                 logger?.LogError(e, "An error occurred while seeding the database.");

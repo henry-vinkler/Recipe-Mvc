@@ -1,6 +1,7 @@
 @using RecipeMvc.Core.Editors
 @using RecipeMvc.Facade
-@model MealView
+@model MealPlanView
 
-@Html.InputFor(x => x.Name)
-@Html.InputFor(x => x.Description)
+@Html.InputFor(x => x.Date)
+@Html.InputFor(x => x.Items)
+@Html.InputFor(x => x.PlannedItems)

@@ -1,6 +1,7 @@
 @using RecipeMvc.Core.Editors
 @using RecipeMvc.Facade
-@model MealView
+@model MealPlanView
 
-@Html.ShowFor(x => x.Name)
-@Html.ShowFor(x => x.Description)
+@Html.ShowFor(x => x.Date)
+@Html.ShowFor(x => x.Items)
+@Html.ShowFor(x => x.PlannedItems)

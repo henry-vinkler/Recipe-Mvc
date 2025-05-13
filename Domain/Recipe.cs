@@ -9,5 +9,4 @@ public class Recipe(RecipeData? d) : Entity<RecipeData>(d)
     public string ImagePath => Data.ImagePath;
     public float Calories => Data.Calories;
     public string Tags => Data.Tags;
-    public virtual ICollection<PlannedRecipe> PlannedRecipes { get; set; }
 }
