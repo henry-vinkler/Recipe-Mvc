@@ -15,5 +15,12 @@ public class RecipeView : EntityView {
     public float Calories { get; set; }
     [StringLength(60, MinimumLength = 3)] [Required(ErrorMessage = "Tags are required.")]
     public string Tags { get; set; }
-    public IList<RecipeIngredientView> Ingredients { get; set; } = new List<RecipeIngredientView>();
+
+    [DisplayName("Favourited by")]
+    public int FavouriteCount { get; set; }
+
+    public bool IsFavourited { get; set; }
+
+    public IList<FavouriteView> FavouritedBy { get; set; } = new List<FavouriteView>();
+
 }
