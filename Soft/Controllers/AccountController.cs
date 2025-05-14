@@ -94,7 +94,7 @@ namespace RecipeMvc.Soft.Controllers
 
                         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                        return RedirectToAction("SecurePage", "Account");
+                        return RedirectToAction("Index", "Home");
                     }
                     else
                     {
@@ -114,10 +114,23 @@ namespace RecipeMvc.Soft.Controllers
             return RedirectToAction("Index", "Home");
         }
         [Authorize]
-        public IActionResult SecurePage()
+        public IActionResult AccountInfo()
         {
-            ViewBag.Name = HttpContext.User.Identity.Name;
-            return View();
+            ViewData["Title"] = "AccountInfo";
+
+            var username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("Login");
+            }
+
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Username == username || u.Email == username);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            return View(user);
         }
     }
 }
