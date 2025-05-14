@@ -39,7 +39,7 @@
                         <h5 class="card-title mb-0">@recipe.Title</h5>
                         <form asp-action="ToggleFavorite" method="post" class="mb-0">
                             <input type="hidden" name="id" value="@recipe.Id" />
-                            <button type="submit" class="btn btn-outline-danger btn-sm">❤️</button>
+                            <button type="submit" class="btn btn-sm">❤️</button>
                         </form>
                     </div>
                     <p class="card-text text-muted">@recipe.Calories kcal</p>
