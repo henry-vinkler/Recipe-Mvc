@@ -10,7 +10,7 @@ public static class SeedData {
         using (var context = new ApplicationDbContext(serviceProvider.GetRequiredService<
                 DbContextOptions<ApplicationDbContext>>()))
         {
-            if (context.Recipes.Any())
+            if (!context.Recipes.Any())
             {
                 return;
             }

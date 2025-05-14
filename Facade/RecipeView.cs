@@ -16,6 +16,8 @@ public class RecipeView : EntityView {
     [StringLength(60, MinimumLength = 3)] [Required(ErrorMessage = "Tags are required.")]
     public string Tags { get; set; }
 
+    public IList<RecipeIngredientView> Ingredients { get; set; } = new List<RecipeIngredientView>();
+
     [DisplayName("Favourited by")]
     public int FavouriteCount { get; set; }
 
