@@ -1,9 +1,14 @@
 using System.Linq.Dynamic.Core;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RecipeMvc.Data;
 using RecipeMvc.Domain;
 
 namespace RecipeMvc.Infra;
+public sealed class UserAccountRepo(DbContext db)
+    : Repo<UserAccount, UserAccountData>(db, d => new(d)), IUserAccountRepo {
+    protected internal override string selectTextField => nameof(UserAccountData.Username);
+}
 public class Repo<TObject, TData>(DbContext c , Func<TData?, TObject> f)  
     where TObject: Entity<TData> 
     where TData: EntityData<TData> {
@@ -19,6 +24,18 @@ public class Repo<TObject, TData>(DbContext c , Func<TData?, TObject> f)
         => filter is null 
             ? set
             : set.Where(whereExpr(), filter);
+    private IQueryable<TData> filtered(string propertyName, int idValue)
+        => set.Where(whereExpr(propertyName), idValue);
+    private string whereExpr(string propertyName) {
+        var filters = new List<string>();
+        foreach (var p in typeof(TData).GetProperties())
+        {
+            if (p.Name != propertyName) continue;
+            if (p.PropertyType != typeof(int)) continue;
+            filters.Add($"({p.Name}==@0)");
+        }
+        return string.Join(" OR ", filters);
+    }
     private string whereExpr() {  
         var filters = new List<string>();
         foreach( var p in typeof(TData).GetProperties()) {
@@ -44,6 +61,8 @@ public class Repo<TObject, TData>(DbContext c , Func<TData?, TObject> f)
         var cnt = await filtered(filter).CountAsync();
         return cnt % pageSize == 0? cnt/pageSize: cnt/pageSize + 1;   
     }
+    public async Task<IEnumerable<TObject>> GetAsync(string propertyName, int idValue)
+        => (await filtered(propertyName, idValue).ToListAsync()).Select(f);
     public async Task<IEnumerable<TObject>> GetAsync(int pageIdx, byte pageSize
         , string? orderBy=null, string? filter=null) 
         => (await ordered(orderBy, filter)
@@ -68,4 +87,21 @@ public class Repo<TObject, TData>(DbContext c , Func<TData?, TObject> f)
         set.Remove(x);
         await db.SaveChangesAsync();
     }
- }
+    protected internal virtual string selectTextField => nameof(EntityData.Id);
+    public async Task<IEnumerable<dynamic>> SelectItems(string searchString, int id) {
+        var l = (await GetAsync()).ToList();
+        var o = await GetAsync(id);
+        if (o != null && !l.Contains(o)) l.Add(o);
+        return new SelectList(l, nameof(EntityData.Id), selectTextField, id);
+    }
+    private async Task<SelectList> selectList(int id, List<TObject>? l = null) {
+        var list = l ?? [];
+        var o = await GetAsync(id);
+        if (o != null && !list.Contains(o)) list.Add(o);
+        return new SelectList(list, nameof(EntityData.Id), selectTextField, id);
+    }
+    public async Task<dynamic?> SelectItem(int id) {
+        var l = await selectList(id);
+        return l.FirstOrDefault();
+    }
+}

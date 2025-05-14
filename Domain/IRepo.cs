@@ -9,7 +9,7 @@ public interface IRepo<TObject>
     public Task<TObject?> GetAsync(int? id);
     public Task AddAsync(TObject o);
     public Task UpdateAsync(TObject o);
-    public Task DeleteAsync(int? id);
+    public Task DeleteAsync(int id);
     public Task<IEnumerable<dynamic>> SelectItems(string searchString, int id);
     public Task<dynamic?> SelectItem(int id);
 }
