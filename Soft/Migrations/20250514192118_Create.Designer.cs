@@ -11,8 +11,8 @@ using RecipeMvc.Soft.Data;
 namespace RecipeMvc.Soft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250505121823_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250514192118_Create")]
+    partial class Create
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -216,7 +216,7 @@ namespace RecipeMvc.Soft.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.FavouritesData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.FavouriteData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

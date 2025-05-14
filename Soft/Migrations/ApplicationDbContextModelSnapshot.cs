@@ -213,7 +213,7 @@ namespace RecipeMvc.Soft.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.FavouritesData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.FavouriteData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

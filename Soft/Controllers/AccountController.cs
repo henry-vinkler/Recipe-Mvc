@@ -19,7 +19,8 @@ namespace RecipeMvc.Soft.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Registration(RegistrationView model)
+        public async Task<IActionResult> Registration(RegistrationView model)
+
         {
             if (ModelState.IsValid)
             {
@@ -49,9 +50,8 @@ namespace RecipeMvc.Soft.Controllers
                     _context.UserAccounts.Add(account);
                     _context.SaveChanges();
 
-                    ModelState.Clear();
-                    ViewBag.Message = $"{account.FirstName} {account.LastName}. Registration successful! Please log in now";
-                    return View();
+                    await SignInUserAsync(account);
+                    return RedirectToAction("Index", "Home");
                 }
                 catch (DbUpdateException)
                 {
