@@ -1,6 +1,14 @@
 ﻿@using RecipeMvc.Core.Editors
-@using RecipeMvc.Facade
-@model RecipeView
+@using RecipeMvc.Core
+@using RecipeMvc.Domain
+@using RecipeMvc.Soft.Data
+@model RecipeMvc.Facade.RecipeView
+
+@{
+	var authors = await Services.Get<IUserAccountRepo>()?.GetAsync()! ?? [];
+	authors = authors.OrderBy(p => p.Username).ToList();
+	var selectRecipes = new SelectList(authors, "Id", "Username", Model.AuthorId);
+}
 
 @Html.InputFor(x => x.AuthorUsername)
 @Html.InputFor(x => x.Title)
