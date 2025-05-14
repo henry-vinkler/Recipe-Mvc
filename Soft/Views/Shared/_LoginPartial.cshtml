@@ -2,11 +2,11 @@
 {
     <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="navbar-form navbar-right">
         <ul class="nav navbar-nav navbar-right">
-            <li>
-                Hello @Context.User.Identity.Name
-            </li>
-            <li>
-                <button type="submit" class="btn btn-link navbar-bin navbar-link">Log out</button>
+            <li style="display:inline;">
+                <button type="submit"
+                        style="background:none; border:none; color:inherit; padding:0; font:inherit; cursor:pointer;">
+                    Log out
+                </button>
             </li>
         </ul>
     </form>

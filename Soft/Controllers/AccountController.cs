@@ -24,8 +24,22 @@ namespace RecipeMvc.Soft.Controllers
         {
             if (ModelState.IsValid)
             {
-                var passwordHasher = new PasswordHasher<UserAccountData>();
+                // Check for existing username or email
+                bool usernameExists = _context.UserAccounts.Any(u => u.Username == model.Username);
+                bool emailExists = _context.UserAccounts.Any(u => u.Email == model.Email);
 
+                if (usernameExists)
+                {
+                    ModelState.AddModelError("Username", "Username is already taken.");
+                    return View(model);
+                }
+                if (emailExists)
+                {
+                    ModelState.AddModelError("Email", "Email is already registered.");
+                    return View(model);
+                }
+
+                var passwordHasher = new PasswordHasher<UserAccountData>();
                 UserAccountData account = new()
                 {
                     FirstName = model.FirstName,
@@ -33,7 +47,6 @@ namespace RecipeMvc.Soft.Controllers
                     Email = model.Email,
                     Username = model.Username
                 };
-
                 account.Password = passwordHasher.HashPassword(account, model.Password);
 
                 try
@@ -43,12 +56,11 @@ namespace RecipeMvc.Soft.Controllers
 
                     ModelState.Clear();
                     ViewBag.Message = $"{account.FirstName} {account.LastName}. Registration successful! Please log in now";
-
                     return View();
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("", "Please enter unique Email or Password.");
+                    ModelState.AddModelError("", "An error occurred while saving. Please try again.");
                     return View(model);
                 }
             }
