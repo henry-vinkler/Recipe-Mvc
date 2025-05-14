@@ -16,6 +16,7 @@ public class RegistrationView
 
     [Required(ErrorMessage = "Email is required.")]
     [RegularExpression(@"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$", ErrorMessage = "Please Enter Valid Email.")]
+
     [MaxLength(100, ErrorMessage = "Email cannot exceed 100 characters.")]
     public string Email { get; set; }
 
