@@ -1,19 +1,24 @@
-﻿@if (Context.User.Identity.Name != null)
+﻿@using Microsoft.AspNetCore.Identity
+
+@if (Context.User.Identity.IsAuthenticated)
 {
-    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="navbar-form navbar-right">
-        <ul class="nav navbar-nav navbar-right">
+    <div class="nav-item dropdown ms-auto">
+        <button class="btn custom-dropdown-btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            @Context.User.Identity.Name
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu" aria-labelledby="userDropdown">
             <li>
-                Hello @Context.User.Identity.Name
+                <a class="dropdown-item" asp-controller="Account" asp-action="AccountInfo">View Info</a>
             </li>
             <li>
-                <button type="submit" class="btn btn-link navbar-bin navbar-link">Log out</button>
+                <a class="dropdown-item" asp-controller="Account" asp-action="Logout">Log out</a>
             </li>
         </ul>
-    </form>
+    </div>
 }
 else
 {
-    <ul class=" nav navbar-nav navbar-right">
+    <ul class="nav navbar-nav navbar-right">
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
         </li>

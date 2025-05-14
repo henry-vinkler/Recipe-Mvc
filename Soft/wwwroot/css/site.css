@@ -29,3 +29,24 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.custom-dropdown-btn {
+    --bs-btn-bg: #8e947f;
+    --bs-btn-hover-bg: #ccc098;
+    --bs-btn-active-bg: #ccc098;
+    background-color: var(--bs-btn-bg);
+    border-color: var(--bs-btn-bg);
+    color: white;
+}
+
+    .custom-dropdown-btn:hover {
+        background-color: var(--bs-btn-hover-bg);
+        border-color: var(--bs-btn-hover-bg);
+    }
+
+    .custom-dropdown-btn:focus,
+    .custom-dropdown-btn:active {
+        background-color: var(--bs-btn-active-bg);
+        border-color: var(--bs-btn-active-bg);
+        box-shadow: none;
+    }
