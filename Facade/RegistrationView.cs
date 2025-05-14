@@ -25,6 +25,7 @@ public class RegistrationView
 
     [Required(ErrorMessage = "Password is required.")]
     [StringLength(20, MinimumLength =5, ErrorMessage = "Password must be between 5 and 20 characters long.")]
+    [RegularExpression(@"^(?=.*\d).+$", ErrorMessage = "Password must contain at least one number.")]
     [DataType(DataType.Password)]
     public string Password { get; set; }
 
