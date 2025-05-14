@@ -30,6 +30,7 @@ public class RegistrationView
     public string Password { get; set; }
 
     [Required(ErrorMessage = "Confirm password is required.")]
+    [Compare("Password", ErrorMessage = "Passwords do not match.")]
     [DataType(DataType.Password)]
     public string ConfirmPassword { get; set; }
 
