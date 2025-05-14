@@ -1,0 +1,9 @@
+﻿@model IEnumerable<ShoppingListView>
+@using RecipeMvc.Core.Editors
+@using RecipeMvc.Facade
+
+@{
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+
+@Html.ShowTable(Model)

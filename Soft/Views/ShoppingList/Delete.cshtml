@@ -1,0 +1,11 @@
+﻿@using RecipeMvc.Facade
+@model ShoppingListView
+
+@{
+    Layout = "~/Views/Shared/_Delete.cshtml";
+}
+
+@{
+    await Html.RenderPartialAsync("_ShowShoppingList", Model);
+}
+
