@@ -364,3 +364,5 @@ FodyWeavers.xsd
 /Soft/app.db-shm
 /.gitignore
 /.gitignore
+/Soft/app.db
+/Soft/app.db-wal
