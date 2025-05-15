@@ -1,23 +1,255 @@
-﻿@using RecipeMvc.Facade
+﻿@using RecipeMvc.Core
+@using RecipeMvc.Core.Editors
+@using RecipeMvc.Domain
+@using RecipeMvc.Facade.Recipe
+@using Newtonsoft.Json
 @model RecipeView
-
 @{
-    Layout = "~/Views/Shared/_Edit.cshtml";
+    ViewData["Title"] = "Edit Recipe";
+    var ingredients = ViewBag.AvailableIngredients as List<IngredientView> ?? new();
 }
 
-@{
-    await Html.RenderPartialAsync("_EditRecipe", Model);
+<h2>Edit Recipe</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data" id="edit-recipe-form">
+    @Html.HiddenFor(x => x.Id)
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="mb-3">
+        @Html.LabelFor(x => x.Title)
+        @Html.TextBoxFor(x => x.Title, new { @class = "form-control", name = "Title" })
+        @Html.ValidationMessageFor(x => x.Title)
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(x => x.Description)
+        @Html.TextAreaFor(x => x.Description, new { @class = "form-control", name = "Description" })
+        @Html.ValidationMessageFor(x => x.Description)
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(x => x.Tags)
+        @Html.TextBoxFor(x => x.Tags, new { @class = "form-control", name = "Tags" })
+        @Html.ValidationMessageFor(x => x.Tags)
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="ImageFile"></label>
+        <input asp-for="ImageFile" type="file" class="form-control" />
+        <span asp-validation-for="ImageFile" class="text-danger"></span>
+    </div>
+
+    <label>Ingredients</label>
+    <div class="row mb-2">
+        <div class="col position-relative">
+            <input id="ingredient-search" class="form-control" placeholder="Search ingredient..." autocomplete="off" aria-label="Search ingredient" />
+            <div id="ingredient-dropdown" class="dropdown-menu w-100" style="max-height:200px;overflow-y:auto;position:absolute;z-index:1000; display:none;">
+                @foreach (var ing in ingredients)
+                {
+                    <button type="button" class="dropdown-item" data-id="@ing.Id" data-name="@ing.Name">@ing.Name</button>
+                }
+            </div>
+        </div>
+        <div class="col">
+            <input type="number" id="ingredient-amount" class="form-control" placeholder="Amount" min="0" step="any" aria-label="Amount" />
+        </div>
+        <div class="col">
+            <button type="button" id="add-ingredient" class="btn btn-secondary">Add</button>
+        </div>
+    </div>
+
+    <ul id="added-ingredients" class="list-group mb-3">
+        @for (int i = 0; i < Model.Ingredients.Count; i++)
+        {
+            var ingredient = Model.Ingredients[i];
+            var ingName = ingredients.FirstOrDefault(x => x.Id == ingredient.IngredientId)?.Name ?? "Unknown";
+
+            <li class="list-group-item d-flex justify-content-between align-items-center" data-id="@ingredient.IngredientId" data-quantity="@ingredient.Quantity.ToString("F2")">
+                <span class="ingredient-text">@ingName - @ingredient.Quantity.ToString("F2")</span>
+                <button type="button" class="btn btn-sm btn-danger ms-2 remove-ingredient">Remove</button>
+            </li>
+        }
+    </ul>
+
+    <!-- Use this container to put hidden inputs dynamically for model binding -->
+    <div id="ingredients-hidden"></div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+@section Scripts {
+    <script>
+        (function() {
+            const searchInput = document.getElementById('ingredient-search');
+            const dropdown = document.getElementById('ingredient-dropdown');
+            const ul = document.getElementById('added-ingredients');
+            const form = document.getElementById('edit-recipe-form');
+            const amountInput = document.getElementById('ingredient-amount');
+            const hiddenContainer = document.getElementById('ingredients-hidden');
+
+            // We'll keep track of ingredients in this array
+            let ingredientsList = [];
+
+            let dropdownHasFocus = false;
+            let selectedIngredientId = '';
+            let selectedIngredientName = '';
+
+            // Dropdown show/hide with delay
+            searchInput.addEventListener('focus', () => dropdown.style.display = 'block');
+            searchInput.addEventListener('blur', () => setTimeout(() => {
+                if (!dropdownHasFocus) dropdown.style.display = 'none';
+            }, 150));
+            dropdown.addEventListener('mouseenter', () => dropdownHasFocus = true);
+            dropdown.addEventListener('mouseleave', () => {
+                dropdownHasFocus = false;
+                setTimeout(() => {
+                    if (document.activeElement !== searchInput) dropdown.style.display = 'none';
+                }, 150);
+            });
+
+            // Filter dropdown items on input
+            searchInput.addEventListener('input', function () {
+                const search = this.value.trim().toLowerCase();
+                let anyVisible = false;
+                document.querySelectorAll('#ingredient-dropdown .dropdown-item').forEach(item => {
+                    const visible = item.textContent.toLowerCase().includes(search);
+                    item.style.display = visible ? '' : 'none';
+                    if (visible) anyVisible = true;
+                });
+                dropdown.style.display = anyVisible ? 'block' : 'none';
+
+                // Reset selection if user types something new
+                selectedIngredientId = '';
+                selectedIngredientName = '';
+            });
+
+            // Select ingredient from dropdown
+            document.querySelectorAll('#ingredient-dropdown .dropdown-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    selectedIngredientId = this.dataset.id;
+                    selectedIngredientName = this.dataset.name;
+                    searchInput.value = selectedIngredientName;
+                    dropdown.style.display = 'none';
+                    searchInput.focus();
+                });
+            });
+
+            // Add ingredient to our array and update UI
+            function addOrUpdateIngredient(id, name, amount) {
+                if (!id) {
+                    alert("Please select a valid ingredient from the list.");
+                    return;
+                }
+                if (isNaN(amount) || amount <= 0) {
+                    alert("Please enter a valid positive amount.");
+                    return;
+                }
+
+                // Check if ingredient already in list
+                const existingIndex = ingredientsList.findIndex(i => i.IngredientId === id);
+                if (existingIndex !== -1) {
+                    ingredientsList[existingIndex].Quantity += amount;
+                } else {
+                    ingredientsList.push({ IngredientId: id, Name: name, Quantity: amount });
+                }
+
+                rebuildIngredientsList();
+            }
+
+            // Rebuild the ingredients <ul> and hidden inputs in the form
+            function rebuildIngredientsList() {
+                // Clear the list UI
+                ul.innerHTML = '';
+
+                // Clear old hidden inputs before adding new ones
+                hiddenContainer.innerHTML = '';
+
+                ingredientsList.forEach((ingredient, index) => {
+                    // Build UI list
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    li.setAttribute('data-id', ingredient.IngredientId);
+
+                    const span = document.createElement('span');
+                    span.className = 'ingredient-text';
+                    span.textContent = `${ingredient.Name} - ${ingredient.Quantity.toFixed(2)}`;
+
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'btn btn-sm btn-danger ms-2 remove-ingredient';
+                    removeBtn.textContent = 'Remove';
+                    removeBtn.onclick = () => {
+                        ingredientsList.splice(index, 1);
+                        rebuildIngredientsList();
+                    };
+
+                    li.appendChild(span);
+                    li.appendChild(removeBtn);
+                    ul.appendChild(li);
+
+                    // Add hidden inputs for MVC model binding inside hiddenContainer
+                    const idxInput = document.createElement('input');
+                    idxInput.type = 'hidden';
+                    idxInput.name = 'Ingredients.Index';
+                    idxInput.value = index;
+                    hiddenContainer.appendChild(idxInput);
+
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = `Ingredients[${index}].IngredientId`;
+                    idInput.value = ingredient.IngredientId;
+                    hiddenContainer.appendChild(idInput);
+
+                    const qtyInput = document.createElement('input');
+                    qtyInput.type = 'hidden';
+                    qtyInput.name = `Ingredients[${index}].Quantity`;
+                    qtyInput.value = ingredient.Quantity.toFixed(2);
+                    hiddenContainer.appendChild(qtyInput);
+                });
+            }
+
+            // Initial load: populate ingredientsList from model data rendered in razor
+            (function initFromModel() {
+                const initialIngredients = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Ingredients ?? []));
+                const availableIngredients = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.AvailableIngredients ?? new List<dynamic>()));
+
+                ingredientsList = initialIngredients.map(i => {
+                    // Find name from availableIngredients by id
+                    const found = availableIngredients.find(ai => ai.Id === i.IngredientId);
+                    return {
+                        IngredientId: i.IngredientId.toString(),
+                        Name: found ? found.Name : 'Unknown',
+                        Quantity: parseFloat(i.Quantity)
+                    };
+                });
+                rebuildIngredientsList();
+            })();
+
+            // Add ingredient button
+            document.getElementById('add-ingredient').addEventListener('click', () => {
+                if (!selectedIngredientId) {
+                    alert('Please select an ingredient from the dropdown.');
+                    return;
+                }
+                const amount = parseFloat(amountInput.value);
+                if (isNaN(amount) || amount <= 0) {
+                    alert('Please enter a valid positive amount.');
+                    return;
+                }
+
+                addOrUpdateIngredient(selectedIngredientId, selectedIngredientName, amount);
+
+                selectedIngredientId = '';
+                selectedIngredientName = '';
+                searchInput.value = '';
+                amountInput.value = '';
+
+                document.querySelectorAll('#ingredient-dropdown .dropdown-item').forEach(item => item.style.display = '');
+            });
+
+            // On form submit, rebuild hidden inputs (to be safe)
+            form.addEventListener('submit', () => {
+                rebuildIngredientsList();
+            });
+        })();
+    </script>
 }
-
-<hr />
-
-<h3>Ingredients</h3>
-
-@await Html.PartialAsync(
-        "_RecipeIngredientList",
-        Model.Ingredients )
-
-
-@await Html.PartialAsync(
-        "_RecipeIngredientForm",
-        new RecipeIngredientView { RecipeId = Model.Id } )

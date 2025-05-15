@@ -50,4 +50,7 @@ public abstract class BaseController<TObject, TData, TView>(DbContext c,
         await r.DeleteAsync(id);
         return RedirectToAction(nameof(Index));
     }
+    public async Task<IActionResult> SelectItems(string searchString, int id) {
+        return Ok(await r.SelectItems(searchString, id));
+    }
 }

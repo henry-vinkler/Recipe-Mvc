@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace RecipeMvc.Facade;
+namespace RecipeMvc.Facade.Recipe;
 
 [DisplayName("Ingredient")]
 public class IngredientView : EntityView

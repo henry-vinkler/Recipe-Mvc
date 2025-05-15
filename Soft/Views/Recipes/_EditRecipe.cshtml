@@ -1,9 +1,18 @@
-﻿@using RecipeMvc.Core.Editors
-@using RecipeMvc.Facade
+﻿@using RecipeMvc.Core
+@using RecipeMvc.Core.Editors
+@using RecipeMvc.Domain
+@using RecipeMvc.Facade.Recipe
+@using RecipeMvc.Soft.Data
 @model RecipeView
+
+@inject RecipeMvc.Domain.IUserAccountRepo UserAccountRepo
+
+@{
+    var authors = await UserAccountRepo.GetAsync() ?? [];
+    authors = authors.OrderBy(p => p.Username).ToList();
+    var selectAuthor = new SelectList(authors, "Id", "Username", Model.AuthorId);
+}
 
 @Html.InputFor(x => x.Title)
 @Html.InputFor(x => x.Description)
-@Html.InputFor(x => x.ImagePath)
-@Html.InputFor(x => x.Calories)
 @Html.InputFor(x => x.Tags)
