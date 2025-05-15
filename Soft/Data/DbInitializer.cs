@@ -75,7 +75,7 @@ public class DbInitializer(ApplicationDbContext? c)
         if (c is not null)
         {
             set.AddRange(list);
-            await c.SaveChangesAsync();
+            c.SaveChanges();
         }
         list.Clear();
     }

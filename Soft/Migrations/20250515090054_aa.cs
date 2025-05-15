@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace RecipeMvc.Soft.Migrations
+namespace Soft.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class aa : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -65,18 +66,47 @@ namespace RecipeMvc.Soft.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Meal",
+                name: "MealPlans",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true)
+                    DateOfMeal = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Note = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Meal", x => x.Id);
+                    table.PrimaryKey("PK_MealPlans", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlannedRecipes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    MealPlanId = table.Column<int>(type: "INTEGER", nullable: false),
+                    RecipeId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlannedRecipes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RecipeIngredients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    RecipeId = table.Column<int>(type: "INTEGER", nullable: false),
+                    IngredientId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Quantity = table.Column<float>(type: "REAL", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RecipeIngredients", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -296,7 +326,13 @@ namespace RecipeMvc.Soft.Migrations
                 name: "Ingredients");
 
             migrationBuilder.DropTable(
-                name: "Meal");
+                name: "MealPlans");
+
+            migrationBuilder.DropTable(
+                name: "PlannedRecipes");
+
+            migrationBuilder.DropTable(
+                name: "RecipeIngredients");
 
             migrationBuilder.DropTable(
                 name: "Recipes");

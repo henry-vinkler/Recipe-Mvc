@@ -43,20 +43,20 @@ internal partial class Program {
     }
 
     private static void SeedData(WebApplication app) {
-        Task.Run(async () => {
+       // Task.Run(async () => {
             IServiceProvider? services = null;
             try {
                 using var scope = app.Services.CreateScope();
                 services = scope.ServiceProvider;
                 var db = services.GetRequiredService<ApplicationDbContext>();
                 var initializer = new DbInitializer(db);
-                initializer.Initialize();
-                await initializer.Initialize(10);;
+                //initializer.Initialize();
+                _ = initializer.Initialize(10);
             } catch (Exception e) {
                 var logger = services?.GetRequiredService<ILogger<Program>>();
                 logger?.LogError(e, "An error occurred while seeding the database.");
             }
-        });
+        //});
     }
 }
 

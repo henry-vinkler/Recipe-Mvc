@@ -1,22 +1,24 @@
+@using RecipeMvc.Data
 @using RecipeMvc.Domain
 
 @model IEnumerable<PlannedRecipeView>
 @{
     ViewData["Title"] = "Päeva toitumiskava";
+    Layout = "~/Views/Shared/_Layout.cshtml";
     var date = (DateTime)ViewBag.Date;
-    var recipes = (List<Recipe>)ViewBag.AvailableRecipes!;
+    var recipes = ViewBag.AvailableRecipes as List<PlannedRecipeView> ?? new List<PlannedRecipeView>();
 }
 
 <h2>@date.ToShortDateString()</h2>
 
-<form asp-action="AddToDay" method="post">
+<form asp-action="AddToDay"  method="post">
     <input type="hidden" name="date" value="@date" />
     <div class="row mb-3">
         <div class="col">
             <select name="recipeId" class="form-select">
                 @foreach (var r in recipes)
                 {
-                    <option value="@r.Id">@r.Title</option>
+                    <option value="@r.Id">@r.RecipeTitle</option>
                 }
             </select>
         </div>

@@ -8,16 +8,21 @@ using RecipeMvc.Soft.Controllers;
 using RecipeMvc.Soft.Data;
 
 public class PlannedRecipeController(ApplicationDbContext db)
-    : BaseController<MealPlan, MealPlanData, MealPlanView>(db, new MealPlanViewFactory(), db => new(db))
+    : BaseController<PlannedRecipe, PlannedRecipeData, PlannedRecipeView>(db, new PlannedRecipeViewFactory(), db => new(db))
 {
-  public async Task<IActionResult> DayView(DateTime date)
+    [HttpGet]
+    public async Task<IActionResult> DayView(DateTime date)
     {
+        date = db.MealPlans.ElementAt(0).DateOfMeal;
+        // var aa = new MealPlanData { Id = 0, DateOfMeal = date, UserId = 1, Note = "Test" };
+        // var aaa = new MealPlanData { Id = 1, DateOfMeal = date, UserId = 1, Note = "TestUks" };
+        // var list = new List<MealPlanData> { aa, aaa };
         var plan = await db.MealPlans.FirstOrDefaultAsync(p => p.DateOfMeal == date);
+        //var plan = list.FirstOrDefault(p => p.DateOfMeal == date);
         if (plan == null) return NotFound();
 
         var planned = await db.PlannedRecipes
             .Where(p => p.MealPlanId == plan.Id)
-            .Include(p => p.Recipe)
             .ToListAsync();
 
         var viewModels = planned.Select(p => new PlannedRecipeView
@@ -25,11 +30,16 @@ public class PlannedRecipeController(ApplicationDbContext db)
             Id = p.Id,
             MealPlanId = p.MealPlanId,
             RecipeId = p.RecipeId,
-            MealType = p.MealType,
-            RecipeTitle = p.Recipe?.Title ?? "Not named"
         });
 
-        ViewBag.AvailableRecipes = await db.Recipes.ToListAsync();
+        var list = new List<PlannedRecipeView>();
+        foreach (var v in viewModels) {
+            var recipe = await db.Recipes.FirstOrDefaultAsync(r => r.Id == v.RecipeId);
+            if (recipe == null) continue;
+            v.RecipeTitle = recipe.Title;
+            list.Add(v); ;
+        }
+        ViewBag.AvailableRecipes = list;
         ViewBag.Date = date;
         return View(viewModels);
     }
@@ -49,7 +59,7 @@ public class PlannedRecipeController(ApplicationDbContext db)
         {
             MealPlanId = plan.Id,
             RecipeId = recipeId,
-            MealType = mealType
+            //MealType = mealType
         };
         db.PlannedRecipes.Add(planned);
         await db.SaveChangesAsync();

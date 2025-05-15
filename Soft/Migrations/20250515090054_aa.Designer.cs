@@ -8,11 +8,11 @@ using RecipeMvc.Soft.Data;
 
 #nullable disable
 
-namespace RecipeMvc.Soft.Migrations
+namespace Soft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250503083738_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250515090054_aa")]
+    partial class aa
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -238,16 +238,16 @@ namespace RecipeMvc.Soft.Migrations
                     b.ToTable("Ingredients");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.MealData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.MealPlanData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Description")
+                    b.Property<DateTime>("DateOfMeal")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Note")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
@@ -255,7 +255,24 @@ namespace RecipeMvc.Soft.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Meal");
+                    b.ToTable("MealPlans");
+                });
+
+            modelBuilder.Entity("RecipeMvc.Data.PlannedRecipeData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MealPlanId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PlannedRecipes");
                 });
 
             modelBuilder.Entity("RecipeMvc.Data.RecipeData", b =>
@@ -289,6 +306,26 @@ namespace RecipeMvc.Soft.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Recipes");
+                });
+
+            modelBuilder.Entity("RecipeMvc.Data.RecipeIngredientData", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IngredientId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<float>("Quantity")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RecipeIngredients");
                 });
 
             modelBuilder.Entity("RecipeMvc.Data.ShoppingListIngredientData", b =>

@@ -7,7 +7,7 @@ public sealed class PlannedRecipeViewFactory
     public override PlannedRecipeView CreateView(PlannedRecipeData? d)
     {
         var v = base.CreateView(d);
-        v.RecipeTitle = d?.Recipe?.Title;
+        //v.RecipeTitle = d?.Recipe?.Title;
         return v;
     }
 }
