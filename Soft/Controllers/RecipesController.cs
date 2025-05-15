@@ -7,6 +7,7 @@ using RecipeMvc.Domain;
 using System.Security.Claims;
 using RecipeMvc.Soft.Data;
 using RecipeMvc.Facade.Recipe;
+using System.Globalization;
 
 namespace RecipeMvc.Soft.Controllers;
 
@@ -20,7 +21,6 @@ public class RecipesController : Controller
         _db = db;
     }
 
-    // GET: Recipes
     [AllowAnonymous]
     public async Task<IActionResult> Index(string? searchString)
     {
@@ -53,13 +53,10 @@ public class RecipesController : Controller
             })
             .ToListAsync();
 
-        // Calculate total calories without adding CaloriesPerUnit to RecipeIngredientView
         foreach (var recipe in recipeViews)
         {
-            // Use the EF navigation properties loaded in Ingredients to get calories per unit
             recipe.Calories = recipe.Ingredients.Sum(ing =>
             {
-                // Find the ingredient's calories per unit from the database or from cached data
                 var ingredientCalories = _db.Ingredients
                     .Where(i => i.Id == ing.IngredientId)
                     .Select(i => i.Calories)
@@ -72,15 +69,12 @@ public class RecipesController : Controller
         return View(recipeViews);
     }
 
-
-    // GET: Recipes/Create
     public async Task<IActionResult> Create()
     {
         await SetAvailableIngredientsAsync();
         return View(new RecipeView { Ingredients = new List<RecipeIngredientView>() });
     }
 
-    // POST: Recipes/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(RecipeView model)
@@ -92,8 +86,7 @@ public class RecipesController : Controller
         }
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        var usernameClaim = User.FindFirst(ClaimTypes.Name);
-        if (userIdClaim == null || usernameClaim == null)
+        if (userIdClaim == null)
         {
             ModelState.AddModelError("", "User not authenticated.");
             await SetAvailableIngredientsAsync();
@@ -104,7 +97,6 @@ public class RecipesController : Controller
         string imagePath = null;
         if (model.ImageFile != null && model.ImageFile.Length > 0)
         {
-            // Save to wwwroot/images/recipes (ensure this folder exists)
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "recipes");
             Directory.CreateDirectory(uploadsFolder);
             var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
@@ -121,44 +113,53 @@ public class RecipesController : Controller
         {
             Title = model.Title,
             Description = model.Description,
-            Calories = model.Calories,
             Tags = model.Tags,
             AuthorId = authorId,
-            ImagePath = imagePath // Save the path or null
+            ImagePath = imagePath
         };
+
+        // Calculate calories from ingredients
+        if (model.Ingredients != null)
+        {
+            recipeData.Calories = model.Ingredients.Sum(ing =>
+            {
+                var cal = _db.Ingredients.Where(i => i.Id == ing.IngredientId).Select(i => i.Calories).FirstOrDefault();
+                return cal * ing.Quantity;
+            });
+        }
+        else
+        {
+            recipeData.Calories = 0;
+        }
 
         _db.Recipes.Add(recipeData);
         await _db.SaveChangesAsync();
 
-        // Save ingredients (unchanged)
         if (model.Ingredients != null)
         {
-            foreach (var ing in model.Ingredients)
-            {
-                if (ing.IngredientId > 0 && ing.Quantity > 0)
+            var groupedIngredients = model.Ingredients
+                .GroupBy(i => i.IngredientId)
+                .Select(g => new RecipeIngredientData
                 {
-                    var recipeIngredient = new RecipeIngredientData
-                    {
-                        RecipeId = recipeData.Id,
-                        IngredientId = ing.IngredientId,
-                        Quantity = ing.Quantity
-                    };
-                    _db.RecipeIngredients.Add(recipeIngredient);
-                }
-            }
+                    RecipeId = recipeData.Id,
+                    IngredientId = g.Key,
+                    Quantity = g.Sum(i => i.Quantity)
+                });
+
+            await _db.RecipeIngredients.AddRangeAsync(groupedIngredients);
             await _db.SaveChangesAsync();
         }
 
         return RedirectToAction(nameof(Index));
     }
 
-    // GET: Recipes/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null) return NotFound();
 
         var recipe = await _db.Recipes
             .Include(r => r.RecipeIngredients)
+            .ThenInclude(ri => ri.Ingredient)
             .FirstOrDefaultAsync(r => r.Id == id);
 
         if (recipe == null) return NotFound();
@@ -175,6 +176,7 @@ public class RecipesController : Controller
                 .Select(ri => new RecipeIngredientView
                 {
                     IngredientId = ri.IngredientId,
+                    IngredientName = ri.Ingredient.Name,
                     Quantity = ri.Quantity
                 }).ToList()
         };
@@ -183,28 +185,29 @@ public class RecipesController : Controller
         return View(model);
     }
 
-    // POST: Recipes/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, RecipeView model)
+    public async Task<IActionResult> Edit(RecipeView model)
     {
-        if (id != model.Id) return NotFound();
-
         if (!ModelState.IsValid)
         {
             await SetAvailableIngredientsAsync();
             return View(model);
         }
 
-        var recipe = await _db.Recipes.Include(r => r.RecipeIngredients).FirstOrDefaultAsync(r => r.Id == id);
-        if (recipe == null) return NotFound();
+        var recipe = await _db.Recipes
+            .Include(r => r.RecipeIngredients)
+            .FirstOrDefaultAsync(r => r.Id == model.Id);
 
+        if (recipe == null)
+            return NotFound();
+
+        // Update basic fields
         recipe.Title = model.Title;
         recipe.Description = model.Description;
-        recipe.Calories = model.Calories;
         recipe.Tags = model.Tags;
 
-        // Handle image update
+        // Handle image upload
         if (model.ImageFile != null && model.ImageFile.Length > 0)
         {
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "recipes");
@@ -219,29 +222,47 @@ public class RecipesController : Controller
             recipe.ImagePath = "/images/recipes/" + uniqueFileName;
         }
 
-        // Update ingredients (unchanged)
+        // Remove old ingredients
         _db.RecipeIngredients.RemoveRange(recipe.RecipeIngredients);
+
+        // Add new ingredients (check for null and valid quantities)
         if (model.Ingredients != null)
         {
-            foreach (var ing in model.Ingredients)
-            {
-                if (ing.IngredientId > 0 && ing.Quantity > 0)
+            var groupedIngredientsData = model.Ingredients
+                .Where(i => i.IngredientId > 0 && i.Quantity > 0)
+                .GroupBy(i => i.IngredientId)
+                .Select(g => new RecipeIngredientData
                 {
-                    _db.RecipeIngredients.Add(new RecipeIngredientData
-                    {
-                        RecipeId = recipe.Id,
-                        IngredientId = ing.IngredientId,
-                        Quantity = ing.Quantity
-                    });
-                }
-            }
+                    RecipeId = recipe.Id,
+                    IngredientId = g.Key,
+                    Quantity = g.Sum(i => i.Quantity)
+                });
+
+            await _db.RecipeIngredients.AddRangeAsync(groupedIngredientsData);
         }
 
         await _db.SaveChangesAsync();
+
+        // Recalculate total calories from ingredients
+        float totalCalories = 0f;
+
+        var recipeIngredients = await _db.RecipeIngredients
+            .Where(ri => ri.RecipeId == recipe.Id)
+            .Include(ri => ri.Ingredient)
+            .ToListAsync();
+
+        foreach (var ri in recipeIngredients)
+        {
+            totalCalories += (ri.Ingredient?.Calories ?? 0) * ri.Quantity;
+        }
+
+        recipe.Calories = totalCalories;
+
+        await _db.SaveChangesAsync();
+
         return RedirectToAction(nameof(Index));
     }
 
-    // GET: Recipes/Details/5
     [AllowAnonymous]
     public async Task<IActionResult> Details(int? id)
     {
@@ -269,30 +290,33 @@ public class RecipesController : Controller
                     IngredientId = ri.IngredientId,
                     IngredientName = ri.Ingredient?.Name,
                     Quantity = ri.Quantity
-                }).ToList()
+                }).ToList(),
         };
 
         return View(model);
     }
 
-    // GET: Recipes/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null) return NotFound();
 
-        var recipe = await _db.Recipes.FindAsync(id);
+        var recipe = await _db.Recipes
+            .FirstOrDefaultAsync(r => r.Id == id);
+
         if (recipe == null) return NotFound();
 
         var model = new RecipeView
         {
             Id = recipe.Id,
-            Title = recipe.Title
+            Title = recipe.Title,
+            Description = recipe.Description,
+            Tags = recipe.Tags,
+            Calories = recipe.Calories
         };
 
         return View(model);
     }
 
-    // POST: Recipes/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
@@ -307,7 +331,6 @@ public class RecipesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // Helper to set available ingredients for views
     private async Task SetAvailableIngredientsAsync()
     {
         ViewBag.AvailableIngredients = await _db.Ingredients
