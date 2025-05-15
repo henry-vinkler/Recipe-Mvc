@@ -42,7 +42,6 @@ public class RecipesController : Controller
                 Id = r.Id,
                 Title = r.Title,
                 Description = r.Description,
-                Calories = r.Calories,
                 Tags = r.Tags,
                 AuthorId = r.AuthorId,
                 Ingredients = r.RecipeIngredients.Select(ri => new RecipeIngredientView
@@ -54,8 +53,25 @@ public class RecipesController : Controller
             })
             .ToListAsync();
 
+        // Calculate total calories without adding CaloriesPerUnit to RecipeIngredientView
+        foreach (var recipe in recipeViews)
+        {
+            // Use the EF navigation properties loaded in Ingredients to get calories per unit
+            recipe.Calories = recipe.Ingredients.Sum(ing =>
+            {
+                // Find the ingredient's calories per unit from the database or from cached data
+                var ingredientCalories = _db.Ingredients
+                    .Where(i => i.Id == ing.IngredientId)
+                    .Select(i => i.Calories)
+                    .FirstOrDefault();
+
+                return ingredientCalories * ing.Quantity;
+            });
+        }
+
         return View(recipeViews);
     }
+
 
     // GET: Recipes/Create
     public async Task<IActionResult> Create()
