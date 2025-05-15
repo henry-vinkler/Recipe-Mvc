@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RecipeMvc.Soft.Data;
 using RecipeMvc.Models;
+using RecipeMvc.Domain;
+using RecipeMvc.Infra;
 
 internal class Program {
     private static void Main(string[] args) {
@@ -17,6 +19,10 @@ internal class Program {
         builder.Services.AddControllersWithViews();
 
         builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+        builder.Services.AddScoped<IUserAccountRepo>(provider =>
+            new UserAccountRepo(provider.GetRequiredService<ApplicationDbContext>()));
+
+
         var app = builder.Build();
 
         using (var scope = app.Services.CreateScope()) {

@@ -1,10 +1,37 @@
-﻿@using RecipeMvc.Facade
+﻿@using RecipeMvc.Facade.Recipe
 @model RecipeView
-
 @{
-    Layout = "~/Views/Shared/_Create.cshtml";
+    ViewData["Title"] = "Create Recipe";
+    var ingredients = ViewBag.AvailableIngredients as List<IngredientView>;
 }
 
-@{
-    await Html.RenderPartialAsync("_EditRecipe", Model);
-}
+<h2>Create Recipe</h2>
+
+<form asp-action="Create" method="post">
+    @Html.TextBoxFor(x => x.Title)
+    @Html.TextAreaFor(x => x.Description)
+    @Html.TextBoxFor(x => x.Tags)
+
+    <h4>Ingredients</h4>
+    <div id="ingredients-list">
+        @for (int i = 0; i < 5; i++) // Allow up to 5 ingredients, adjust as needed
+        {
+            <div class="row mb-2">
+                <div class="col">
+                    <select name="Ingredients[@i].IngredientId" class="form-select">
+                        <option value="">Select ingredient</option>
+                        @foreach (var ing in ingredients)
+                        {
+                            <option value="@ing.Id">@ing.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col">
+                    <input type="number" name="Ingredients[@i].Amount" class="form-control" placeholder="Amount" min="0" step="any" />
+                </div>
+            </div>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

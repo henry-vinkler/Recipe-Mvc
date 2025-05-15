@@ -1,13 +1,16 @@
-﻿@using RecipeMvc.Core.Editors
-@using RecipeMvc.Core
+﻿@using RecipeMvc.Core
+@using RecipeMvc.Core.Editors
 @using RecipeMvc.Domain
+@using RecipeMvc.Facade.Recipe
 @using RecipeMvc.Soft.Data
-@model RecipeMvc.Facade.RecipeView
+@model RecipeView
+
+@inject RecipeMvc.Domain.IUserAccountRepo UserAccountRepo
 
 @{
-	var authors = await Services.Get<IUserAccountRepo>()?.GetAsync()! ?? [];
-	authors = authors.OrderBy(p => p.Username).ToList();
-	var selectAuthor = new SelectList(authors, "Id", "Username", Model.AuthorId);
+    var authors = await UserAccountRepo.GetAsync() ?? [];
+    authors = authors.OrderBy(p => p.Username).ToList();
+    var selectAuthor = new SelectList(authors, "Id", "Username", Model.AuthorId);
 }
 
 @Html.SelectFor(x => x.AuthorId, "authors")

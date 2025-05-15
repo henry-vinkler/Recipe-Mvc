@@ -11,8 +11,8 @@ using RecipeMvc.Soft.Data;
 namespace RecipeMvc.Soft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250514185506_RecipeIngredientData")]
-    partial class RecipeIngredientData
+    [Migration("20250515001504_Initialize")]
+    partial class Initialize
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -303,12 +303,9 @@ namespace RecipeMvc.Soft.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("UserAccountDataId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserAccountDataId");
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Recipes");
                 });
@@ -329,6 +326,10 @@ namespace RecipeMvc.Soft.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IngredientId");
+
+                    b.HasIndex("RecipeId");
 
                     b.ToTable("RecipeIngredients");
                 });
@@ -441,9 +442,37 @@ namespace RecipeMvc.Soft.Migrations
 
             modelBuilder.Entity("RecipeMvc.Data.RecipeData", b =>
                 {
-                    b.HasOne("RecipeMvc.Data.UserAccountData", null)
+                    b.HasOne("RecipeMvc.Data.UserAccountData", "Author")
                         .WithMany("Recipes")
-                        .HasForeignKey("UserAccountDataId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("RecipeMvc.Data.RecipeIngredientData", b =>
+                {
+                    b.HasOne("RecipeMvc.Data.IngredientData", "Ingredient")
+                        .WithMany()
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RecipeMvc.Data.RecipeData", "Recipe")
+                        .WithMany("RecipeIngredients")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ingredient");
+
+                    b.Navigation("Recipe");
+                });
+
+            modelBuilder.Entity("RecipeMvc.Data.RecipeData", b =>
+                {
+                    b.Navigation("RecipeIngredients");
                 });
 
             modelBuilder.Entity("RecipeMvc.Data.UserAccountData", b =>

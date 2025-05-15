@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<RecipeView>
 @using RecipeMvc.Core.Editors
 @using RecipeMvc.Facade
+@using RecipeMvc.Facade.Recipe
 
 @{
     ViewData["Title"] = "Recipes";
@@ -19,7 +20,12 @@
     {
         <div class="col">
             <div class="card h-100 shadow-sm position-relative">
-                <img src="@recipe.ImagePath" class="card-img-top" alt="@recipe.Title" style="height: 200px; object-fit: cover;">
+                @if (!string.IsNullOrEmpty(recipe.ImagePath))
+                {
+                    <img src="@recipe.ImagePath" alt="Recipe Image" class="img-fluid" />
+                }
+
+
 
                 <div class="position-absolute top-0 end-0 m-2">
                     <div class="dropdown">
