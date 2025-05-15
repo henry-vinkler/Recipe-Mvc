@@ -25,9 +25,7 @@
                     <img src="@recipe.ImagePath" alt="Recipe Image" class="img-fluid" />
                 }
 
-
-
-                <div class="position-absolute top-0 end-0 m-2">
+                <div class="position-absolute bottom-0 end-0 m-2">
                     <div class="dropdown">
                         <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             ⋮
@@ -48,11 +46,24 @@
                             <button type="submit" class="btn btn-sm">❤️</button>
                         </form>
                     </div>
-                    <p class="card-text text-muted">@recipe.Calories kcal</p>
+                    <p class="card-text text-muted mb-1">@recipe.Calories kcal</p>
+                    @if (recipe.Ingredients != null && recipe.Ingredients.Any())
+                    {
+                        <ul class="list-unstyled small text-muted mb-2">
+                            @foreach (var ing in recipe.Ingredients)
+                            {
+                                <li>
+                                    @ing.IngredientName
+                                    @if (ing.Quantity > 0)
+                                    {
+                                        <span class="text-secondary">(@ing.Quantity)</span>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
                 </div>
             </div>
         </div>
     }
 </div>
-
-

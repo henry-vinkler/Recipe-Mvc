@@ -65,9 +65,11 @@ namespace RecipeMvc.Soft.Controllers
                 {
                     var claims = new List<Claim>
                     {
+                        new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                         new(ClaimTypes.Name, user.FirstName),
                         new("Name", user.FirstName),
                         new(ClaimTypes.Role, "User"),
+
                     };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

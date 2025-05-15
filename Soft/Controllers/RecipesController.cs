@@ -24,7 +24,11 @@ public class RecipesController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Index(string? searchString)
     {
-        var recipes = _db.Recipes.Include(r => r.Author).AsQueryable();
+        var recipes = _db.Recipes
+            .Include(r => r.Author)
+            .Include(r => r.RecipeIngredients)
+                .ThenInclude(ri => ri.Ingredient)
+            .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchString))
         {
@@ -41,7 +45,12 @@ public class RecipesController : Controller
                 Calories = r.Calories,
                 Tags = r.Tags,
                 AuthorId = r.AuthorId,
-                AuthorUsername = r.Author.Username
+                Ingredients = r.RecipeIngredients.Select(ri => new RecipeIngredientView
+                {
+                    IngredientId = ri.IngredientId,
+                    IngredientName = ri.Ingredient.Name,
+                    Quantity = ri.Quantity
+                }).ToList()
             })
             .ToListAsync();
 
@@ -66,9 +75,9 @@ public class RecipesController : Controller
             return View(model);
         }
 
-        // Set AuthorId from current user
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-        if (userIdClaim == null)
+        var usernameClaim = User.FindFirst(ClaimTypes.Name);
+        if (userIdClaim == null || usernameClaim == null)
         {
             ModelState.AddModelError("", "User not authenticated.");
             await SetAvailableIngredientsAsync();
@@ -76,19 +85,36 @@ public class RecipesController : Controller
         }
         int authorId = int.Parse(userIdClaim.Value);
 
+        string imagePath = null;
+        if (model.ImageFile != null && model.ImageFile.Length > 0)
+        {
+            // Save to wwwroot/images/recipes (ensure this folder exists)
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "recipes");
+            Directory.CreateDirectory(uploadsFolder);
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await model.ImageFile.CopyToAsync(stream);
+            }
+            imagePath = "/images/recipes/" + uniqueFileName;
+        }
+
         var recipeData = new RecipeData
         {
             Title = model.Title,
             Description = model.Description,
             Calories = model.Calories,
             Tags = model.Tags,
-            AuthorId = authorId
+            AuthorId = authorId,
+            ImagePath = imagePath // Save the path or null
         };
 
         _db.Recipes.Add(recipeData);
         await _db.SaveChangesAsync();
 
-        // Save ingredients
+        // Save ingredients (unchanged)
         if (model.Ingredients != null)
         {
             foreach (var ing in model.Ingredients)
@@ -162,7 +188,22 @@ public class RecipesController : Controller
         recipe.Calories = model.Calories;
         recipe.Tags = model.Tags;
 
-        // Update ingredients
+        // Handle image update
+        if (model.ImageFile != null && model.ImageFile.Length > 0)
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "recipes");
+            Directory.CreateDirectory(uploadsFolder);
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await model.ImageFile.CopyToAsync(stream);
+            }
+            recipe.ImagePath = "/images/recipes/" + uniqueFileName;
+        }
+
+        // Update ingredients (unchanged)
         _db.RecipeIngredients.RemoveRange(recipe.RecipeIngredients);
         if (model.Ingredients != null)
         {
@@ -206,7 +247,6 @@ public class RecipesController : Controller
             Calories = recipe.Calories,
             Tags = recipe.Tags,
             AuthorId = recipe.AuthorId,
-            AuthorUsername = recipe.Author?.Username,
             Ingredients = recipe.RecipeIngredients
                 .Select(ri => new RecipeIngredientView
                 {
