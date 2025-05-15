@@ -190,6 +190,7 @@ namespace RecipeMvc.Soft.Controllers
         {
             var claims = new List<Claim>
             {
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Name, user.Username),
                 new(ClaimTypes.Email, user.Email),
                 new("FirstName", user.FirstName),
