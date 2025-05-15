@@ -1,0 +1,36 @@
+﻿@using RecipeMvc.Domain
+@model List<Recipe>
+
+@{
+    ViewData["Title"] = "Your Favourite Recipes";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <p>You have not added any recipes to your favourites yet.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var recipe in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <img src="@recipe.ImagePath" class="card-img-top" alt="@recipe.Title" />
+                    <div class="card-body">
+                        <h5 class="card-title">@recipe.Title</h5>
+                        <p class="card-text">@recipe.Description?.Substring(0, Math.Min(recipe.Description.Length, 100))...</p>
+
+                        <form asp-action="Remove" asp-controller="Favourites" method="post">
+                            <input type="hidden" name="recipeId" value="@recipe.Id" />
+                            <button type="submit" class="btn btn-danger">Remove from Favourites ❤️</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
