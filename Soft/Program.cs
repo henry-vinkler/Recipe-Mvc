@@ -50,6 +50,5 @@ internal partial class Program {
            .WithStaticAssets();
         app.Run();
     }
-    }
 }
 
