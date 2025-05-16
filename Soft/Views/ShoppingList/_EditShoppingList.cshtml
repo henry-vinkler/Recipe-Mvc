@@ -1,0 +1,7 @@
+﻿@using RecipeMvc.Core.Editors
+@using RecipeMvc.Facade
+@model ShoppingListView
+
+@Html.InputFor(x => x.Name)
+@Html.InputFor(x => x.Notes)
+@Html.CheckBoxFor(x => x.IsChecked)
