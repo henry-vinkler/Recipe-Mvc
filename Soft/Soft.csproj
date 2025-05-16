@@ -9,7 +9,6 @@
     <RootNamespace>$(SolutionName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 </PropertyGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\Infra\Infra.csproj" />
   </ItemGroup>
