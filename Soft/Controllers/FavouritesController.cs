@@ -20,9 +20,9 @@ public class FavouritesController : Controller {
             .Include(f => f.Recipe)
             .ToListAsync();
 
-       
+
         var recipes = favourites
-            .Select(f => f.Recipe as Recipe) 
+            .Select(f => f.Recipe)
             .Where(r => r != null)
             .ToList();
 
