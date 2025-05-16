@@ -1,11 +1,14 @@
+@using RecipeMvc.Core
 @using RecipeMvc.Facade
 @model MealPlanView
 
 
 @{
     Layout = "~/Views/Shared/_Delete.cshtml";
+    ViewData["Title"] = "Delete";
+    var title = TypeHelper.DisplayName(Model, "Index");
 }
 
 @{
-    await Html.RenderPartialAsync("_ShowMeal", Model);
+    await Html.RenderPartialAsync("_ShowPlannedRecipe", Model);
 }

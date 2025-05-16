@@ -1,9 +1,13 @@
+@using RecipeMvc.Core
 @using RecipeMvc.Facade
 @model MealPlanView
 
 @{
     Layout = "~/Views/Shared/_Create.cshtml";
+    ViewData["Title"] = "Create";
+    var title = TypeHelper.DisplayName(Model, "Index");
+
 }
 
-@{await Html.RenderPartialAsync("_EditMeal", Model);}
+@{await Html.RenderPartialAsync("_EditPlannedRecipe", Model);}
 

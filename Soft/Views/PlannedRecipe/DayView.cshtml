@@ -50,6 +50,16 @@
                 <td>@m.MealType</td>
                 <td>@m.RecipeTitle</td>
             </tr>
+            <td>
+                <form asp-action="RemoveFromDay" method="post">
+                <input type="hidden" name="id" value="@m.Id" />
+            <input type="hidden" name="date" value="@date" />
+            <button class="btn btn-danger btn-sm" type="submit">Eemalda</button>
+            </form>
+            </td>
         }
     </tbody>
 </table>
+
+
+

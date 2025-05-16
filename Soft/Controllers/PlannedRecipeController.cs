@@ -8,7 +8,8 @@ using RecipeMvc.Soft.Controllers;
 using RecipeMvc.Soft.Data;
 
 public class PlannedRecipeController(ApplicationDbContext db)
-    : BaseController<PlannedRecipe, PlannedRecipeData, PlannedRecipeView>(db, new PlannedRecipeViewFactory(), db => new(db))
+    : BaseController<PlannedRecipe, PlannedRecipeData, PlannedRecipeView>
+        (db, new PlannedRecipeViewFactory(), db => new(db))
 {
     [HttpGet]
     public async Task<IActionResult> DayView(DateTime date)
@@ -66,4 +67,17 @@ public class PlannedRecipeController(ApplicationDbContext db)
 
         return RedirectToAction("DayView", new { date });
     }
+    
+[HttpPost]
+    public async Task<IActionResult> RemoveFromDay(int id, DateTime date)
+    {
+        var item = await db.PlannedRecipes.FindAsync(id);
+        if (item != null)
+        {
+            db.PlannedRecipes.Remove(item);
+            await db.SaveChangesAsync();
+        }
+         return RedirectToAction("DayView", new { date });
+    }
+
 }
