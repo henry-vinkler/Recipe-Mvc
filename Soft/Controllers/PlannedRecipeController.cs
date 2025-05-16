@@ -68,7 +68,7 @@ public class PlannedRecipeController(ApplicationDbContext db)
         return RedirectToAction("DayView", new { date });
     }
     
-[HttpPost]
+    [HttpPost]
     public async Task<IActionResult> RemoveFromDay(int id, DateTime date)
     {
         var item = await db.PlannedRecipes.FindAsync(id);
