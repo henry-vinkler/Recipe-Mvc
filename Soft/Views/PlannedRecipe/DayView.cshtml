@@ -1,0 +1,67 @@
+@using RecipeMvc.Data
+@using RecipeMvc.Domain
+
+@model IEnumerable<PlannedRecipeView>
+@{
+    ViewData["Title"] = "Päeva toitumiskava";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var date = (DateTime)ViewBag.Date;
+    var recipes = ViewBag.AvailableRecipes as List<PlannedRecipeView> ?? new List<PlannedRecipeView>();
+}
+
+<h2>@date.ToShortDateString()</h2>
+
+<form asp-action="AddToDay"  method="post">
+    <input type="hidden" name="date" value="@date" />
+    <div class="row mb-3">
+        <div class="col">
+            <select name="recipeId" class="form-select">
+                @foreach (var r in recipes)
+                {
+                    <option value="@r.Id">@r.RecipeTitle</option>
+                }
+            </select>
+        </div>
+        <div class="col">
+            <select name="mealType" class="form-select">
+                @foreach (var type in Enum.GetValues(typeof(RecipeMvc.Aids.MealType)))
+                {
+                    <option value="@type">@type</option>
+                }
+            </select>
+        </div>
+        <div class="col">
+            <button class="btn btn-success" type="submit">Lisa</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Toidukord</th>
+            <th>Retsept</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model.OrderBy(m => m.MealType))
+        {
+            <tr>
+                <td>@m.MealType</td>
+                
+                <td>@m.RecipeTitle</td>
+            </tr>
+            <td>
+                <form asp-action="RemoveFromDay" method="post">
+                <input type="hidden" name="id" value="@m.Id" />
+            <input type="hidden" name="date" value="@date" />
+            <button class="btn btn-danger btn-sm" type="submit">Eemalda</button>
+            </form>
+            </td>
+        }
+        
+    </tbody>
+</table>
+
+
+

@@ -1,6 +1,7 @@
 ﻿using RecipeMvc.Data;
 using RecipeMvc.Domain;
 namespace RecipeMvc.Domain;
+
 public class Recipe(RecipeData? d) : Entity<RecipeData>(d)
 {
     public int AuthorId => Data.AuthorId;

@@ -6,7 +6,7 @@ using RecipeMvc.Models;
 using RecipeMvc.Domain;
 using RecipeMvc.Infra;
 
-internal class Program {
+internal partial class Program {
     private static void Main(string[] args) {
         var builder = WebApplication.CreateBuilder(args);
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -50,20 +50,6 @@ internal class Program {
            .WithStaticAssets();
         app.Run();
     }
-
-    /*private static void SeedData(WebApplication app) {
-        Task.Run(async () => {
-            IServiceProvider? services = null;
-            try {
-                using var scope = app.Services.CreateScope();
-                services = scope.ServiceProvider;
-                var db = services.GetRequiredService<ApplicationDbContext>();
-                await new DbInitializer(db).Initialize();
-            } catch (Exception e) {
-                var logger = services?.GetRequiredService<ILogger<Program>>();
-                logger?.LogError(e, "An error occurred while seeding the database.");
-            }
-        });
-    }*/
+    }
 }
 
