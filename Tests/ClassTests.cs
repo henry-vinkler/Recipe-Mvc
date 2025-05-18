@@ -23,7 +23,6 @@ public abstract class BaseClassTests<TClass, TBaseClass> : BaseTests
         type = typeof(TClass);
         obj = createObj();
     }
-
     [TestCleanup] public virtual void Cleanup() {
         type = null;
         obj = null;
