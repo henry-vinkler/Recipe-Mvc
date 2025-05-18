@@ -1,0 +1,41 @@
+﻿using RecipeMvc.Data;
+
+namespace RecipeMvc.Tests.Data;
+
+[TestClass]
+public class RecipeDataTests : SealedTests<RecipeData, EntityData<RecipeData>> {
+
+    [TestInitialize] public override void Initialize() {
+        base.Initialize();
+        if (obj == null) return;
+
+        obj.Id = 1;
+        obj.AuthorId = 1;
+        obj.Author = new UserAccountData();
+        obj.Title = "Title";
+        obj.Description = "This is description.";
+        obj.ImagePath = "ImagePath.jpg";
+        obj.Calories = 50f;
+        obj.Tags = "Tag one, tag two";
+        obj.RecipeIngredients = new List<RecipeIngredientData> {
+         new RecipeIngredientData { Id = 1, RecipeId = 1, IngredientId = 1, Quantity = 2.5f },
+         new RecipeIngredientData { Id = 2, RecipeId = 1, IngredientId = 2, Quantity = 3.0f }
+        };
+    }
+
+    [TestMethod] public void CloneTest() {
+        var d = obj?.Clone();
+        notNull(d);
+        equal(obj.Id, d?.Id);
+        equal(obj.AuthorId, d?.AuthorId);
+        notNull(d?.Author);
+        equal(obj.Title, d?.Title);
+        equal(obj.Description, d?.Description);
+        equal(obj.ImagePath, d?.ImagePath);
+        equal(obj.Calories, d?.Calories);
+        equal(obj.Tags, d?.Tags);
+        notNull(d?.RecipeIngredients);
+        equal(obj.RecipeIngredients.Count, d?.RecipeIngredients.Count);
+    }
+
+}
