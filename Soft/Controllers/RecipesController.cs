@@ -81,9 +81,18 @@ public class RecipesController : Controller
     {
         if (!ModelState.IsValid)
         {
+            int userId = 0;
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdString, out userId)) {
+                ModelState.AddModelError("", "User ID is invalid.");
+                await SetAvailableIngredientsAsync();
+                return View(model);
+            }
+            model.AuthorId = userId;
             await SetAvailableIngredientsAsync();
-            return View(model);
+            return RedirectToAction(nameof(Index));
         }
+        return View(model);
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
         if (userIdClaim == null)
