@@ -19,8 +19,15 @@ public abstract class BaseClassTests<TClass, TBaseClass> : BaseTests
     where TBaseClass : class {
     protected TClass? obj;
     protected abstract TClass createObj();
-    [TestInitialize] public virtual void Initialize() => obj = createObj();
-    [TestCleanup] public virtual void Cleanup() => obj = null;
+    [TestInitialize] public virtual void Initialize() {
+        type = typeof(TClass);
+        obj = createObj();
+    }
+
+    [TestCleanup] public virtual void Cleanup() {
+        type = null;
+        obj = null;
+    }
     [TestMethod] public void CanCreateTest() => notNull(obj);
     [TestMethod] public void IsTypeOfTest() => isType(obj, typeof(TClass));
     [TestMethod] public void IsBaseTypeOfTest() => equal(obj?.GetType().BaseType, typeof(TBaseClass));
@@ -45,5 +52,11 @@ public abstract class BaseClassTests<TClass, TBaseClass> : BaseTests
             Assert.Fail($"Test method for <{notTested}> not found.");
         Assert.Fail($"Test methods for <{notTested}> not found.");
     }
+    protected override void canGet<T>(PropertyInfo pi, T? expected) where T : default {
+        var actual = pi.GetValue(obj);
+        equal(actual, expected);
+    }
+    protected override void canSet<T>(PropertyInfo pi, T? v)
+        where T : default => pi.SetValue(obj, v);
 }
 

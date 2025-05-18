@@ -2,13 +2,10 @@
 
 namespace RecipeMvc.Tests.Data;
 
-[TestClass]
-public class RecipeDataTests : SealedTests<RecipeData, EntityData<RecipeData>> {
-
+[TestClass] public class RecipeDataTests : SealedTests<RecipeData, EntityData<RecipeData>> {
     [TestInitialize] public override void Initialize() {
         base.Initialize();
         if (obj == null) return;
-
         obj.Id = 1;
         obj.AuthorId = 1;
         obj.Author = new UserAccountData();
@@ -37,5 +34,9 @@ public class RecipeDataTests : SealedTests<RecipeData, EntityData<RecipeData>> {
         notNull(d?.RecipeIngredients);
         equal(obj.RecipeIngredients.Count, d?.RecipeIngredients.Count);
     }
-
+    [TestMethod] public void TitleTest() => isProperty<string>();
+    [TestMethod] public void DescriptionTest() => isProperty<string>();
+    [TestMethod] public void ImagePathTest() => isProperty<string>();
+    [TestMethod] public void CaloriesTest() => isProperty<float>();
+    [TestMethod] public void TagsTest() => isProperty<string>();
 }
