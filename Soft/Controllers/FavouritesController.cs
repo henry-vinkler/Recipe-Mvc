@@ -15,16 +15,17 @@ public class FavouritesController : Controller {
     public async Task<IActionResult> Index() {
         int userId = 1; // asendan päris useriga hiljem
 
-        var favourites = await _db.Favourites
+        /*var favourites = await _db.Favourites
+            .Where(f => f.UserId == userId)
+            .ToListAsync();*/
+
+
+        var recipes = await _db.Favourites
             .Where(f => f.UserId == userId)
             .Include(f => f.Recipe)
-            .ToListAsync();
-
-
-        var recipes = favourites
             .Select(f => f.Recipe)
             .Where(r => r != null)
-            .ToList();
+            .ToListAsync();
 
         return View(recipes);
     }
