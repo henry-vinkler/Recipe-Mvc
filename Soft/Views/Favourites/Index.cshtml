@@ -1,5 +1,5 @@
-﻿@using RecipeMvc.Domain
-@model List<RecipeMvc.Data.RecipeData>
+﻿@using RecipeMvc.Data
+@model List<RecipeData>
 
 @{
     ViewData["Title"] = "Your Favourite Recipes";
@@ -9,7 +9,7 @@
 
 @if (Model == null || !Model.Any())
 {
-    <p>You have not added any recipes to your favourites yet.</p>
+    <div class="alert alert-info">You have not added any recipes to your favourites yet.</div>
 }
 else
 {
@@ -17,20 +17,33 @@ else
         @foreach (var recipe in Model)
         {
             <div class="col-md-4 mb-3">
-                <div class="card">
-                    <img src="@recipe.ImagePath" class="card-img-top" alt="@recipe.Title" />
+                <div class="card h-100 shadow shadow-sm">
+
+                    <a asp-controller="Recipes" asp-action="Details" asp-route-id="@recipe.Id" class="text-decoration-none text-dark">
+                    @if (!string.IsNullOrEmpty(recipe.ImagePath))
+                    {
+                        <img src="@recipe.ImagePath" class="card-img-top" alt="@recipe.Title" />
+                    }
+
                     <div class="card-body">
                         <h5 class="card-title">@recipe.Title</h5>
-                        <p class="card-text">@recipe.Description?.Substring(0, Math.Min(recipe.Description.Length, 100))...</p>
+                        <p class="card-text text-muted">
+                            @recipe.Description?.Substring(0, Math.Min(recipe.Description.Length, 100))...
+                        </p>
 
+                    </div>
+                     </a>
+
+                     <div-class="card-footer bg-transparent border-top-0">
                         <form asp-action="Remove" asp-controller="Favourites" method="post">
                             <input type="hidden" name="recipeId" value="@recipe.Id" />
-                            <button type="submit" class="btn btn-danger">Remove from Favourites ❤️</button>
+                            <button type="submit" class="btn btn-danger w-100">💔 Remove from Favourites</button>
                         </form>
                     </div>
                 </div>
-            </div>
+            
         }
     </div>
 }
+
 
