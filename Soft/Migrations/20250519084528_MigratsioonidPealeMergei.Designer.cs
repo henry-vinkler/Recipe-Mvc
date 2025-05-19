@@ -8,11 +8,11 @@ using RecipeMvc.Soft.Data;
 
 #nullable disable
 
-namespace RecipeMvc.Soft.Migrations
+namespace Soft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250516105403_initial")]
-    partial class initial
+    [Migration("20250519084528_MigratsioonidPealeMergei")]
+    partial class MigratsioonidPealeMergei
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
