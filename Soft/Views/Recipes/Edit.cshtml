@@ -155,7 +155,8 @@
                     const qtyInput = document.createElement('input');
                     qtyInput.type = 'hidden';
                     qtyInput.name = `Ingredients[${index}].Quantity`;
-                    qtyInput.value = ingredient.Quantity.toFixed(2);
+                    const qtyString = ingredient.Quantity.toFixed(2).replace('.', ',');
+                    qtyInput.value = qtyString;
                     hiddenContainer.appendChild(qtyInput);
                 });
             }
@@ -195,10 +196,11 @@
 
                 document.querySelectorAll('#ingredient-dropdown .dropdown-item').forEach(item => item.style.display = '');
             });
-                    form.addEventListener('submit', function(e) {
-            rebuildIngredientsList();
-        });
-
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                rebuildIngredientsList();
+                form.submit(); 
+            });
         })();
     </script>
 }
