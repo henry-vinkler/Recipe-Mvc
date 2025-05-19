@@ -30,6 +30,8 @@ internal partial class Program {
             SeedData.Initialize(services);
         }
 
+        app.UseStaticFiles();
+
         if (!app.Environment.IsDevelopment()) {
             app.UseExceptionHandler("/Home/Error");
             app.UseHsts();
@@ -39,7 +41,7 @@ internal partial class Program {
         app.UseRouting();
 
         app.UseAuthentication();
-        app.UseAuthorization();
+        app.UseAuthorization();      
 
         app.MapStaticAssets();
         app.MapControllerRoute(

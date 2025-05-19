@@ -94,7 +94,7 @@ namespace RecipeMvc.Soft.Controllers;
             using (var stream = new FileStream(filePath, FileMode.Create)) {
                 await model.ImageFile.CopyToAsync(stream);
             }
-            imagePath = uniqueFileName;
+            imagePath = "/images/recipes/" + uniqueFileName;
         }
 
         var recipeData = new RecipeData {

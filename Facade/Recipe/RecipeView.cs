@@ -22,12 +22,4 @@ public class RecipeView : EntityView {
     public string Tags { get; set; }
 
     public IList<RecipeIngredientView> Ingredients { get; set; } = new List<RecipeIngredientView>();
-
-    [DisplayName("Favourited by")]
-    public int FavouriteCount { get; set; }
-
-    public bool IsFavourited { get; set; }
-
-    public IList<FavouriteView> FavouritedBy { get; set; } = new List<FavouriteView>();
-
 }
