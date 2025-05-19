@@ -106,7 +106,7 @@ public class RecipesController : Controller
             {
                 await model.ImageFile.CopyToAsync(stream);
             }
-            imagePath = "/images/recipes/" + uniqueFileName;
+            imagePath = uniqueFileName;
         }
 
         var recipeData = new RecipeData
