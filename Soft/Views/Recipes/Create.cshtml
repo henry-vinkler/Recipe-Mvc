@@ -17,7 +17,7 @@
         </ul>
     </div>
 }
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="mb-3">
         @Html.LabelFor(x => x.Title)
         @Html.TextBoxFor(x => x.Title, new { @class = "form-control" })
@@ -44,10 +44,12 @@
         <div class="col position-relative">
             <input id="ingredient-search" class="form-control" placeholder="Search ingredient..." autocomplete="off" />
             <div id="ingredient-dropdown" class="dropdown-menu w-100" style="max-height:200px;overflow-y:auto;position:absolute;z-index:1000; display:none;">
+            @if(ingredients != null) {
                 @foreach (var ing in ingredients)
                 {
                     <button type="button" class="dropdown-item" data-id="@ing.Id" data-name="@ing.Name">@ing.Name</button>
                 }
+            }
             </div>
         </div>
         <div class="col">
