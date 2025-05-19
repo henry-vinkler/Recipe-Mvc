@@ -283,6 +283,9 @@ namespace Soft.Migrations
                     b.Property<int>("MealPlanId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("MealType")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("RecipeId")
                         .HasColumnType("INTEGER");
 
@@ -304,18 +307,15 @@ namespace Soft.Migrations
                         .HasColumnType("REAL");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImagePath")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Tags")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

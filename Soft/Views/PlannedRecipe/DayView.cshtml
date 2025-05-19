@@ -11,7 +11,7 @@
 
 <h2>@date.ToShortDateString()</h2>
 
-<form asp-action="AddToDay"  method="post">
+<form asp-action="AddToDay" method="post">
     <input type="hidden" name="date" value="@date" />
     <div class="row mb-3">
         <div class="col">
@@ -48,18 +48,16 @@
         {
             <tr>
                 <td>@m.MealType</td>
-                
                 <td>@m.RecipeTitle</td>
             </tr>
             <td>
                 <form asp-action="RemoveFromDay" method="post">
-                <input type="hidden" name="id" value="@m.Id" />
-            <input type="hidden" name="date" value="@date" />
-            <button class="btn btn-danger btn-sm" type="submit">Eemalda</button>
-            </form>
+                    <input type="hidden" name="id" value="@m.Id" />
+                    <input type="hidden" name="date" value="@date" />
+                    <button class="btn btn-danger btn-sm" type="submit">Eemalda</button>
+                </form>
             </td>
         }
-        
     </tbody>
 </table>
 

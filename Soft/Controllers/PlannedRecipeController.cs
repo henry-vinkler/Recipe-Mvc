@@ -14,33 +14,35 @@ public class PlannedRecipeController(ApplicationDbContext db)
     [HttpGet]
     public async Task<IActionResult> DayView(DateTime date)
     {
-        date = db.MealPlans.ElementAt(0).DateOfMeal;
-        // var aa = new MealPlanData { Id = 0, DateOfMeal = date, UserId = 1, Note = "Test" };
-        // var aaa = new MealPlanData { Id = 1, DateOfMeal = date, UserId = 1, Note = "TestUks" };
-        // var list = new List<MealPlanData> { aa, aaa };
-        var plan = await db.MealPlans.FirstOrDefaultAsync(p => p.DateOfMeal == date);
-        //var plan = list.FirstOrDefault(p => p.DateOfMeal == date);
+        var Date = await db.MealPlans.FirstOrDefaultAsync();
+        if (Date != null) date = Date.DateOfMeal;
+        var plan = await db.MealPlans.FirstOrDefaultAsync(p => p.DateOfMeal.Date == date);
         if (plan == null) return NotFound();
 
         var planned = await db.PlannedRecipes
             .Where(p => p.MealPlanId == plan.Id)
             .ToListAsync();
-
-        var viewModels = planned.Select(p => new PlannedRecipeView
+    
+        var viewModels = new List<PlannedRecipeView>();
+        foreach (var p in planned)
         {
-            Id = p.Id,
-            MealPlanId = p.MealPlanId,
-            RecipeId = p.RecipeId,
-        });
-
-        var list = new List<PlannedRecipeView>();
-        foreach (var v in viewModels) {
-            var recipe = await db.Recipes.FirstOrDefaultAsync(r => r.Id == v.RecipeId);
-            if (recipe == null) continue;
-            v.RecipeTitle = recipe.Title;
-            list.Add(v); ;
+            var recipe = await db.Recipes.FirstOrDefaultAsync(r => r.Id == p.RecipeId);
+            viewModels.Add(new PlannedRecipeView
+            {
+                Id = p.Id,
+                MealPlanId = p.MealPlanId,
+                RecipeId = p.RecipeId,
+                MealType = p.MealType,
+                RecipeTitle = recipe?.Title ?? ""
+            });
         }
-        ViewBag.AvailableRecipes = list;
+
+        // Drop-down jaoks kõik retseptid
+        var allRecipes = await db.Recipes.ToListAsync();
+        ViewBag.AvailableRecipes = allRecipes.Select(r => new PlannedRecipeView {
+            Id = r.Id,
+            RecipeTitle = r.Title
+        }).ToList();
         ViewBag.Date = date;
         return View(viewModels);
     }
@@ -48,10 +50,16 @@ public class PlannedRecipeController(ApplicationDbContext db)
     [HttpPost]
     public async Task<IActionResult> AddToDay(DateTime date, int recipeId, MealType mealType)
     {
+        await AddPlannedRecipe(date, recipeId, mealType);
+        return RedirectToAction("DayView", new { date });
+    }
+
+    private async Task AddPlannedRecipe(DateTime date, int recipeId, MealType mealType)
+    {
         var plan = await db.MealPlans.FirstOrDefaultAsync(p => p.DateOfMeal == date);
         if (plan == null)
         {
-            plan = new MealPlanData { DateOfMeal = date, UserId = 1 }; // <--- vali loogika
+            plan = new MealPlanData { DateOfMeal = date, UserId = 1 };
             db.MealPlans.Add(plan);
             await db.SaveChangesAsync();
         }
@@ -60,12 +68,10 @@ public class PlannedRecipeController(ApplicationDbContext db)
         {
             MealPlanId = plan.Id,
             RecipeId = recipeId,
-            //MealType = mealType
+            MealType = mealType
         };
         db.PlannedRecipes.Add(planned);
         await db.SaveChangesAsync();
-
-        return RedirectToAction("DayView", new { date });
     }
     
     [HttpPost]
