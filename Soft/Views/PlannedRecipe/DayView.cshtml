@@ -1,5 +1,6 @@
 @using RecipeMvc.Data
 @using RecipeMvc.Domain
+@using RecipeMvc.Aids
 
 @model IEnumerable<PlannedRecipeView>
 @{
@@ -39,25 +40,38 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>Toidukord</th>
-            <th>Retsept</th>
+            <th>Day</th>
+            <th>mealType type</th>
+            <th>Recipe</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var m in Model.OrderBy(m => m.MealType))
+        @foreach (var day in Enum.GetValues(typeof(RecipeMvc.Aids.Enums.Days)))
         {
             <tr>
+                <td>@day</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        }
+        @* // Vana Modeli põhine tabeli sisu:
+        @* @foreach (var m in Model.OrderBy(m => m.MealType))
+        {
+            <tr>
+                <td>@Enum.GetName(typeof(RecipeMvc.Aids.Enums.Days), m.MealType)</td>
                 <td>@m.MealType</td>
                 <td>@m.RecipeTitle</td>
+                <td>
+                    <form asp-action="RemoveFromDay" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="@m.Id" />
+                        <input type="hidden" name="date" value="@date" />
+                        <button class="btn btn-danger btn-sm" type="submit">Eemalda</button>
+                    </form>
+                </td>
             </tr>
-            <td>
-                <form asp-action="RemoveFromDay" method="post">
-                    <input type="hidden" name="id" value="@m.Id" />
-                    <input type="hidden" name="date" value="@date" />
-                    <button class="btn btn-danger btn-sm" type="submit">Eemalda</button>
-                </form>
-            </td>
-        }
+        } *@
     </tbody>
 </table>
 
