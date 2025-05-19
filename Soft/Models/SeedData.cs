@@ -14,7 +14,7 @@ public static class SeedData
         {
             if (context.Ingredients.Any())
             {
-                return; // DB has been seeded
+                return ; // DB has been seeded
             }
 
             context.Ingredients.AddRange(
@@ -54,6 +54,34 @@ public static class SeedData
                 new IngredientData { Name = "Coconut Milk", Calories = 0.0197f, Unit = "ml" },
                 new IngredientData { Name = "Cream", Calories = 0.0345f, Unit = "ml" }
             );
+            context.MealPlans.AddRange(
+                new MealPlanData { DateOfMeal = DateTime.Now, UserId = 1, Note = "Test meal plan" },
+                new MealPlanData { DateOfMeal = DateTime.Now.AddDays(1), UserId = 1, Note = "Another test meal plan" }
+            );
+            // if (context.Recipes.Any())
+            // {
+            //     return ; // DB has been seeded
+            // }
+            // // Lisa see enne retseptide lisamist, kui AuthorId on nõutud
+
+            // context.Recipes.AddRange(
+            //     new RecipeData
+            //     {
+            //         Title = "Pasta Carbonara",
+            //         Description = "A classic Italian pasta dish made with eggs, cheese, pancetta, and pepper.",
+            //         Calories = 500,
+            //         Tags = "Italian, Pasta",
+            //         AuthorId = 1 // eemalda või pane null, kui pole nõutud
+            //     },
+            //     new RecipeData
+            //     {
+            //         Title = "Pizza",
+            //         Description = "A classic Italian pizza.",
+            //         Calories = 800,
+            //         Tags = "Italian, Pizza",
+            //         AuthorId = 2
+            //     }
+            //);
             context.SaveChanges();
         }
     }

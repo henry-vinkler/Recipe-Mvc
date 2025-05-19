@@ -39,14 +39,14 @@ body {
     color: white;
 }
 
-    .custom-dropdown-btn:hover {
-        background-color: var(--bs-btn-hover-bg);
-        border-color: var(--bs-btn-hover-bg);
-    }
+.custom-dropdown-btn:hover {
+    background-color: var(--bs-btn-hover-bg);
+    border-color: var(--bs-btn-hover-bg);
+}
 
-    .custom-dropdown-btn:focus,
-    .custom-dropdown-btn:active {
-        background-color: var(--bs-btn-active-bg);
-        border-color: var(--bs-btn-active-bg);
-        box-shadow: none;
-    }
+.custom-dropdown-btn:focus,
+.custom-dropdown-btn:active {
+    background-color: var(--bs-btn-active-bg);
+    border-color: var(--bs-btn-active-bg);
+    box-shadow: none;
+}
