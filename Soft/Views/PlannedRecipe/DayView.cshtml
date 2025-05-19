@@ -8,34 +8,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var date = (DateTime)ViewBag.Date;
     var recipes = ViewBag.AvailableRecipes as List<PlannedRecipeView> ?? new List<PlannedRecipeView>();
+    var selectedDay = ViewBag.SelectedDay as string ?? "";
 }
 
 <h2>@date.ToShortDateString()</h2>
-
-<form asp-action="AddToDay" method="post">
-    <input type="hidden" name="date" value="@date" />
-    <div class="row mb-3">
-        <div class="col">
-            <select name="recipeId" class="form-select">
-                @foreach (var r in recipes)
-                {
-                    <option value="@r.Id">@r.RecipeTitle</option>
-                }
-            </select>
-        </div>
-        <div class="col">
-            <select name="mealType" class="form-select">
-                @foreach (var type in Enum.GetValues(typeof(RecipeMvc.Aids.MealType)))
-                {
-                    <option value="@type">@type</option>
-                }
-            </select>
-        </div>
-        <div class="col">
-            <button class="btn btn-success" type="submit">Lisa</button>
-        </div>
-    </div>
-</form>
 
 <table class="table table-bordered">
     <thead>
@@ -49,29 +25,46 @@
     <tbody>
         @foreach (var day in Enum.GetValues(typeof(RecipeMvc.Aids.Enums.Days)))
         {
-            <tr>
-                <td>@day</td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-        }
-        @* // Vana Modeli põhine tabeli sisu:
-        @* @foreach (var m in Model.OrderBy(m => m.MealType))
-        {
-            <tr>
-                <td>@Enum.GetName(typeof(RecipeMvc.Aids.Enums.Days), m.MealType)</td>
-                <td>@m.MealType</td>
-                <td>@m.RecipeTitle</td>
+            var isActive = selectedDay == day.ToString();
+            <tr class="@(isActive ? "table-active" : "")">
                 <td>
-                    <form asp-action="RemoveFromDay" method="post" style="display:inline;">
-                        <input type="hidden" name="id" value="@m.Id" />
-                        <input type="hidden" name="date" value="@date" />
-                        <button class="btn btn-danger btn-sm" type="submit">Eemalda</button>
+                    <form asp-action="DayView" method="get" style="display:inline;">
+                        <input type="hidden" name="selectedDay" value="@day" />
+                        <button type="submit" class="btn btn-link p-0 m-0 align-baseline">@day</button>
                     </form>
                 </td>
+                <td colspan="3">
+                    @if (isActive)
+                    {
+                        <form asp-action="AddToDay" method="post" class="d-inline">
+                            <input type="hidden" name="date" value="@date" />
+                            <input type="hidden" name="selectedDay" value="@selectedDay" />
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <select name="recipeId" class="form-select">
+                                        @foreach (var r in recipes)
+                                        {
+                                            <option value="@r.Id">@r.RecipeTitle</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select name="mealType" class="form-select">
+                                        @foreach (var type in Enum.GetValues(typeof(RecipeMvc.Aids.MealType)))
+                                        {
+                                            <option value="@type">@type</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <button class="btn btn-success" type="submit">Lisa</button>
+                                </div>
+                            </div>
+                        </form>
+                    }
+                </td>
             </tr>
-        } *@
+        }
     </tbody>
 </table>
 

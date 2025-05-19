@@ -12,8 +12,9 @@ public class PlannedRecipeController(ApplicationDbContext db)
         (db, new PlannedRecipeViewFactory(), db => new(db))
 {
     [HttpGet]
-    public async Task<IActionResult> DayView(DateTime date)
+    public async Task<IActionResult> DayView(DateTime date, string selectedDay = "")
     {
+        ViewBag.SelectedDay = selectedDay;
         var Date = await db.MealPlans.FirstOrDefaultAsync();
         if (Date != null) date = Date.DateOfMeal;
         var plan = await db.MealPlans.FirstOrDefaultAsync(p => p.DateOfMeal.Date == date);
@@ -33,7 +34,8 @@ public class PlannedRecipeController(ApplicationDbContext db)
                 MealPlanId = p.MealPlanId,
                 RecipeId = p.RecipeId,
                 MealType = p.MealType,
-                RecipeTitle = recipe?.Title ?? ""
+                RecipeTitle = recipe?.Title ?? "",
+                // Day = ... (vajadusel lisa siia, kui on olemas)
             });
         }
 
@@ -48,13 +50,14 @@ public class PlannedRecipeController(ApplicationDbContext db)
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddToDay(DateTime date, int recipeId, MealType mealType)
+    public async Task<IActionResult> AddToDay(DateTime date, int recipeId, MealType mealType, string selectedDay)
     {
-        await AddPlannedRecipe(date, recipeId, mealType);
+        await AddPlannedRecipe(date, recipeId, mealType, selectedDay);
+        // Pärast lisamist suuna tagasi ilma selectedDay-ta, et "aktiivne" kaoks
         return RedirectToAction("DayView", new { date });
     }
 
-    private async Task AddPlannedRecipe(DateTime date, int recipeId, MealType mealType)
+    private async Task AddPlannedRecipe(DateTime date, int recipeId, MealType mealType, string selectedDay)
     {
         var plan = await db.MealPlans.FirstOrDefaultAsync(p => p.DateOfMeal == date);
         if (plan == null)
@@ -69,6 +72,7 @@ public class PlannedRecipeController(ApplicationDbContext db)
             MealPlanId = plan.Id,
             RecipeId = recipeId,
             MealType = mealType
+            // NB! Kui tahad salvestada päeva ainult vaate jaoks, lisa see ainult PlannedRecipeView-sse, mitte PlannedRecipeData-sse
         };
         db.PlannedRecipes.Add(planned);
         await db.SaveChangesAsync();
