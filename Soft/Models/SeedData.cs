@@ -21,10 +21,10 @@ public static class SeedData
                 new IngredientData { Name = "Flour", Calories = 3.64f, Unit = "g" },
                 new IngredientData { Name = "Sugar", Calories = 3.87f, Unit = "g" },
                 new IngredientData { Name = "Butter", Calories = 7.17f, Unit = "g" },
-                new IngredientData { Name = "Egg", Calories = 1.55f, Unit = "g" },
+                new IngredientData { Name = "Egg", Calories = 1.55f, Unit = "" },
                 new IngredientData { Name = "Milk", Calories = 0.42f, Unit = "ml" },
                 new IngredientData { Name = "Salt", Calories = 0f, Unit = "g" },
-                new IngredientData { Name = "Olive Oil", Calories = 8.84f, Unit = "g" },
+                new IngredientData { Name = "Olive Oil", Calories = 8.84f, Unit = "ml" },
                 new IngredientData { Name = "Chicken Breast", Calories = 1.65f, Unit = "g" },
                 new IngredientData { Name = "Tomato", Calories = 0.18f, Unit = "g" },
                 new IngredientData { Name = "Onion", Calories = 0.4f, Unit = "g" },
@@ -58,30 +58,6 @@ public static class SeedData
                 new MealPlanData { DateOfMeal = DateTime.Now, UserId = 1, Note = "Test meal plan" },
                 new MealPlanData { DateOfMeal = DateTime.Now.AddDays(1), UserId = 1, Note = "Another test meal plan" }
             );
-            // if (context.Recipes.Any())
-            // {
-            //     return ; // DB has been seeded
-            // }
-            // // Lisa see enne retseptide lisamist, kui AuthorId on nõutud
-
-            // context.Recipes.AddRange(
-            //     new RecipeData
-            //     {
-            //         Title = "Pasta Carbonara",
-            //         Description = "A classic Italian pasta dish made with eggs, cheese, pancetta, and pepper.",
-            //         Calories = 500,
-            //         Tags = "Italian, Pasta",
-            //         AuthorId = 1 // eemalda või pane null, kui pole nõutud
-            //     },
-            //     new RecipeData
-            //     {
-            //         Title = "Pizza",
-            //         Description = "A classic Italian pizza.",
-            //         Calories = 800,
-            //         Tags = "Italian, Pizza",
-            //         AuthorId = 2
-            //     }
-            //);
             context.SaveChanges();
         }
     }

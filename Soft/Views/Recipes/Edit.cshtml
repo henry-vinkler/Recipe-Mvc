@@ -29,7 +29,7 @@
             <div id="ingredient-dropdown" class="dropdown-menu w-100" style="max-height:200px;overflow-y:auto;position:absolute;z-index:1000; display:none;">
 				@if (ingredients != null && ingredients.Any()) {
 				    @foreach (var ing in ingredients) {
-                        <button type="button" class="dropdown-item" data-id="@ing.Id" data-name="@ing.Name">@ing.Name</button>
+                        <button type="button" class="dropdown-item" data-id="@ing.Id" data-name="@ing.Name" data-unit="@ing.Unit">@ing.Name (@ing.Unit)</button>
                     }
                 }
             </div>
@@ -62,6 +62,7 @@
             let dropdownHasFocus = false;
             let selectedIngredientId = '';
             let selectedIngredientName = '';
+            let selectedIngredientUnit = '';
 
             searchInput.addEventListener('focus', () => dropdown.style.display = 'block');
             searchInput.addEventListener('blur', () => setTimeout(() => {
@@ -86,11 +87,13 @@
                 dropdown.style.display = anyVisible ? 'block' : 'none';
                 selectedIngredientId = '';
                 selectedIngredientName = '';
+                selectedIngredientUnit = '';
             });
             document.querySelectorAll('#ingredient-dropdown .dropdown-item').forEach(item => {
                 item.addEventListener('click', function () {
                     selectedIngredientId = this.dataset.id;
                     selectedIngredientName = this.dataset.name;
+                    selectedIngredientUnit = this.dataset.unit;
                     searchInput.value = selectedIngredientName;
                     dropdown.style.display = 'none';
                     searchInput.focus();
@@ -109,7 +112,7 @@
                 if (existingIndex !== -1) {
                     ingredientsList[existingIndex].Quantity += amount;
                 } else {
-                    ingredientsList.push({ IngredientId: id, Name: name, Quantity: amount });
+                    ingredientsList.push({ IngredientId: id, Name: name, Quantity: amount, Unit: unit });
                 }
 
                 rebuildIngredientsList();
@@ -125,7 +128,7 @@
 
                     const span = document.createElement('span');
                     span.className = 'ingredient-text';
-                    span.textContent = `${ingredient.Name} - ${ingredient.Quantity.toFixed(2)}`;
+                    span.textContent = `${ingredient.Name} - ${ingredient.Quantity.toFixed(2).replace('.', ',')} ${ingredient.Unit || ''}`;
 
                     const removeBtn = document.createElement('button');
                     removeBtn.type = 'button';
@@ -158,6 +161,13 @@
                     const qtyString = ingredient.Quantity.toFixed(2).replace('.', ',');
                     qtyInput.value = qtyString;
                     hiddenContainer.appendChild(qtyInput);
+
+                    const unitInput = document.createElement('input');
+                    unitInput.type = 'hidden';
+                    unitInput.name = `Ingredients[${index}].Unit`;
+                    unitInput.value = ingredient.Unit || '';
+                    hiddenContainer.appendChild(unitInput);
+
                 });
             }
 
@@ -170,7 +180,8 @@
                     return {
                         IngredientId: i.IngredientId.toString(),
                         Name: found ? found.Name : 'Unknown',
-                        Quantity: parseFloat(i.Quantity)
+                        Quantity: parseFloat(i.Quantity),
+                        Unit: found ? found.Unit : ''
                     };
                 });
                 rebuildIngredientsList();
@@ -187,10 +198,11 @@
                     return;
                 }
 
-                addOrUpdateIngredient(selectedIngredientId, selectedIngredientName, amount);
+                addOrUpdateIngredient(selectedIngredientId, selectedIngredientName, amount, selectedIngredientUnit);
 
                 selectedIngredientId = '';
                 selectedIngredientName = '';
+                selectedIngredientUnit = '';
                 searchInput.value = '';
                 amountInput.value = '';
 

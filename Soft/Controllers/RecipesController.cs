@@ -41,7 +41,8 @@ namespace RecipeMvc.Soft.Controllers;
                 Ingredients = r.RecipeIngredients.Select(ri => new RecipeIngredientView {
                     IngredientId = ri.IngredientId,
                     IngredientName = ri.Ingredient.Name,
-                    Quantity = ri.Quantity
+                    Quantity = ri.Quantity,
+                    Unit = ri.Ingredient.Unit
                 }).ToList()
             }).ToListAsync();
 
@@ -149,7 +150,8 @@ namespace RecipeMvc.Soft.Controllers;
                 .Select(ri => new RecipeIngredientView {
                     IngredientId = ri.IngredientId,
                     IngredientName = ri.Ingredient.Name,
-                    Quantity = ri.Quantity
+                    Quantity = ri.Quantity,
+                    Unit = ri.Ingredient.Unit
                 }).ToList()
         };
         await SetAvailableIngredientsAsync();
@@ -229,7 +231,8 @@ namespace RecipeMvc.Soft.Controllers;
                 .Select(ri => new RecipeIngredientView {
                     IngredientId = ri.IngredientId,
                     IngredientName = ri.Ingredient?.Name,
-                    Quantity = ri.Quantity
+                    Quantity = ri.Quantity,
+                    Unit = ri.Ingredient.Unit
                 }).ToList(), };
         return View(model);
     }
