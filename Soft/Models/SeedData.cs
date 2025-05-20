@@ -39,9 +39,9 @@ public static class SeedData {
                 new IngredientData { Name = "Soy Sauce", Calories = 0.0053f, Unit = "ml" },
                 new IngredientData { Name = "Vinegar", Calories = 0.0021f, Unit = "ml" },
                 new IngredientData { Name = "Lemon Juice", Calories = 0.0022f, Unit = "ml" },
-                new IngredientData { Name = "Honey", Calories = 0.0304f, Unit = "ml" },
-                new IngredientData { Name = "Ketchup", Calories = 0.0112f, Unit = "ml" },
-                new IngredientData { Name = "Mayonnaise", Calories = 0.068f, Unit = "ml" },
+                new IngredientData { Name = "Honey", Calories = 0.0304f, Unit = "g" },
+                new IngredientData { Name = "Ketchup", Calories = 0.0112f, Unit = "g" },
+                new IngredientData { Name = "Mayonnaise", Calories = 0.068f, Unit = "g" },
                 new IngredientData { Name = "Coconut Milk", Calories = 0.0197f, Unit = "ml" },
                 new IngredientData { Name = "Cream", Calories = 0.0345f, Unit = "ml" }
             };

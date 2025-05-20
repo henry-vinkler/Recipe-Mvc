@@ -11,7 +11,7 @@ public class RecipeView : EntityView {
     [StringLength(60, MinimumLength = 3)] [Required(ErrorMessage = "Title is required.")]
     public string Title { get; set; }
 
-    [StringLength(200, MinimumLength = 3)] [Required(ErrorMessage = "Add a description.")]
+    [StringLength(1000, MinimumLength = 3)] [Required(ErrorMessage = "Add a description.")]
     public string Description { get; set; }
     public IFormFile ?ImageFile { get; set; }
     public string ?ImagePath { get; set; }

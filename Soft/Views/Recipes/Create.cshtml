@@ -5,7 +5,6 @@
     var ingredients = ViewBag.AvailableIngredients as List<IngredientView>;
 }
 
-<h2>Create Recipe</h2>
 @if (!ViewData.ModelState.IsValid)
 {
     <div class="alert alert-danger">
@@ -18,35 +17,22 @@
     </div>
 }
 <form asp-action="Create" method="post" enctype="multipart/form-data">
-    <div class="mb-3">
-        @Html.LabelFor(x => x.Title)
-        @Html.TextBoxFor(x => x.Title, new { @class = "form-control" })
-        @Html.ValidationMessageFor(x => x.Title)
-    </div>
-    <div class="mb-3">
-        @Html.LabelFor(x => x.Description)
-        @Html.TextAreaFor(x => x.Description, new { @class = "form-control" })
-        @Html.ValidationMessageFor(x => x.Description)
-    </div>
-    <div class="mb-3">
-        @Html.LabelFor(x => x.Tags)
-        @Html.TextBoxFor(x => x.Tags, new { @class = "form-control" })
-        @Html.ValidationMessageFor(x => x.Tags)
-    </div>
+    @{
+        await Html.RenderPartialAsync("_EditRecipe", Model);
+    }
 
     <div class="form-group">
-        <label asp-for="ImageFile"></label>
+        <label><b>Image File</b></label>
         <input asp-for="ImageFile" type="file" class="form-control" />
         <span asp-validation-for="ImageFile" class="text-danger"></span>
     </div>
-    <label asp-for="Ingredients"></label>
+    <label><b>Ingredients</b></label>
     <div class="row mb-2">
         <div class="col position-relative">
             <input id="ingredient-search" class="form-control" placeholder="Search ingredient..." autocomplete="off" />
             <div id="ingredient-dropdown" class="dropdown-menu w-100" style="max-height:200px;overflow-y:auto;position:absolute;z-index:1000; display:none;">
             @if(ingredients != null) {
-                @foreach (var ing in ingredients)
-                {
+                @foreach (var ing in ingredients) {
                         <button type="button" class="dropdown-item" data-id="@ing.Id" data-name="@ing.Name" data-unit="@ing.Unit">@ing.Name (@ing.Unit)</button>
                 }
             }
@@ -62,8 +48,8 @@
 
     <ul id="added-ingredients" class="list-group mb-3"></ul>
     <div id="ingredients-hidden"></div>
-
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-primary">Create</button> | 
+    <a asp-action="Index">Back to List</a>
 </form>
 
 @section Scripts {
@@ -72,12 +58,10 @@
         const dropdown = document.getElementById('ingredient-dropdown');
         let dropdownHasFocus = false;
 
-        // Show dropdown on focus
         searchInput.addEventListener('focus', function () {
             dropdown.style.display = 'block';
         });
 
-        // Hide dropdown on blur, unless mouse is over dropdown
         searchInput.addEventListener('blur', function () {
             setTimeout(function () {
                 if (!dropdownHasFocus) dropdown.style.display = 'none';
@@ -94,7 +78,6 @@
             }, 100);
         });
 
-        // Filter dropdown as user types
         searchInput.addEventListener('input', function () {
             var search = this.value.toLowerCase();
             var items = document.querySelectorAll('#ingredient-dropdown .dropdown-item');
@@ -104,7 +87,6 @@
             dropdown.style.display = 'block';
         });
 
-        // Select ingredient from dropdown
         let selectedIngredientId = '';
         let selectedIngredientName = '';
         let selectedIngredientUnit = '';
@@ -119,7 +101,6 @@
             });
         });
 
-        // Add ingredient to list
         document.getElementById('add-ingredient').addEventListener('click', function () {
             var id = selectedIngredientId;
             var name = selectedIngredientName;
@@ -127,12 +108,9 @@
 			var unit = selectedIngredientUnit;
 
             if (!id || !amount) return;
-
-            // Prevent duplicate ingredient
             var existing = document.querySelector(`#added-ingredients li[data-id='${id}']`);
             if (existing) return;
 
-            // Add to visible list
             var ul = document.getElementById('added-ingredients');
             var li = document.createElement('li');
             li.className = 'list-group-item d-flex justify-content-between align-items-center';
@@ -149,7 +127,6 @@
             li.appendChild(removeBtn);
             ul.appendChild(li);
 
-            // Add hidden inputs for form submission
             var hiddenDiv = document.getElementById('ingredients-hidden');
             var hiddenInputsDiv = document.createElement('div');
             hiddenInputsDiv.setAttribute('data-id', id);
@@ -159,13 +136,11 @@
                  <input type="hidden" name="Ingredients[${ul.children.length - 1}].Unit" value="${selectedIngredientUnit}" />`;
             hiddenDiv.appendChild(hiddenInputsDiv);
 
-            // Reset fields
             selectedIngredientId = '';
             selectedIngredientName = '';
             selectedIngredientUnit = '';
             searchInput.value = '';
             document.getElementById('ingredient-amount').value = '';
-            // Show all dropdown items again
             document.querySelectorAll('#ingredient-dropdown .dropdown-item').forEach(function (item) {
                 item.style.display = '';
             });
