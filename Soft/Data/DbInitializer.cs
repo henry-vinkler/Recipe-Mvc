@@ -93,11 +93,14 @@ public class DbInitializer(ApplicationDbContext? c)
             new() { Title = "Tacos", Description = "Spicy tacos with beef and salsa", Tags = "Tacos, Beef, Salsa", Calories = 400, AuthorId = 1 },
             new() { Title = "Ice Cream", Description = "Creamy ice cream with chocolate", Tags = "Ice Cream, Chocolate", Calories = 250, AuthorId = 1 },
         };
+        var MealPlan = new MealPlanData[]{
+            new(){DateOfMeal= DateTime.Now,Note="Söögikava"}
+        };
             // public int AuthorId { get; set; }
-            // public string Title { get; set; }
-            // public string Description { get; set; }
-            // public string ImagePath { get; set; }
-            // public float Calories { get; set; }
-            // public string Tags { get; set; }
+        // public string Title { get; set; }
+        // public string Description { get; set; }
+        // public string ImagePath { get; set; }
+        // public float Calories { get; set; }
+        // public string Tags { get; set; }
     }
 }

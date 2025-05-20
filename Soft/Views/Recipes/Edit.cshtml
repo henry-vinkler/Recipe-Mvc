@@ -17,6 +17,11 @@
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
     <div class="mb-3">
+        @Html.LabelFor(x => x.AuthorId)
+        @Html.TextBoxFor(x => x.AuthorId, new { @class = "form-control", name = "Author ID" })
+        @Html.ValidationMessageFor(x => x.AuthorId)
+    </div>
+    <div class="mb-3">
         @Html.LabelFor(x => x.Title)
         @Html.TextBoxFor(x => x.Title, new { @class = "form-control", name = "Title" })
         @Html.ValidationMessageFor(x => x.Title)

@@ -58,30 +58,33 @@ public static class SeedData
                 new MealPlanData { DateOfMeal = DateTime.Now, UserId = 1, Note = "Test meal plan" },
                 new MealPlanData { DateOfMeal = DateTime.Now.AddDays(1), UserId = 1, Note = "Another test meal plan" }
             );
-            // if (context.Recipes.Any())
-            // {
-            //     return ; // DB has been seeded
-            // }
-            // // Lisa see enne retseptide lisamist, kui AuthorId on nõutud
+            if (context is null) return;
+            if (context.Recipes.Any()) return;
 
-            // context.Recipes.AddRange(
-            //     new RecipeData
-            //     {
-            //         Title = "Pasta Carbonara",
-            //         Description = "A classic Italian pasta dish made with eggs, cheese, pancetta, and pepper.",
-            //         Calories = 500,
-            //         Tags = "Italian, Pasta",
-            //         AuthorId = 1 // eemalda või pane null, kui pole nõutud
-            //     },
-            //     new RecipeData
-            //     {
-            //         Title = "Pizza",
-            //         Description = "A classic Italian pizza.",
-            //         Calories = 800,
-            //         Tags = "Italian, Pizza",
-            //         AuthorId = 2
-            //     }
-            //);
+            if (!context.Recipes.Any())
+            {
+                
+                var recipes = new RecipeData[] {
+                new() { Title = "Pasta", Description = "Delicious pasta with tomato sauce",Tags = "Pasta, Tomato sauce", Calories = 500,AuthorId = 1 },
+                new() { Title = "Salad", Description = "Fresh salad with vegetables", Tags = "Salad, Vegetables", Calories = 200, AuthorId = 1 },
+                new() { Title = "Pizza", Description = "Cheesy pizza with pepperoni", Tags = "Pizza, Cheese, Pepperoni", Calories = 800, AuthorId = 1 },
+                new() { Title = "Burger", Description = "Juicy burger with lettuce and tomato", Tags = "Burger, Lettuce, Tomato", Calories = 600,   AuthorId = 1 },
+                new() { Title = "Sushi", Description = "Sushi rolls with fish and rice", Tags = "Sushi, Fish, Rice", Calories = 300, AuthorId = 1 },
+                new() { Title = "Tacos", Description = "Spicy tacos with beef and salsa", Tags = "Tacos, Beef, Salsa", Calories = 400, AuthorId = 1 },
+                new() { Title = "Ice Cream", Description = "Creamy ice cream with chocolate", Tags = "Ice Cream, Chocolate", Calories = 250, AuthorId = 1 },
+                };
+                context.Recipes.AddRange(recipes);
+            }
+
+        
+        if (!context.MealPlans.Any())
+        {
+            context.MealPlans.AddRange(
+                new MealPlanData { DateOfMeal = DateTime.Now, UserId = 1, Note = "Test meal plan" },
+                new MealPlanData { DateOfMeal = DateTime.Now.AddDays(1), UserId = 1, Note = "Another test meal plan" }
+            );
+        }
+            
             context.SaveChanges();
         }
     }
