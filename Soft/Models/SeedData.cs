@@ -1,27 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using RecipeMvc.Data;
 using RecipeMvc.Soft.Data;
 
 namespace RecipeMvc.Models;
 
-public static class SeedData
-{
-    public static void Initialize(IServiceProvider serviceProvider)
-    {
+public static class SeedData {
+    public static void Initialize(IServiceProvider serviceProvider) {
         using (var context = new ApplicationDbContext(
-            serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
-        {
-            if (context.Ingredients.Any())
-            {
-                return ; // DB has been seeded
-            }
-
-            context.Ingredients.AddRange(
+            serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>())) {
+            var ingredients = new List<IngredientData> {
                 new IngredientData { Name = "Flour", Calories = 3.64f, Unit = "g" },
                 new IngredientData { Name = "Sugar", Calories = 3.87f, Unit = "g" },
                 new IngredientData { Name = "Butter", Calories = 7.17f, Unit = "g" },
-                new IngredientData { Name = "Egg", Calories = 1.55f, Unit = "" },
+                new IngredientData { Name = "Egg", Calories = 1.55f, Unit = "pcs" },
                 new IngredientData { Name = "Milk", Calories = 0.42f, Unit = "ml" },
                 new IngredientData { Name = "Salt", Calories = 0f, Unit = "g" },
                 new IngredientData { Name = "Olive Oil", Calories = 8.84f, Unit = "ml" },
@@ -53,7 +44,24 @@ public static class SeedData
                 new IngredientData { Name = "Mayonnaise", Calories = 0.068f, Unit = "ml" },
                 new IngredientData { Name = "Coconut Milk", Calories = 0.0197f, Unit = "ml" },
                 new IngredientData { Name = "Cream", Calories = 0.0345f, Unit = "ml" }
-            );
+            };
+            foreach (var ingredient in ingredients) {
+                var existing = context.Ingredients.FirstOrDefault(i => i.Name == ingredient.Name);
+                if (existing != null) {
+                    bool updated = false;
+                    if (existing.Calories != ingredient.Calories) {
+                        existing.Calories = ingredient.Calories;
+                        updated = true;
+                    }
+                    if (existing.Unit != ingredient.Unit) {
+                        existing.Unit = ingredient.Unit;
+                        updated = true;
+                    }
+                    if (updated) context.Ingredients.Update(existing);
+                }
+                else context.Ingredients.Add(ingredient);
+            }
+
             context.MealPlans.AddRange(
                 new MealPlanData { DateOfMeal = DateTime.Now, UserId = 1, Note = "Test meal plan" },
                 new MealPlanData { DateOfMeal = DateTime.Now.AddDays(1), UserId = 1, Note = "Another test meal plan" }
