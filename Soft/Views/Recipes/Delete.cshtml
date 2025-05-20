@@ -1,21 +1,9 @@
 ﻿@model RecipeMvc.Facade.Recipe.RecipeView
 
 @{
-    ViewData["Title"] = "Delete Recipe";
+    Layout = "_Delete";
 }
-
-<h2>Delete Recipe</h2>
-
-<h3>Are you sure you want to delete this recipe?</h3>
 
 @{
     await Html.RenderPartialAsync("_ShowRecipe", Model);
 }
-
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id" />
-    <div class="form-group">
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-    </div>
-</form>

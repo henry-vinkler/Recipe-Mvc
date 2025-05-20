@@ -1,10 +1,8 @@
 ﻿@model RecipeMvc.Facade.Recipe.RecipeView
 
 @{
-    ViewData["Title"] = "Recipe Details";
+	Layout = "_Details";
 }
-
-<h2>@Model.Title</h2>
 
 @if (!string.IsNullOrEmpty(Model.ImagePath))
 {
