@@ -5,15 +5,6 @@
 @using RecipeMvc.Soft.Data
 @model RecipeView
 
-@inject RecipeMvc.Domain.IUserAccountRepo UserAccountRepo
-
-@*{
-    var authors = await UserAccountRepo.GetAsync() ?? [];
-    authors = authors.OrderBy(p => p.Username).ToList();
-    var selectAuthor = new SelectList(authors, "Id", "Username", Model.AuthorId);
-}
-@Html.InputFor(x => x.AuthorId)*@
-
 @Html.InputFor(x => x.Title)
 @Html.InputFor(x => x.Description)
 @Html.InputFor(x => x.Tags)

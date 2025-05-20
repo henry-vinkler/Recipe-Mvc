@@ -8,7 +8,13 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu" aria-labelledby="userDropdown">
             <li>
-                <a class="dropdown-item" asp-controller="Account" asp-action="AccountInfo">View Info</a>
+                <a class="dropdown-item" asp-controller="Account" asp-action="AccountInfo">View account info</a>
+            </li>
+            <li>
+                <a class="dropdown-item" asp-controller="Favourites" asp-action="Index">Favourites</a>
+            </li>
+            <li>
+                <a class="dropdown-item" asp-controller="Recipes" asp-action="Index" asp-route-mine="true">My recipes</a>
             </li>
             <li>
                 <a class="dropdown-item" asp-controller="Account" asp-action="Logout">Log out</a>

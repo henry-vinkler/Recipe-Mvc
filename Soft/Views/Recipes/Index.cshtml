@@ -16,15 +16,12 @@
 <a asp-action="Create" class="btn btn-primary mb-4">Create New</a>
 
 <div class="row row-cols-1 row-cols-md-3 g-4">
-    @foreach (var recipe in Model)
-    {
-        <div class="col">
+    @foreach (var recipe in Model) {
+        <div>
             <div class="card h-100 shadow-sm position-relative">
-                @if (!string.IsNullOrEmpty(recipe.ImagePath))
-                {
-                    <img src="~/images/recipes/@recipe.ImagePath" alt="Recipe Image" class="img-fluid" />
+                @if (!string.IsNullOrEmpty(recipe.ImagePath)) {
+                    <img src="@recipe.ImagePath" alt="@recipe.Title" class="img-fluid" />
                 }
-
                 <div class="position-absolute bottom-0 end-0 m-2">
                     <div class="dropdown">
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -47,15 +44,12 @@
                         </form>
                     </div>
                     <p class="card-text text-muted mb-1">@recipe.Calories kcal</p>
-                    @if (recipe.Ingredients != null && recipe.Ingredients.Any())
-                    {
+                    @if (recipe.Ingredients != null && recipe.Ingredients.Any()) {
                         <ul class="list-unstyled small text-muted mb-2">
-                            @foreach (var ing in recipe.Ingredients)
-                            {
+                            @foreach (var ing in recipe.Ingredients) {
                                 <li>
                                     @ing.IngredientName
-                                    @if (ing.Quantity > 0)
-                                    {
+                                    @if (ing.Quantity > 0) {
                                         <span class="text-secondary">(@ing.Quantity)</span>
                                     }
                                 </li>
