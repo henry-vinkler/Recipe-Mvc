@@ -145,7 +145,6 @@ namespace RecipeMvc.Soft.Controllers;
             Description = recipe.Description,
             Calories = recipe.Calories,
             Tags = recipe.Tags,
-            AuthorId = recipe.AuthorId,
             Ingredients = recipe.RecipeIngredients
                 .Select(ri => new RecipeIngredientView {
                     IngredientId = ri.IngredientId,
@@ -225,6 +224,7 @@ namespace RecipeMvc.Soft.Controllers;
             Calories = recipe.Calories,
             Tags = recipe.Tags,
             AuthorId = recipe.AuthorId,
+            AuthorUsername = recipe.Author?.Username,
             Ingredients = recipe.RecipeIngredients
                 .Select(ri => new RecipeIngredientView {
                     IngredientId = ri.IngredientId,
@@ -244,7 +244,9 @@ namespace RecipeMvc.Soft.Controllers;
             Title = recipe.Title,
             Description = recipe.Description,
             Tags = recipe.Tags,
-            Calories = recipe.Calories
+            Calories = recipe.Calories,
+            AuthorId = recipe.AuthorId,
+            AuthorUsername = recipe.Author?.Username
         };
         return View(model);
     }
