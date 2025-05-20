@@ -237,6 +237,7 @@ namespace RecipeMvc.Soft.Controllers;
     public async Task<IActionResult> Delete(int? id) {
         if (id == null) return NotFound();
         var recipe = await _db.Recipes
+            .Include(r => r.Author)
             .FirstOrDefaultAsync(r => r.Id == id);
         if (recipe == null) return NotFound();
         var model = new RecipeView {
