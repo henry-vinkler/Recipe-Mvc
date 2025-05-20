@@ -14,7 +14,6 @@
 }
 
 <div>
-    <label><b>Ingredients</b></label>
     @if (Model.Ingredients != null && Model.Ingredients.Any())
     {
         <table class="table">
@@ -41,7 +40,4 @@
     }
 </div>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-</div>
+
