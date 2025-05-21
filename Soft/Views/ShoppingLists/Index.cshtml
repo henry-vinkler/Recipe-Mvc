@@ -1,13 +1,14 @@
 ﻿@model IEnumerable<RecipeMvc.Facade.ShoppingListView>
-
 @{
     ViewData["Title"] = "Shopping Lists";
 }
 
-<h1>@ViewData["Title"]</h1>
-
-<table class="table">
-    <thead>
+<h1 class="display-4 fw-bold text-primary mb-4">Shopping Lists</h1>
+<p>
+    <a class="btn btn-primary" asp-action="Create">+ Create New</a>
+</p>
+<table class="table table-hover table-bordered">
+    <thead class="table-light">
         <tr>
             <th>Name</th>
             <th>Notes</th>
@@ -31,5 +32,3 @@
         }
     </tbody>
 </table>
-
-<a asp-action="Create" class="btn btn-primary">Create New</a>
