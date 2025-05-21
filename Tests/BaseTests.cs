@@ -4,7 +4,6 @@ using RecipeMvc.Aids;
 namespace RecipeMvc.Tests;
 public abstract class BaseTests {
     protected const int repeatCount = 1000;
-    protected Type? type;
     protected void equal<T>(T? x, T? y, string? msg = null) => Assert.AreEqual(x, y, msg);
     protected void notEqual<T>(T? x, T? y, string? msg = null) => Assert.AreNotEqual(x, y, msg);
     protected void isTrue(bool x, string? msg = null) => Assert.IsTrue(x, msg);
