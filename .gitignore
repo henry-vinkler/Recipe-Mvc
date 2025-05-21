@@ -366,3 +366,4 @@ FodyWeavers.xsd
 /.gitignore
 /Soft/app.db
 /Soft/app.db-wal
+/Soft/wwwroot/images/recipes
