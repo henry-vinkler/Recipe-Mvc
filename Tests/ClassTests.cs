@@ -14,6 +14,12 @@ public abstract class ClassTests<TClass, TBaseClass> : BaseClassTests<TClass, TB
     protected override TClass createObj() => new ();
 }
 
+public abstract class AbstractTests<TClass, TBaseClass> : BaseClassTests<TClass, TBaseClass>
+    where TClass : class
+    where TBaseClass : class {
+    [TestMethod] public void IsAbstarctTest() => isTrue(typeof(TClass).IsAbstract);
+}
+
 public abstract class BaseClassTests<TClass, TBaseClass> : BaseTests 
     where TClass : class 
     where TBaseClass : class {
@@ -29,7 +35,7 @@ public abstract class BaseClassTests<TClass, TBaseClass> : BaseTests
     }
     [TestMethod] public void CanCreateTest() => notNull(obj);
     [TestMethod] public void IsTypeOfTest() => isType(obj, typeof(TClass));
-    [TestMethod] public void IsBaseTypeOfTest() => equal(obj?.GetType().BaseType, typeof(TBaseClass));
+    [TestMethod] public void IsBaseTypeOfTest() => equal(typeof(TClass).BaseType, typeof(TBaseClass));
     [TestMethod] public void IsTested() {
         var testMethods = GetType()
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
