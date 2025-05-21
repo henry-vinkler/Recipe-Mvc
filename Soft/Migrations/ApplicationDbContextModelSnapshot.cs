@@ -7,7 +7,7 @@ using RecipeMvc.Soft.Data;
 
 #nullable disable
 
-namespace Soft.Migrations
+namespace RecipeMvc.Soft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot

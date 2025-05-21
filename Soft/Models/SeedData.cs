@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using RecipeMvc.Data;
 using RecipeMvc.Soft.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace RecipeMvc.Models;
 
@@ -12,6 +13,22 @@ public static class SeedData
         using (var context = new ApplicationDbContext(
             serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
         {
+            if (!context.UserAccounts.Any(u => u.Id == 1))
+            {
+                var account = new UserAccountData
+                {
+                    Id = 1,
+                    FirstName = "Test",
+                    LastName = "User",
+                    Email = "test@example.com",
+                    Username = "admin"
+                };
+                var passwordHasher = new PasswordHasher<UserAccountData>();
+                account.Password = passwordHasher.HashPassword(account, "admin");
+
+                context.UserAccounts.Add(account);
+                context.SaveChanges();
+            }
             var ingredients = new List<IngredientData> {
                 new IngredientData { Name = "Flour", Calories = 3.64f, Unit = "g" },
                 new IngredientData { Name = "Sugar", Calories = 3.87f, Unit = "g" },
@@ -65,37 +82,65 @@ public static class SeedData
                 }
                 else context.Ingredients.Add(ingredient);
             }
-            context.MealPlans.AddRange(
-                new MealPlanData { DateOfMeal = DateTime.Now, UserId = 1, Note = "Test meal plan" },
-                new MealPlanData { DateOfMeal = DateTime.Now.AddDays(1), UserId = 1, Note = "Another test meal plan" }
-            );
-            if (context is null) return;
-            if (context.Recipes.Any()) return;
-
             if (!context.Recipes.Any())
             {
-                
                 var recipes = new RecipeData[] {
-                new() { Title = "Pasta", Description = "Delicious pasta with tomato sauce",Tags = "Pasta, Tomato sauce", Calories = 500,AuthorId = 1 },
-                new() { Title = "Salad", Description = "Fresh salad with vegetables", Tags = "Salad, Vegetables", Calories = 200, AuthorId = 1 },
-                new() { Title = "Pizza", Description = "Cheesy pizza with pepperoni", Tags = "Pizza, Cheese, Pepperoni", Calories = 800, AuthorId = 1 },
-                new() { Title = "Burger", Description = "Juicy burger with lettuce and tomato", Tags = "Burger, Lettuce, Tomato", Calories = 600,   AuthorId = 1 },
-                new() { Title = "Sushi", Description = "Sushi rolls with fish and rice", Tags = "Sushi, Fish, Rice", Calories = 300, AuthorId = 1 },
-                new() { Title = "Tacos", Description = "Spicy tacos with beef and salsa", Tags = "Tacos, Beef, Salsa", Calories = 400, AuthorId = 1 },
-                new() { Title = "Ice Cream", Description = "Creamy ice cream with chocolate", Tags = "Ice Cream, Chocolate", Calories = 250, AuthorId = 1 },
+                    new() { Title = "Pasta", Description = "Delicious pasta with tomato sauce", Tags = "Pasta, Tomato sauce", Calories = 500, AuthorId = 1 },
+                    new() { Title = "Salad", Description = "Fresh salad with vegetables", Tags = "Salad, Vegetables", Calories = 200, AuthorId = 1 },
+                    new() { Title = "Pizza", Description = "Cheesy pizza with pepperoni", Tags = "Pizza, Cheese, Pepperoni", Calories = 800, AuthorId = 1 },
+                    new() { Title = "Burger", Description = "Juicy burger with lettuce and tomato", Tags = "Burger, Lettuce, Tomato", Calories = 600, AuthorId = 1 },
+                    new() { Title = "Sushi", Description = "Sushi rolls with fish and rice", Tags = "Sushi, Fish, Rice", Calories = 300, AuthorId = 1 },
+                    new() { Title = "Tacos", Description = "Spicy tacos with beef and salsa", Tags = "Tacos, Beef, Salsa", Calories = 400, AuthorId = 1 },
+                    new() { Title = "Ice Cream", Description = "Creamy ice cream with chocolate", Tags = "Ice Cream, Chocolate", Calories = 250, AuthorId = 1 },
                 };
                 context.Recipes.AddRange(recipes);
+                context.SaveChanges();
+
+                // Fetch recipes and ingredients for associations
+                var pasta = context.Recipes.FirstOrDefault(r => r.Title == "Pasta");
+                var salad = context.Recipes.FirstOrDefault(r => r.Title == "Salad");
+                var pizza = context.Recipes.FirstOrDefault(r => r.Title == "Pizza");
+
+                var flour = context.Ingredients.FirstOrDefault(i => i.Name == "Flour");
+                var tomato = context.Ingredients.FirstOrDefault(i => i.Name == "Tomato");
+                var cheese = context.Ingredients.FirstOrDefault(i => i.Name == "Cheese");
+                var lettuce = context.Ingredients.FirstOrDefault(i => i.Name == "Lettuce");
+                var onion = context.Ingredients.FirstOrDefault(i => i.Name == "Onion");
+
+                // Add ingredients to recipes using RecipeIngredientData
+                if (pasta != null && flour != null && tomato != null)
+                {
+                    context.RecipeIngredients.AddRange(
+                        new RecipeIngredientData { RecipeId = pasta.Id, IngredientId = flour.Id, Quantity = 100 },
+                        new RecipeIngredientData { RecipeId = pasta.Id, IngredientId = tomato.Id, Quantity = 50 }
+                    );
+                }
+                if (salad != null && lettuce != null && onion != null)
+                {
+                    context.RecipeIngredients.AddRange(
+                        new RecipeIngredientData { RecipeId = salad.Id, IngredientId = lettuce.Id, Quantity = 30 },
+                        new RecipeIngredientData { RecipeId = salad.Id, IngredientId = onion.Id, Quantity = 10 }
+                    );
+                }
+                if (pizza != null && flour != null && cheese != null && tomato != null)
+                {
+                    context.RecipeIngredients.AddRange(
+                        new RecipeIngredientData { RecipeId = pizza.Id, IngredientId = flour.Id, Quantity = 120 },
+                        new RecipeIngredientData { RecipeId = pizza.Id, IngredientId = cheese.Id, Quantity = 80 },
+                        new RecipeIngredientData { RecipeId = pizza.Id, IngredientId = tomato.Id, Quantity = 60 }
+                    );
+                }
+                context.SaveChanges();
             }
 
-        
-        if (!context.MealPlans.Any())
-        {
-            context.MealPlans.AddRange(
-                new MealPlanData { DateOfMeal = DateTime.Now, UserId = 1, Note = "Test meal plan" },
-                new MealPlanData { DateOfMeal = DateTime.Now.AddDays(1), UserId = 1, Note = "Another test meal plan" }
-            );
-        }
-            
+            if (!context.MealPlans.Any())
+            {
+                context.MealPlans.AddRange(
+                    new MealPlanData { DateOfMeal = DateTime.Now, UserId = 1, Note = "Test meal plan" },
+                    new MealPlanData { DateOfMeal = DateTime.Now.AddDays(1), UserId = 1, Note = "Another test meal plan" }
+                );
+            }
+
             context.SaveChanges();
         }
     }
