@@ -1,37 +1,19 @@
 ﻿@model RecipeMvc.Facade.Recipe.RecipeView
 
 @{
-    ViewData["Title"] = "Recipe Details";
+	Layout = "_Details";
 }
-
-<h2>@Model.Title</h2>
 
 @if (!string.IsNullOrEmpty(Model.ImagePath))
 {
     <img src="@Model.ImagePath" alt="Recipe Image" style="max-width: 400px; margin-bottom: 20px;" />
 }
 
-<div>
-    <h4>Author ID</h4>
-    <p>@Model.AuthorId</p>
-</div>
-<div>
-    <h4>Description</h4>
-    <p>@Model.Description</p>
-</div>
+@{
+    await Html.RenderPartialAsync("_ShowRecipe", Model);
+}
 
 <div>
-    <h4>Tags</h4>
-    <p>@Model.Tags</p>
-</div>
-
-<div>
-    <h4>Total Calories</h4>
-    <p>@Model.Calories</p>
-</div>
-
-<div>
-    <h4>Ingredients</h4>
     @if (Model.Ingredients != null && Model.Ingredients.Any())
     {
         <table class="table">
@@ -39,6 +21,7 @@
                 <tr>
                     <th>Ingredient</th>
                     <th>Quantity</th>
+                    <th>Unit</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,6 +30,7 @@
                     <tr>
                         <td>@ingredient.IngredientName</td>
                         <td>@ingredient.Quantity</td>
+                        <td>@ingredient.Unit</td>
                     </tr>
                 }
             </tbody>
@@ -58,7 +42,4 @@
     }
 </div>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-</div>
+

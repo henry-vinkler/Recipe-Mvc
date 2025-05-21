@@ -3,9 +3,8 @@
 @using RecipeMvc.Facade.Recipe
 @model RecipeView
 
-
+@Html.ShowFor(x=> x.AuthorUsername)
 @Html.ShowFor(x => x.Title)
 @Html.ShowFor(x => x.Description)
-@Html.ShowFor(x => x.ImagePath)
 @Html.ShowFor(x => x.Calories)
 @Html.ShowFor(x => x.Tags)
