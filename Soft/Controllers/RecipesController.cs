@@ -46,6 +46,10 @@ namespace RecipeMvc.Soft.Controllers;
                 Description = r.Description,
                 Tags = r.Tags,
                 AuthorId = r.AuthorId,
+                ImagePath = string.IsNullOrEmpty(r.ImagePath) ? null :
+                    r.ImagePath.StartsWith("/images/recipes/")
+                        ? r.ImagePath
+                        : "/images/recipes/" + r.ImagePath,
                 Ingredients = r.RecipeIngredients.Select(ri => new RecipeIngredientView {
                     IngredientId = ri.IngredientId,
                     IngredientName = ri.Ingredient.Name,
