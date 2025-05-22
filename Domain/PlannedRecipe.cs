@@ -1,5 +1,5 @@
 using RecipeMvc.Aids;
-using RecipeMvc.Aids.Enums;
+using RecipeMvc.Aids;
 using RecipeMvc.Data;
 using RecipeMvc.Domain;
 

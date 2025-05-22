@@ -23,7 +23,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var day in Enum.GetValues(typeof(RecipeMvc.Aids.Enums.Days)))
+        @foreach (var day in Enum.GetValues(typeof(Days)))
         {
             var isActive = selectedDay == day.ToString();
             <tr class="@(isActive ? "table-active" : "")">
@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="col">
                                     <select name="mealType" class="form-select">
-                                        @foreach (var type in Enum.GetValues(typeof(RecipeMvc.Aids.MealType)))
+                                        @foreach (var type in Enum.GetValues(typeof(MealType)))
                                         {
                                             <option value="@type">@type</option>
                                         }
@@ -64,6 +64,21 @@
                     }
                 </td>
             </tr>
+            foreach (var planned in plannedForDay)
+            {
+                <tr>
+                    <td></td>
+                    <td>@planned.MealType</td>
+                    <td>@planned.RecipeTitle</td>
+                    <td>
+                        <form asp-action="RemoveFromDay" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@planned.Id" />
+                            <input type="hidden" name="date" value="@date" />
+                            <button type="submit" class="btn btn-danger btn-sm">Eemalda</button>
+                        </form>
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>

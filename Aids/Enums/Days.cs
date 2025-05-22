@@ -1,4 +1,4 @@
-namespace RecipeMvc.Aids.Enums
+namespace RecipeMvc.Aids
 {
     public enum Days
     {

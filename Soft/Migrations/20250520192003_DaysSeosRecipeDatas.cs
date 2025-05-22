@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Soft.Migrations
 {
     /// <inheritdoc />
-    public partial class UusRidaPlannnedDatal : Migration
+    public partial class DaysSeosRecipeDatas : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -88,7 +88,8 @@ namespace Soft.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     MealPlanId = table.Column<int>(type: "INTEGER", nullable: false),
                     RecipeId = table.Column<int>(type: "INTEGER", nullable: false),
-                    MealType = table.Column<int>(type: "INTEGER", nullable: false)
+                    MealType = table.Column<int>(type: "INTEGER", nullable: false),
+                    Day = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

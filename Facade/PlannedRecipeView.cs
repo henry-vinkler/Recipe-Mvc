@@ -1,5 +1,4 @@
 using RecipeMvc.Aids;
-using RecipeMvc.Data;
 using RecipeMvc.Facade;
 
 public sealed class PlannedRecipeView : EntityView

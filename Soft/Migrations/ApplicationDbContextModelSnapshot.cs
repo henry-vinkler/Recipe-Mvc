@@ -280,6 +280,9 @@ namespace Soft.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Day")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("MealPlanId")
                         .HasColumnType("INTEGER");
 

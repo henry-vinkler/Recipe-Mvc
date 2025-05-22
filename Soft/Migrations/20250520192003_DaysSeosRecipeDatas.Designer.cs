@@ -11,8 +11,8 @@ using RecipeMvc.Soft.Data;
 namespace Soft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250519203741_UusRidaPlannnedDatal")]
-    partial class UusRidaPlannnedDatal
+    [Migration("20250520192003_DaysSeosRecipeDatas")]
+    partial class DaysSeosRecipeDatas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -281,6 +281,9 @@ namespace Soft.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Day")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("MealPlanId")
