@@ -67,22 +67,25 @@
     <script src="~/js/select2.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="favouriteToast" class="toast text-bg-success" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-body">
-                Recipe added to favourites!
-            </div>
-        </div>
+    <div class="toast-container position-fixed top-50 start-50 translate-middle">
+        <div id="favouriteToast" class="toast custom-toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body d-flex align-items-center justify-content-between">
+                <span><i class=" bi bi-heart-fill me-2 text-danger"></i>Recipe added to favourites!</span>
+                <button type="button" class="btn-close ms-3" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                </div>
     </div>
     
     <script> 
         window.onload = function() {
             const toastElement = document.getElementById('favouriteToast');
             if (toastElement && sessionStorage.getItem("showFavouriteToast") === "true") {
-            const toast = new bootstrap.Toast(toastElement);
+            const toast = new bootstrap.Toast(toastElement, { 
+            delay: 2000
+            });
+
             toast.show();
             sessionStorage.removeItem("showFavouriteToast");
-
             }
         }
     </script>
