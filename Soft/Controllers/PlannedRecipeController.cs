@@ -53,7 +53,7 @@ public class PlannedRecipeController(ApplicationDbContext db)
     public async Task<IActionResult> AddToDay(DateTime date, int recipeId, MealType mealType, string selectedDay)
     {
         await AddPlannedRecipe(date, recipeId, mealType, selectedDay);
-        return RedirectToAction("WeekView", new { date });
+        return RedirectToAction("DayView", new { date });
     }
 
     private async Task AddPlannedRecipe(DateTime date, int recipeId, MealType mealType, string selectedDay)
@@ -89,6 +89,6 @@ public class PlannedRecipeController(ApplicationDbContext db)
             db.PlannedRecipes.Remove(item);
             await db.SaveChangesAsync();
         }
-        return RedirectToAction("WeekView", new { date });
+        return RedirectToAction("DayView", new { date });
     }
 }
