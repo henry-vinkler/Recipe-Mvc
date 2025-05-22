@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RecipeMvc.Soft.Migrations
 {
     /// <inheritdoc />
-    public partial class initialize : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -79,6 +79,22 @@ namespace RecipeMvc.Soft.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ShoppingListIngredients", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShoppingLists",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserID = table.Column<int>(type: "INTEGER", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    IsChecked = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Notes = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShoppingLists", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -402,6 +418,9 @@ namespace RecipeMvc.Soft.Migrations
 
             migrationBuilder.DropTable(
                 name: "ShoppingListIngredients");
+
+            migrationBuilder.DropTable(
+                name: "ShoppingLists");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

@@ -133,14 +133,6 @@ public static class SeedData
                 context.SaveChanges();
             }
 
-            if (!context.MealPlans.Any())
-            {
-                context.MealPlans.AddRange(
-                    new MealPlanData { DateOfMeal = DateTime.Now, UserId = 1, Note = "Test meal plan" },
-                    new MealPlanData { DateOfMeal = DateTime.Now.AddDays(1), UserId = 1, Note = "Another test meal plan" }
-                );
-            }
-
             context.SaveChanges();
         }
     }

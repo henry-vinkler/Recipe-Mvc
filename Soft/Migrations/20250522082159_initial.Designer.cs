@@ -11,7 +11,7 @@ using RecipeMvc.Soft.Data;
 namespace RecipeMvc.Soft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250521124557_initial")]
+    [Migration("20250522082159_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -257,39 +257,35 @@ namespace RecipeMvc.Soft.Migrations
                     b.ToTable("Ingredients");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.MealPlanData", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("DateOfMeal")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MealPlans");
-                });
-
             modelBuilder.Entity("RecipeMvc.Data.PlannedRecipeData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DateOfMeal")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("MealPlanId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MealType")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("RecipeId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("RecipeId");
 
                     b.ToTable("PlannedRecipes");
                 });
@@ -487,6 +483,25 @@ namespace RecipeMvc.Soft.Migrations
                         .HasForeignKey("RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Recipe");
+                });
+
+            modelBuilder.Entity("RecipeMvc.Data.PlannedRecipeData", b =>
+                {
+                    b.HasOne("RecipeMvc.Data.UserAccountData", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RecipeMvc.Data.RecipeData", "Recipe")
+                        .WithMany()
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
 
                     b.Navigation("Recipe");
                 });
