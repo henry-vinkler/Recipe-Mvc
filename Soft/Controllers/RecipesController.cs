@@ -22,7 +22,10 @@ namespace RecipeMvc.Soft.Controllers;
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchString)) {
-            recipes = recipes.Where(r => r.Title.Contains(searchString));
+            var search = searchString.ToLower();
+            recipes = recipes.Where(r => 
+                r.Title.ToLower().Contains(search) ||
+                r.Tags.ToLower().Contains(search));
             ViewData["CurrentFilter"] = searchString;
         }
 
