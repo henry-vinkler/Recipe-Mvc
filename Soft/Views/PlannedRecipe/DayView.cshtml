@@ -1,5 +1,4 @@
 @using RecipeMvc.Data
-@using RecipeMvc.Domain
 @using RecipeMvc.Aids
 
 @model IEnumerable<PlannedRecipeView>
@@ -64,24 +63,32 @@
                     }
                 </td>
             </tr>
-            foreach (var planned in plannedForDay)
+            var plannedForDay = Model.Where(p => p.Day == day.ToString() && p.MealType != null).ToList();
+            @foreach (var planned in plannedForDay)
             {
                 <tr>
                     <td></td>
                     <td>@planned.MealType</td>
                     <td>@planned.RecipeTitle</td>
                     <td>
-                        <form asp-action="RemoveFromDay" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@planned.Id" />
-                            <input type="hidden" name="date" value="@date" />
-                            <button type="submit" class="btn btn-danger btn-sm">Eemalda</button>
-                        </form>
+                        @if(isActive)
+                        {
+                            <form asp-action="_EditMeal" method="get" style="display:inline;">
+                                <input type="hidden" name="id" value="@planned.Id" />
+                                <button type="submit" class="btn btn-primary btn-sm">Muuda</button>
+                            </form>
+                        }
+                        @if(isActive)
+                        {
+                            <form asp-action="RemoveFromDay" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@planned.Id" />
+                                <input type="hidden" name="date" value="@date" />
+                                <button type="submit" class="btn btn-danger btn-sm">Eemalda</button>
+                            </form>
+                        }
                     </td>
                 </tr>
             }
         }
     </tbody>
 </table>
-
-
-
