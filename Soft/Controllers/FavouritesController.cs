@@ -49,8 +49,9 @@ public class FavouritesController : Controller {
 
             _db.Favourites.Add(fav);
             await _db.SaveChangesAsync();
-        }
 
+            TempData["showFavouriteToast"] = true;
+        }
         return RedirectToAction("Index", "Recipes");
     }
 
