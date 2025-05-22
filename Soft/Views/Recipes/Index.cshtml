@@ -5,6 +5,9 @@
 
 @{
     ViewData["Title"] = "Recipes";
+    var currentPage = (int)(ViewData["CurrentPage"] ?? 1);
+    var totalPages = (int)(ViewData["TotalPages"] ?? 1);
+    var currentFilter = ViewData["CurrentFilter"] as string;
 }
 
 <h2>Recipes</h2>
@@ -62,3 +65,29 @@
         </div>
     }
 </div>
+
+<nav aria-label="Recipe pagination">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-searchString="@currentFilter">Previous</a>
+        </li>
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(i == currentPage ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-searchString="@currentFilter">@i</a>
+            </li>
+        }
+        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-searchString="@currentFilter">Next</a>
+        </li>
+    </ul>
+</nav>
+
+
+@if (!string.IsNullOrEmpty(currentFilter))
+{
+    <div class="text-center mb-3">
+        <a asp-action="Index" class="btn btn-link">Show all recipes</a>
+    </div>
+}
+

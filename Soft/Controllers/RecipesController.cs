@@ -10,11 +10,12 @@ namespace RecipeMvc.Soft.Controllers;
 
 [Authorize] public class RecipesController : Controller {
     private readonly ApplicationDbContext _db;
+    private const byte pageSize = 6;
     public RecipesController(ApplicationDbContext db) {
         _db = db;
     }
 
-    [AllowAnonymous] public async Task<IActionResult> Index(string? searchString, bool mine = false) {
+    [AllowAnonymous] public async Task<IActionResult> Index(string? searchString, bool mine = false, int page = 1) {
         var recipes = _db.Recipes
             .Include(r => r.Author)
             .Include(r => r.RecipeIngredients)
@@ -34,7 +35,11 @@ namespace RecipeMvc.Soft.Controllers;
             recipes = recipes.Where(r => r.AuthorId == userId);
         }
 
+        var totalCount = await recipes.CountAsync();
         var recipeViews = await recipes
+            .OrderByDescending(r => r.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(r => new RecipeView {
                 Id = r.Id,
                 Title = r.Title,
@@ -58,6 +63,9 @@ namespace RecipeMvc.Soft.Controllers;
                 return ingredientCalories * ing.Quantity;
             });
         }
+        ViewData["CurrentPage"] = page;
+        ViewData["TotalPages"] = (int)Math.Ceiling(totalCount / (double)pageSize);
+        ViewData["CurrentFilter"] = searchString;
         return View(recipeViews);
     }
 
