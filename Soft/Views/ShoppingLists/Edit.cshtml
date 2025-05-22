@@ -46,5 +46,5 @@
 </div>
 
 @section Scripts {
-    @await Html.PartialAsync("_EditShoppingListIngredient", Model)
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

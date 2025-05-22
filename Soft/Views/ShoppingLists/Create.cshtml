@@ -44,9 +44,7 @@
 </form>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_EditShoppingListIngredient", Model);
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <style>
         .switch {
             position: relative;
