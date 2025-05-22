@@ -71,6 +71,13 @@
     </form>
 }
 
+@await Html.PartialAsync("_WeekNavigation", new {
+    Date = date,
+    Action = "DayView",
+    SelectedDay = selectedDay,
+    CurrentFilter = currentFilter
+})
+
 @if (!Model.Any())
 {
     <div class="alert alert-info">No planned recipes for this day.</div>
