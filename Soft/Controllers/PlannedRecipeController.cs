@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RecipeMvc.Data;
 using RecipeMvc.Soft.Data;
-using System.Threading.Tasks;
-using System.Linq;
 using RecipeMvc.Aids;
+using RecipeMvc.Facade;
+
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
@@ -14,6 +14,7 @@ namespace RecipeMvc.Soft.Controllers
     public class PlannedRecipeController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private const byte pageSize = 6;
 
         public PlannedRecipeController(ApplicationDbContext db)
         {
@@ -82,14 +83,14 @@ namespace RecipeMvc.Soft.Controllers
 
         // Add a planned recipe
         [HttpPost]
-        public async Task<IActionResult> AddToDay(DateTime date, int recipeId, MealType mealType, Days day)
+        public async Task<IActionResult> AddToDay(DateTime date, int recipeId, MealType mealType, Days day, int page = 1)
         {
             var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdString, out var userId))
                 return Challenge();
 
             if (recipeId == 0)
-                return RedirectToAction("DayView");
+                return RedirectToAction("Index", new { page });
 
             var planned = new PlannedRecipeData
             {
@@ -102,8 +103,8 @@ namespace RecipeMvc.Soft.Controllers
 
             _db.PlannedRecipes.Add(planned);
             await _db.SaveChangesAsync();
-
-            return RedirectToAction("DayView");
+            return RedirectToAction("DayView", new { date, day });
+            //return RedirectToAction("Index", new { page });
         }
 
         // Remove a planned recipe
@@ -117,6 +118,53 @@ namespace RecipeMvc.Soft.Controllers
                 await _db.SaveChangesAsync();
             }
             return RedirectToAction("DayView");
+        }
+        [AllowAnonymous]
+        public async Task<IActionResult> Index(string? searchString, int page = 1)
+        {
+            // Calculate week start and end for the given page
+            var today = DateTime.Today;
+            var weekStart = today.AddDays(-((int)today.DayOfWeek - (int)DayOfWeek.Monday) + (page - 1) * 7);
+            var weekEnd = weekStart.AddDays(7);
+
+            var recipes = _db.PlannedRecipes
+                .Include(r => r.Recipe)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                var search = searchString.ToLower();
+                recipes = recipes.Where(r =>
+                    (r.Recipe != null && r.Recipe.Title != null && r.Recipe.Title.ToLower().Contains(search)) ||
+                    r.MealType.ToString().ToLower().Contains(search));
+                ViewData["CurrentFilter"] = searchString;
+            }
+
+            // Filter by week
+            recipes = recipes.Where(r => r.DateOfMeal >= weekStart && r.DateOfMeal < weekEnd);
+
+            // Group by day for the week, but map to PlannedRecipeView
+            var grouped = await recipes.ToListAsync();
+            var groupedByDay = grouped
+                .GroupBy(r => r.Day)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(p => new PlannedRecipeView {
+                        Id = p.Id,
+                        AuthorId = p.AuthorId,
+                        RecipeId = p.RecipeId,
+                        RecipeTitle = p.Recipe?.Title ?? string.Empty,
+                        MealType = p.MealType,
+                        Day = p.Day.ToString(),
+                        DateOfMeal = p.DateOfMeal
+                    }).ToList()
+                );
+
+            ViewData["CurrentPage"] = page;
+            ViewData["WeekStart"] = weekStart;
+            ViewData["WeekEnd"] = weekEnd.AddDays(-1);
+            ViewData["TotalPages"] = null; // Optional: calculate if you want to show total weeks
+            return View(groupedByDay);
         }
     }
 }
