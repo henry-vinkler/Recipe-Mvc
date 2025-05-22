@@ -1,83 +1,122 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RecipeMvc.Aids;
 using RecipeMvc.Data;
-using RecipeMvc.Domain;
-using RecipeMvc.Facade;
-using RecipeMvc.Soft.Controllers;
 using RecipeMvc.Soft.Data;
+using System.Threading.Tasks;
+using System.Linq;
+using RecipeMvc.Aids;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
-public class PlannedRecipeController(ApplicationDbContext db)
-    : BaseController<PlannedRecipe, PlannedRecipeData, PlannedRecipeView>
-        (db, new PlannedRecipeViewFactory(), db => new(db))
+namespace RecipeMvc.Soft.Controllers
 {
-    [HttpGet]
-    public async Task<IActionResult> DayView(DateTime date)
+    [Authorize]
+    public class PlannedRecipeController : Controller
     {
-        date = db.MealPlans.ElementAt(0).DateOfMeal;
-        // var aa = new MealPlanData { Id = 0, DateOfMeal = date, UserId = 1, Note = "Test" };
-        // var aaa = new MealPlanData { Id = 1, DateOfMeal = date, UserId = 1, Note = "TestUks" };
-        // var list = new List<MealPlanData> { aa, aaa };
-        var plan = await db.MealPlans.FirstOrDefaultAsync(p => p.DateOfMeal == date);
-        //var plan = list.FirstOrDefault(p => p.DateOfMeal == date);
-        if (plan == null) return NotFound();
+        private readonly ApplicationDbContext _db;
 
-        var planned = await db.PlannedRecipes
-            .Where(p => p.MealPlanId == plan.Id)
-            .ToListAsync();
-
-        var viewModels = planned.Select(p => new PlannedRecipeView
+        public PlannedRecipeController(ApplicationDbContext db)
         {
-            Id = p.Id,
-            MealPlanId = p.MealPlanId,
-            RecipeId = p.RecipeId,
-        });
-
-        var list = new List<PlannedRecipeView>();
-        foreach (var v in viewModels) {
-            var recipe = await db.Recipes.FirstOrDefaultAsync(r => r.Id == v.RecipeId);
-            if (recipe == null) continue;
-            v.RecipeTitle = recipe.Title;
-            list.Add(v); ;
-        }
-        ViewBag.AvailableRecipes = list;
-        ViewBag.Date = date;
-        return View(viewModels);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AddToDay(DateTime date, int recipeId, MealType mealType)
-    {
-        var plan = await db.MealPlans.FirstOrDefaultAsync(p => p.DateOfMeal == date);
-        if (plan == null)
-        {
-            plan = new MealPlanData { DateOfMeal = date, UserId = 1 }; // <--- vali loogika
-            db.MealPlans.Add(plan);
-            await db.SaveChangesAsync();
+            _db = db;
         }
 
-        var planned = new PlannedRecipeData
+        // Show all planned recipes for a week (grouped by day)
+        [HttpGet]
+        public async Task<IActionResult> WeekView(DateTime? weekStart = null)
         {
-            MealPlanId = plan.Id,
-            RecipeId = recipeId,
-            //MealType = mealType
-        };
-        db.PlannedRecipes.Add(planned);
-        await db.SaveChangesAsync();
+            var start = weekStart?.Date ?? DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
+            var end = start.AddDays(7);
 
-        return RedirectToAction("DayView", new { date });
-    }
-    
-    [HttpPost]
-    public async Task<IActionResult> RemoveFromDay(int id, DateTime date)
-    {
-        var item = await db.PlannedRecipes.FindAsync(id);
-        if (item != null)
-        {
-            db.PlannedRecipes.Remove(item);
-            await db.SaveChangesAsync();
+            var planned = await _db.PlannedRecipes
+                .Include(p => p.Author)
+                .Include(p => p.Recipe)
+                .Where(p => p.DateOfMeal >= start && p.DateOfMeal < end)
+                .ToListAsync();
+
+            var grouped = planned
+                .GroupBy(p => p.Day)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            ViewBag.WeekStart = start;
+            ViewBag.AllRecipes = await _db.Recipes.ToListAsync();
+
+            return View(grouped);
         }
-         return RedirectToAction("DayView", new { date });
-    }
 
+        // Show all planned recipes for a specific day
+        [HttpGet]
+        public async Task<IActionResult> DayView(DateTime date, Days? day = null)
+        {
+            // Get logged-in user ID
+            var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdString, out var userId))
+                return Challenge();
+
+            // Only show planned recipes for the logged-in user
+            var planned = await _db.PlannedRecipes
+                .Include(p => p.Author)
+                .Include(p => p.Recipe)
+                .Where(p => p.DateOfMeal.Date == date.Date
+                    && (day == null || p.Day == day)
+                    && p.AuthorId == userId) // <-- Filter by user
+                .ToListAsync();
+
+            var plannedViews = planned.Select(p => new PlannedRecipeView
+            {
+                Id = p.Id,
+                AuthorId = p.AuthorId,
+                AuthorName = p.Author != null ? $"{p.Author.FirstName} {p.Author.LastName}" : "",
+                RecipeId = p.RecipeId,
+                RecipeTitle = p.Recipe?.Title ?? "",
+                MealType = p.MealType,
+                Day = p.Day.ToString(),
+                DateOfMeal = p.DateOfMeal
+            }).ToList();
+
+            ViewBag.Date = date;
+            ViewBag.Day = day;
+            ViewBag.AllRecipes = await _db.Recipes.Where(r => r.AuthorId == userId).ToListAsync();
+
+            return View(plannedViews);
+        }
+
+        // Add a planned recipe
+        [HttpPost]
+        public async Task<IActionResult> AddToDay(DateTime date, int recipeId, MealType mealType, Days day)
+        {
+            var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdString, out var userId))
+                return Challenge();
+
+            if (recipeId == 0)
+                return RedirectToAction("DayView");
+
+            var planned = new PlannedRecipeData
+            {
+                AuthorId = userId,
+                RecipeId = recipeId,
+                MealType = mealType,
+                Day = day,
+                DateOfMeal = date
+            };
+
+            _db.PlannedRecipes.Add(planned);
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction("DayView");
+        }
+
+        // Remove a planned recipe
+        [HttpPost]
+        public async Task<IActionResult> RemoveFromDay(int id, DateTime date, Days day)
+        {
+            var item = await _db.PlannedRecipes.FindAsync(id);
+            if (item != null)
+            {
+                _db.PlannedRecipes.Remove(item);
+                await _db.SaveChangesAsync();
+            }
+            return RedirectToAction("DayView");
+        }
+    }
 }

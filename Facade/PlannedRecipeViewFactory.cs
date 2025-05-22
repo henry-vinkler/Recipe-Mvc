@@ -10,4 +10,5 @@ public sealed class PlannedRecipeViewFactory
         //v.RecipeTitle = d?.Recipe?.Title;
         return v;
     }
+    
 }
