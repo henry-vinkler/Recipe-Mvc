@@ -6,8 +6,8 @@
     ViewData["Title"] = "Päeva toitumiskava";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var date = (DateTime)ViewBag.Date;
-    var recipes = ViewBag.AvailableRecipes as List<PlannedRecipeView> ?? new List<PlannedRecipeView>();
-    var selectedDay = ViewBag.SelectedDay as string ?? "";
+    var recipes = ViewBag.AllRecipes as List<RecipeData> ?? new List<RecipeData>();
+    var selectedDay = ViewBag.Day as Days?;
 }
 
 <h2>@date.ToShortDateString()</h2>
@@ -16,19 +16,20 @@
     <thead>
         <tr>
             <th>Day</th>
-            <th>mealType type</th>
+            <th>Meal Type</th>
             <th>Recipe</th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var day in Enum.GetValues(typeof(Days)))
+        @foreach (Days day in Enum.GetValues(typeof(Days)))
         {
-            var isActive = selectedDay == day.ToString();
+            var isActive = selectedDay.HasValue && selectedDay.Value == day;
             <tr class="@(isActive ? "table-active" : "")">
                 <td>
                     <form asp-action="DayView" method="get" style="display:inline;">
-                        <input type="hidden" name="selectedDay" value="@day" />
+                        <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" />
+                        <input type="hidden" name="day" value="@day" />
                         <button type="submit" class="btn btn-link p-0 m-0 align-baseline">@day</button>
                     </form>
                 </td>
@@ -36,14 +37,21 @@
                     @if (isActive)
                     {
                         <form asp-action="AddToDay" method="post" class="d-inline">
-                            <input type="hidden" name="date" value="@date" />
-                            <input type="hidden" name="selectedDay" value="@selectedDay" />
+                            <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" />
+                            <input type="hidden" name="day" value="@day" />
                             <div class="row mb-3">
                                 <div class="col">
                                     <select name="recipeId" class="form-select">
-                                        @foreach (var r in recipes)
+                                        @if (recipes.Count == 0)
                                         {
-                                            <option value="@r.Id">@r.RecipeTitle</option>
+                                            <option value="">No recipes available</option>
+                                        }
+                                        else
+                                        {
+                                            @foreach (var r in recipes)
+                                            {
+                                                <option value="@r.Id">@r.Title</option>
+                                            }
                                         }
                                     </select>
                                 </div>
@@ -63,26 +71,24 @@
                     }
                 </td>
             </tr>
-            var plannedForDay = Model.Where(p => p.Day == day.ToString() && p.MealType != null).ToList();
-            @foreach (var planned in plannedForDay)
+            var plannedForDay = Model.Where(p => p.Day == day.ToString()).ToList();
+            foreach (var planned in plannedForDay)
             {
                 <tr>
                     <td></td>
                     <td>@planned.MealType</td>
                     <td>@planned.RecipeTitle</td>
                     <td>
-                        @if(isActive)
+                        @if (isActive)
                         {
                             <form asp-action="_EditMeal" method="get" style="display:inline;">
                                 <input type="hidden" name="id" value="@planned.Id" />
                                 <button type="submit" class="btn btn-primary btn-sm">Muuda</button>
                             </form>
-                        }
-                        @if(isActive)
-                        {
                             <form asp-action="RemoveFromDay" method="post" style="display:inline;">
                                 <input type="hidden" name="id" value="@planned.Id" />
-                                <input type="hidden" name="date" value="@date" />
+                                <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" />
+                                <input type="hidden" name="day" value="@day" />
                                 <button type="submit" class="btn btn-danger btn-sm">Eemalda</button>
                             </form>
                         }

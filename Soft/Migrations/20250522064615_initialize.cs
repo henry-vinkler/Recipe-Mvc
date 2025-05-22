@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Soft.Migrations
+namespace RecipeMvc.Soft.Migrations
 {
     /// <inheritdoc />
-    public partial class DaysSeosRecipeDatas : Migration
+    public partial class initialize : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,37 +63,6 @@ namespace Soft.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ingredients", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MealPlans",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    DateOfMeal = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Note = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MealPlans", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PlannedRecipes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    MealPlanId = table.Column<int>(type: "INTEGER", nullable: false),
-                    RecipeId = table.Column<int>(type: "INTEGER", nullable: false),
-                    MealType = table.Column<int>(type: "INTEGER", nullable: false),
-                    Day = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PlannedRecipes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -280,6 +249,36 @@ namespace Soft.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PlannedRecipes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    AuthorId = table.Column<int>(type: "INTEGER", nullable: false),
+                    MealPlanId = table.Column<int>(type: "INTEGER", nullable: false),
+                    RecipeId = table.Column<int>(type: "INTEGER", nullable: false),
+                    MealType = table.Column<int>(type: "INTEGER", nullable: false),
+                    Day = table.Column<int>(type: "INTEGER", nullable: false),
+                    DateOfMeal = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlannedRecipes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PlannedRecipes_Recipes_RecipeId",
+                        column: x => x.RecipeId,
+                        principalTable: "Recipes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlannedRecipes_UserAccounts_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "UserAccounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RecipeIngredients",
                 columns: table => new
                 {
@@ -349,6 +348,16 @@ namespace Soft.Migrations
                 column: "RecipeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PlannedRecipes_AuthorId",
+                table: "PlannedRecipes",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlannedRecipes_RecipeId",
+                table: "PlannedRecipes",
+                column: "RecipeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RecipeIngredients_IngredientId",
                 table: "RecipeIngredients",
                 column: "IngredientId");
@@ -384,9 +393,6 @@ namespace Soft.Migrations
 
             migrationBuilder.DropTable(
                 name: "Favourites");
-
-            migrationBuilder.DropTable(
-                name: "MealPlans");
 
             migrationBuilder.DropTable(
                 name: "PlannedRecipes");
