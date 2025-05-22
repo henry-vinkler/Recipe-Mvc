@@ -20,3 +20,4 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<FavouriteData> Favourites { get; set; } = default!;
 
 }
+
