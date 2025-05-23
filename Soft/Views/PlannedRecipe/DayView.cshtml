@@ -16,9 +16,8 @@
     <thead>
         <tr>
             <th>Day</th>
-            <th>Meal Type</th>
             <th>Recipe</th>
-            <th>Actions</th>
+            <th>Meal Type</th>            
         </tr>
     </thead>
     <tbody>
@@ -76,8 +75,9 @@
             {
                 <tr>
                     <td></td>
-                    <td>@planned.MealType</td>
                     <td>@planned.RecipeTitle</td>
+                    <td>@planned.MealType</td>
+                    
                     <td>
                         @if (isActive)
                         {

@@ -10,11 +10,12 @@ namespace RecipeMvc.Soft.Controllers;
 
 [Authorize] public class RecipesController : Controller {
     private readonly ApplicationDbContext _db;
+    private const byte pageSize = 6;
     public RecipesController(ApplicationDbContext db) {
         _db = db;
     }
 
-    [AllowAnonymous] public async Task<IActionResult> Index(string? searchString, bool mine = false) {
+    [AllowAnonymous] public async Task<IActionResult> Index(string? searchString, bool mine = false, int page = 1) {
         var recipes = _db.Recipes
             .Include(r => r.Author)
             .Include(r => r.RecipeIngredients)
@@ -22,7 +23,10 @@ namespace RecipeMvc.Soft.Controllers;
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchString)) {
-            recipes = recipes.Where(r => r.Title.Contains(searchString));
+            var search = searchString.ToLower();
+            recipes = recipes.Where(r => 
+                r.Title.ToLower().Contains(search) ||
+                r.Tags.ToLower().Contains(search));
             ViewData["CurrentFilter"] = searchString;
         }
 
@@ -31,13 +35,21 @@ namespace RecipeMvc.Soft.Controllers;
             recipes = recipes.Where(r => r.AuthorId == userId);
         }
 
+        var totalCount = await recipes.CountAsync();
         var recipeViews = await recipes
+            .OrderByDescending(r => r.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(r => new RecipeView {
                 Id = r.Id,
                 Title = r.Title,
                 Description = r.Description,
                 Tags = r.Tags,
                 AuthorId = r.AuthorId,
+                ImagePath = string.IsNullOrEmpty(r.ImagePath) ? null :
+                    r.ImagePath.StartsWith("/images/recipes/")
+                        ? r.ImagePath
+                        : "/images/recipes/" + r.ImagePath,
                 Ingredients = r.RecipeIngredients.Select(ri => new RecipeIngredientView {
                     IngredientId = ri.IngredientId,
                     IngredientName = ri.Ingredient.Name,
@@ -55,6 +67,9 @@ namespace RecipeMvc.Soft.Controllers;
                 return ingredientCalories * ing.Quantity;
             });
         }
+        ViewData["CurrentPage"] = page;
+        ViewData["TotalPages"] = (int)Math.Ceiling(totalCount / (double)pageSize);
+        ViewData["CurrentFilter"] = searchString;
         return View(recipeViews);
     }
 
@@ -67,14 +82,10 @@ namespace RecipeMvc.Soft.Controllers;
         if (!ModelState.IsValid) {
             int userId = 0;
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdString, out userId)) {
-                ModelState.AddModelError("", "User ID is invalid.");
-                await SetAvailableIngredientsAsync();
-                return View(model);
-            }
+            if (!int.TryParse(userIdString, out userId)) ModelState.AddModelError("", "User ID is invalid.");
             model.AuthorId = userId;
             await SetAvailableIngredientsAsync();
-            return RedirectToAction(nameof(Index));
+            return View(model);
         }
 
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
