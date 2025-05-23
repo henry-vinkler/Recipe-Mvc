@@ -7,4 +7,6 @@ public sealed class ShoppingList(ShoppingListData? d) : Entity<ShoppingListData>
     public string Name => Data.Name;
     public bool IsChecked => Data.IsChecked;
     public string Notes => Data.Notes;
+    public ICollection<ShoppingListIngredientData> Ingredients { get; set; } = new List<ShoppingListIngredientData>();
+
 }
