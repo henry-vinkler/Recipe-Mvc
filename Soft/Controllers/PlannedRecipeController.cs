@@ -48,8 +48,17 @@ namespace RecipeMvc.Soft.Controllers
         [HttpGet]
         public async Task<IActionResult> DayView(DateTime? date = null, Days? day = null)
         {
-            // If no date is provided, use today
-            var actualDate = date?.Date ?? DateTime.Today;
+            // Kui kuupäeva pole, kasuta tänast päeva
+            var baseDate = date?.Date ?? DateTime.Today;
+            // Kui päev on valitud, arvuta nädala algus ja liida päevade arv
+            DateTime actualDate;
+            if (day != null) {
+                // Leia nädala algus (esmaspäev)
+                var weekStart = baseDate.AddDays(-(int)baseDate.DayOfWeek + (int)DayOfWeek.Monday);
+                actualDate = weekStart.AddDays((int)day);
+            } else {
+                actualDate = baseDate;
+            }
             // Get logged-in user ID
             var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdString, out var userId))
@@ -76,6 +85,7 @@ namespace RecipeMvc.Soft.Controllers
 
             ViewBag.Date = actualDate;
             ViewBag.Day = day;
+            ViewBag.AllRecipes = await _db.Recipes.Where(r => r.AuthorId == userId).ToListAsync();
             return View(plannedViews);
         }
 
@@ -92,6 +102,7 @@ namespace RecipeMvc.Soft.Controllers
 
             var planned = new PlannedRecipeData
             {
+                AuthorId = userId,
                 RecipeId = recipeId,
                 MealType = mealType,
                 Day = day,
