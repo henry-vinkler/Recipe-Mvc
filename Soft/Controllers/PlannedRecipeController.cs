@@ -46,8 +46,10 @@ namespace RecipeMvc.Soft.Controllers
 
         // Show all planned recipes for a specific day
         [HttpGet]
-        public async Task<IActionResult> DayView(DateTime date, Days? day = null)
+        public async Task<IActionResult> DayView(DateTime? date = null, Days? day = null)
         {
+            // If no date is provided, use today
+            var actualDate = date?.Date ?? DateTime.Today;
             // Get logged-in user ID
             var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdString, out var userId))
@@ -57,16 +59,14 @@ namespace RecipeMvc.Soft.Controllers
             var planned = await _db.PlannedRecipes
                 .Include(p => p.Author)
                 .Include(p => p.Recipe)
-                .Where(p => p.DateOfMeal.Date == date.Date
+                .Where(p => p.DateOfMeal.Date == actualDate.Date
                     && (day == null || p.Day == day)
-                    && p.AuthorId == userId) // <-- Filter by user
+                    && p.AuthorId == userId)
                 .ToListAsync();
 
             var plannedViews = planned.Select(p => new PlannedRecipeView
             {
                 Id = p.Id,
-                AuthorId = p.AuthorId,
-                AuthorName = p.Author != null ? $"{p.Author.FirstName} {p.Author.LastName}" : "",
                 RecipeId = p.RecipeId,
                 RecipeTitle = p.Recipe?.Title ?? "",
                 MealType = p.MealType,
@@ -74,10 +74,8 @@ namespace RecipeMvc.Soft.Controllers
                 DateOfMeal = p.DateOfMeal
             }).ToList();
 
-            ViewBag.Date = date;
+            ViewBag.Date = actualDate;
             ViewBag.Day = day;
-            ViewBag.AllRecipes = await _db.Recipes.Where(r => r.AuthorId == userId).ToListAsync();
-
             return View(plannedViews);
         }
 
@@ -94,7 +92,6 @@ namespace RecipeMvc.Soft.Controllers
 
             var planned = new PlannedRecipeData
             {
-                AuthorId = userId,
                 RecipeId = recipeId,
                 MealType = mealType,
                 Day = day,
@@ -151,7 +148,6 @@ namespace RecipeMvc.Soft.Controllers
                     g => g.Key,
                     g => g.Select(p => new PlannedRecipeView {
                         Id = p.Id,
-                        AuthorId = p.AuthorId,
                         RecipeId = p.RecipeId,
                         RecipeTitle = p.Recipe?.Title ?? string.Empty,
                         MealType = p.MealType,

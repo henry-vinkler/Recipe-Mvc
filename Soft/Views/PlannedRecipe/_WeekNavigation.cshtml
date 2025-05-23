@@ -1,0 +1,40 @@
+@using System
+@model dynamic
+@{
+    // Required: DateTime Date, string Action, Days? SelectedDay, string CurrentFilter
+    var date = (DateTime)Model.Date;
+    var action = Model.Action as string ?? "Index";
+    var selectedDay = Model.SelectedDay;
+    var currentFilter = Model.CurrentFilter as string;
+    var canGoPrev = date > DateTime.MinValue;
+    var canGoNext = date < DateTime.MaxValue;
+}
+<nav aria-label="Week navigation" class="mb-3">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(canGoPrev ? "" : "disabled")">
+            @if (canGoPrev) {
+                <form asp-action="@action" method="get" style="display:inline;">
+                    <input type="hidden" name="date" value="@(date.AddDays(-7).ToString("yyyy-MM-dd"))" />
+                    @if (selectedDay != null) { <input type="hidden" name="day" value="@selectedDay" /> }
+                    @if (!string.IsNullOrEmpty(currentFilter)) { <input type="hidden" name="searchString" value="@currentFilter" /> }
+                    <button type="submit" class="page-link">&laquo; Eelmine nädal</button>
+                </form>
+            } else {
+                <span class="page-link">&laquo; Eelmine nädal</span>
+            }
+        </li>
+        <li class="page-item disabled"><span class="page-link">@date.ToString("yyyy-MM-dd") - @(date.AddDays(6).ToString("yyyy-MM-dd"))</span></li>
+        <li class="page-item @(canGoNext ? "" : "disabled")">
+            @if (canGoNext) {
+                <form asp-action="@action" method="get" style="display:inline;">
+                    <input type="hidden" name="date" value="@(date.AddDays(7).ToString("yyyy-MM-dd"))" />
+                    @if (selectedDay != null) { <input type="hidden" name="day" value="@selectedDay" /> }
+                    @if (!string.IsNullOrEmpty(currentFilter)) { <input type="hidden" name="searchString" value="@currentFilter" /> }
+                    <button type="submit" class="page-link">Järgmine nädal &raquo;</button>
+                </form>
+            } else {
+                <span class="page-link">Järgmine nädal &raquo;</span>
+            }
+        </li>
+    </ul>
+</nav>
