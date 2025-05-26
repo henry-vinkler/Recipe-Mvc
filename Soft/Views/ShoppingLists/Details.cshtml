@@ -43,11 +43,31 @@
     </table>
 }
 else
+@if (Model.Ingredients != null && Model.Ingredients.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ingredient</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Checked</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Ingredients)
+            {
+                <tr>
+                    <td>@item.IngredientName</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.Unit</td>
+                    <td>@item.IsChecked</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
 {
     <p>No ingredients found.</p>
 }
-
-<p>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</p>

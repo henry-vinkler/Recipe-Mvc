@@ -6,6 +6,7 @@ using RecipeMvc.Soft.Data;
 using RecipeMvc.Facade;
 using System.Security.Claims;
 
+
 namespace RecipeMvc.Soft.Controllers;
 
 [Authorize] public class ShoppingListsController : Controller
@@ -36,8 +37,10 @@ namespace RecipeMvc.Soft.Controllers;
         if (id is null) return NotFound();
 
         var list = await _db.ShoppingLists
-            .Include(l => l.Ingredients!)
-            .FirstOrDefaultAsync(l => l.Id == id);
+    .Include(l => l.Ingredients!)
+        .ThenInclude(i => i.Ingredient)
+    .FirstOrDefaultAsync(l => l.Id == id);
+
 
         if (list == null) return NotFound();
 
@@ -58,8 +61,6 @@ namespace RecipeMvc.Soft.Controllers;
 
         return View(model);
     }
-
-
     public IActionResult Create() => View(new ShoppingListView());
 
     [HttpPost] [ValidateAntiForgeryToken]

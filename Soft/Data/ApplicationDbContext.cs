@@ -18,5 +18,15 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<RecipeIngredientData> RecipeIngredients { get; set; } = default!;
     public DbSet<FavouriteData> Favourites { get; set; } = default!;
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<ShoppingListIngredientData>()
+            .HasOne(i => i.Ingredient)
+            .WithMany()
+            .HasForeignKey(i => i.IngredientID)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
 }
 
