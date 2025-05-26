@@ -13,11 +13,16 @@ public sealed class ShoppingListIngredientView:EntityView
 
     [DisplayName("Ingredient")]
     public int IngredientID { get; set; }
+    [DisplayName("Name")]
+    public string? IngredientName { get; set; }
 
     [DisplayName("Quantity")]
     [StringLength(40, MinimumLength = 1)]
     [Required(ErrorMessage = "Quantity is required.")]
     public string Quantity { get; set; } = string.Empty;
+
+    [DisplayName("Unit")]
+    public string? Unit { get; set; }
 
     [DisplayName("Checked")]
     public bool IsChecked { get; set; } 

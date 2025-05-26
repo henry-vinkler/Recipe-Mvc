@@ -91,3 +91,8 @@
     </div>
 }
 
+@if (TempData["showFavouriteToast"] != null)
+{
+    <script>sessionStorage.setItem("showFavouriteToast", "true");</script>
+}
+

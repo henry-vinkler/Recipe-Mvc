@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RecipeMvc.Soft.Data;
 
@@ -10,9 +11,11 @@ using RecipeMvc.Soft.Data;
 namespace RecipeMvc.Soft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250522082849_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.4");
@@ -383,15 +386,10 @@ namespace RecipeMvc.Soft.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("ShoppingListDataId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("ShoppingListID")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ShoppingListDataId");
 
                     b.ToTable("ShoppingListIngredients");
                 });
@@ -538,21 +536,9 @@ namespace RecipeMvc.Soft.Migrations
                     b.Navigation("Recipe");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.ShoppingListIngredientData", b =>
-                {
-                    b.HasOne("RecipeMvc.Data.ShoppingListData", null)
-                        .WithMany("Ingredients")
-                        .HasForeignKey("ShoppingListDataId");
-                });
-
             modelBuilder.Entity("RecipeMvc.Data.RecipeData", b =>
                 {
                     b.Navigation("RecipeIngredients");
-                });
-
-            modelBuilder.Entity("RecipeMvc.Data.ShoppingListData", b =>
-                {
-                    b.Navigation("Ingredients");
                 });
 
             modelBuilder.Entity("RecipeMvc.Data.UserAccountData", b =>
