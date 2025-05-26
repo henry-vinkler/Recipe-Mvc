@@ -11,12 +11,16 @@ using Microsoft.AspNetCore.Authorization;
 namespace RecipeMvc.Soft.Controllers
 {
     [Authorize]
-    public class PlannedRecipeController : Controller
+    public class PlannedRecipeController : BaseController<PlannedRecipe, PlannedRecipeData, PlannedRecipeView>
     {
         private readonly ApplicationDbContext _db;
         private const byte pageSize = 6;
 
+        private static readonly PlannedRecipeViewFactory _viewFactory = new();
+        private static readonly Func<PlannedRecipeData?, PlannedRecipe> _entityFactory = d => new PlannedRecipe(d);
+
         public PlannedRecipeController(ApplicationDbContext db)
+            : base(db, _viewFactory, _entityFactory)
         {
             _db = db;
         }

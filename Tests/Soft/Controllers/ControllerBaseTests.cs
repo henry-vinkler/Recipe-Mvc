@@ -6,7 +6,7 @@ using RecipeMvc.Soft.Controllers;
 using RecipeMvc.Tests;
 using Random = RecipeMvc.Aids.Random;
 
-namespace Mvc.Tests.Soft.Controllers; 
+namespace RecipeMvc.Tests.Soft.Controllers; 
 public abstract class ControllerBaseTests<TController, TObject, TData, TView> : 
         DbBaseTests<TController, BaseController<TObject, TData, TView>, TObject, TData> 
     where TController : BaseController<TObject, TData, TView>

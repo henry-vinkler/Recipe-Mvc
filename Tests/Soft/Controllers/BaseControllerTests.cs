@@ -4,7 +4,7 @@ using RecipeMvc.Domain;
 using RecipeMvc.Facade;
 using RecipeMvc.Soft.Controllers;
 
-namespace Mvc.Tests.Soft.Controllers;
+namespace RecipeMvc.Tests.Soft.Controllers;
 
 [TestClass]
 public class BaseControllerTests : ControllerBaseTests<BaseController<PlannedRecipe, PlannedRecipeData, PlannedRecipeView>, PlannedRecipe, PlannedRecipeData, PlannedRecipeView>
