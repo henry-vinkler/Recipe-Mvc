@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Mvc.Data;
-using Mvc.Domain;
-using Mvc.Facade;
-using Mvc.Soft.Controllers;
-using Random = Mvc.Aids.Random;
+using RecipeMvc.Data;
+using RecipeMvc.Domain;
+using RecipeMvc.Facade;
+using RecipeMvc.Soft.Controllers;
+using RecipeMvc.Tests;
+using Random = RecipeMvc.Aids.Random;
 
 namespace Mvc.Tests.Soft.Controllers; 
 public abstract class ControllerBaseTests<TController, TObject, TData, TView> : 
@@ -80,7 +81,7 @@ public abstract class ControllerBaseTests<TController, TObject, TData, TView> :
     private async Task get(int pageIdx, 
         string? orderBy = null, string? filter = null, int? selectedId = null) {
         list = [.. dbSet!.ToList()];
-        var r = await obj!.Index(pageIdx, orderBy, filter, selectedId);
+        var r = await obj!.Index(pageIdx, orderBy, filter);
         isType(r, typeof(ViewResult));
     }
    
