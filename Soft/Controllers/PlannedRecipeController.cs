@@ -84,7 +84,8 @@ namespace RecipeMvc.Soft.Controllers
                 RecipeTitle = p.Recipe?.Title ?? "",
                 MealType = p.MealType,
                 Day = p.Day.ToString(),
-                DateOfMeal = p.DateOfMeal
+                DateOfMeal = p.DateOfMeal,
+                Calories = p.Recipe?.Calories ?? 0
             }).ToList();
 
             ViewBag.Date = actualDate;

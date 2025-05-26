@@ -10,4 +10,5 @@ public sealed class PlannedRecipeView : EntityView
     public MealType MealType { get; set; }
     public string Day { get; set; }
     public DateTime DateOfMeal { get; set; }
+    public float Calories { get; set; }
 }
