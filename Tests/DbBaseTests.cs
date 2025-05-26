@@ -26,14 +26,16 @@ public abstract class DbBaseTests<TClass, TBaseClass, TObject, TData>:
     protected abstract TObject? createEntity(Func<TData> getData);
     protected TObject? createEntity() => entity = createEntity(createData);
     [TestInitialize] public override void Initialize() {
-    var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-      .UseSqlite("DataSource=:memory:")
-      .Options;
-       dbContext = new ApplicationDbContext(options); 
-       dbSet = dbContext!.Set<TData>();
-       seedData();
-       base.Initialize();
-   }
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseSqlite("DataSource=:memory:")
+            .Options;
+        dbContext = new ApplicationDbContext(options);
+        dbContext.Database.OpenConnection(); // For in-memory SQLite
+        dbContext.Database.EnsureCreated();  // Ensure tables exist
+        dbSet = dbContext!.Set<TData>();
+        seedData();
+        base.Initialize();
+    }
     [TestCleanup] public override void Cleanup() {
        base.Cleanup();
        dbContext = null;

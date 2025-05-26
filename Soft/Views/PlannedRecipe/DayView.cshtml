@@ -9,6 +9,7 @@
     var recipes = ViewBag.AllRecipes as List<RecipeData> ?? new List<RecipeData>();
     var selectedDay = ViewBag.Day as Days?;
     var currentFilter = ViewBag.CurrentFilter as string;
+    var Calories= ViewBag.Calories as int? ?? 0;
 }
 
 <h2>@date.ToShortDateString()</h2>
@@ -92,6 +93,7 @@ else
                     <div class="card-body">
                         <h5 class="card-title">@planned.RecipeTitle</h5>
                         <p class="card-text text-muted">@planned.MealType</p>
+                        <p class="card-text text-muted" style="font-size: 0.9em;">Kalorid: @planned.Calories</p>
                         <p class="card-text"><small class="text-muted">@planned.Day</small></p>
                         <form asp-action="RemoveFromDay" method="post">
                             <input type="hidden" name="id" value="@planned.Id" />

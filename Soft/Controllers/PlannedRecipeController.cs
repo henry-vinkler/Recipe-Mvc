@@ -91,6 +91,7 @@ namespace RecipeMvc.Soft.Controllers
             ViewBag.Date = actualDate;
             ViewBag.Day = day;
             ViewBag.AllRecipes = await _db.Recipes.Where(r => r.AuthorId == userId).ToListAsync();
+            ViewBag.Calories = plannedViews.Sum(p => p.Calories);
             return View(plannedViews);
         }
 
