@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using Mvc.Data;
-using Mvc.Domain;
-using Mvc.Facade;
-using Mvc.Soft.Controllers;
+using RecipeMvc.Data;
+using RecipeMvc.Domain;
+using RecipeMvc.Facade;
+using RecipeMvc.Soft.Controllers;
 
-namespace Mvc.Tests.Soft.Controllers;
+namespace RecipeMvc.Tests.Soft.Controllers;
 
 [TestClass] public class BaseControllerTests() :
    ControllerBaseTests<BaseController<Movie, MovieData, MovieView>, Movie, MovieData, MovieView> {

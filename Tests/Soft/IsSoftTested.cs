@@ -1,6 +1,6 @@
 using System;
 using RecipeMvc.Tests;
 
-namespace Mvc.Tests.Soft;
+namespace RecipeMvc.Tests.Soft;
 
 [TestClass] public class IsSoftTested(): AssemblyTests("Soft") {}

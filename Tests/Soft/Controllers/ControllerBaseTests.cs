@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Mvc.Data;
-using Mvc.Domain;
-using Mvc.Facade;
-using Mvc.Soft.Controllers;
-using Random = Mvc.Aids.Random;
+using RecipeMvc.Data;
+using RecipeMvc.Domain;
+using RecipeMvc.Facade;
+using RecipeMvc.Soft.Controllers;
+using Random = RecipeMvc.Aids.Random;
 
-namespace Mvc.Tests.Soft.Controllers; 
+namespace RecipeMvc.Tests.Soft.Controllers; 
 public abstract class ControllerBaseTests<TController, TObject, TData, TView> : 
         DbBaseTests<TController, BaseController<TObject, TData, TView>, TObject, TData> 
     where TController : BaseController<TObject, TData, TView>

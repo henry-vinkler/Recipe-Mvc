@@ -4,7 +4,7 @@ using RecipeMvc.Data;
 using RecipeMvc.Soft.Data;
 using RecipeMvc.Tests;
 
-namespace Mvc.Tests.Soft.Data; 
+namespace RecipeMvc.Tests.Soft.Data; 
 [TestClass] public class ApplicationDbContextTests :
     BaseClassTests<ApplicationDbContext, IdentityDbContext> {
    protected override ApplicationDbContext createObj() {

@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Reflection;
 
-namespace Mvc.Tests;
+namespace RecipeMvc.Tests;
 
 public abstract class SealedTests<TClass, TBaseClass> : ClassTests<TClass, TBaseClass>
     where TClass : class, new()
