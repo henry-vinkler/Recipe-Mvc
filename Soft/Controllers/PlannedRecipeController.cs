@@ -50,14 +50,12 @@ namespace RecipeMvc.Soft.Controllers
 
         // Show all planned recipes for a specific day
         [HttpGet]
-        public async Task<IActionResult> DayView(DateTime? date = null, Days? day = null)
+        public async Task<IActionResult> DayView(DateTime? date = null, Days? day = null, string? searchString = null)
         {
             // Kui kuupäeva pole, kasuta tänast päeva
             var baseDate = date?.Date ?? DateTime.Today;
-            // Kui päev on valitud, arvuta nädala algus ja liida päevade arv
             DateTime actualDate;
             if (day != null) {
-                // Leia nädala algus (esmaspäev)
                 var weekStart = baseDate.AddDays(-(int)baseDate.DayOfWeek + (int)DayOfWeek.Monday);
                 actualDate = weekStart.AddDays((int)day);
             } else {
@@ -76,6 +74,18 @@ namespace RecipeMvc.Soft.Controllers
                     && (day == null || p.Day == day)
                     && p.AuthorId == userId)
                 .ToListAsync();
+
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                var search = searchString.ToLower();
+                planned = planned
+                    .Where(p =>
+                        (p.Recipe != null && p.Recipe.Title != null && p.Recipe.Title.ToLower().Contains(search)) ||
+                        p.MealType.ToString().ToLower().Contains(search) ||
+                        p.DateOfMeal.ToString("yyyy-MM-dd").Contains(search)
+                    ).ToList();
+                ViewData["CurrentFilter"] = searchString;
+            }
 
             var plannedViews = planned.Select(p => new PlannedRecipeView
             {

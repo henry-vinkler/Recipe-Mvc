@@ -27,6 +27,7 @@
                 <form asp-action="Index" method="get" style="display:inline;">
                     <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" />
                     <input type="hidden" name="day" value="@day" />
+                    @if (!string.IsNullOrEmpty(currentFilter)) { <input type="hidden" name="searchString" value="@currentFilter" /> }
                     <button type="submit" class="page-link">@day</button>
                 </form>
             </li>

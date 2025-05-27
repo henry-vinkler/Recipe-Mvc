@@ -29,4 +29,10 @@ public class PlannedRecipeTests : BaseClassTests<PlannedRecipe, Entity<PlannedRe
     [TestMethod] public void MealTypeTest() => equal(MealType.Lunch, obj?.MealType);
     [TestMethod] public void DateOfMealTest() => equal(new DateTime(2025, 5, 26), obj?.DateOfMeal);
     [TestMethod] public void DataTest() => notNull(obj?.Data);
+    [TestMethod] public void MealPlanIdTypeTest() => isType(obj?.MealPlanId, typeof(int));
+    [TestMethod] public void RecipeIdTypeTest() => isType(obj?.RecipeId, typeof(int));
+    [TestMethod] public void AuthorIdTypeTest() => isType(obj?.AuthorId, typeof(int));
+    [TestMethod] public void MealTypeTypeTest() => isType(obj?.MealType, typeof(MealType));
+    [TestMethod] public void DateOfMealTypeTest() => isType(obj?.DateOfMeal, typeof(DateTime));
+    [TestMethod] public void RecipeTypeTest() => isType(obj?.Recipe, typeof(Recipe));
 }
