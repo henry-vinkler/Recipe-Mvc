@@ -6,7 +6,7 @@ using RecipeMvc.Soft.Controllers;
 using RecipeMvc.Soft.Data;
 using RecipeMvc.Tests;
 
-namespace Mvc.Tests.Soft.Views;
+namespace RecipeMvc.Tests.Soft.Views;
 
 public abstract class HostTests<TController, TData> : BaseTests
     where TController : Controller where TData : EntityData<TData>, new() {

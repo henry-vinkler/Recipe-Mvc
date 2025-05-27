@@ -3,7 +3,10 @@ using RecipeMvc.Data;
 using RecipeMvc.Domain;
 using RecipeMvc.Facade;
 using RecipeMvc.Soft.Controllers;
+<<<<<<< HEAD
 using RecipeMvc.Tests;
+=======
+>>>>>>> b657a938c0472978c28a436e7facdc4b240b4471
 using Random = RecipeMvc.Aids.Random;
 
 namespace RecipeMvc.Tests.Soft.Controllers; 
