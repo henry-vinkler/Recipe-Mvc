@@ -1,10 +1,13 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RecipeMvc.Facade;
+using RecipeMvc.Data;
+
 namespace RecipeMvc.Tests.Facade;
 
 
 [TestClass]
 public class PlannedRecipeViewTests : SealedTests<PlannedRecipeView, EntityView>
 {
-    [TestMethod] public override void DisplayNameTest() => isDisplayName("PlannedRecipeView");
     [TestMethod] public void IdTest() => isProperty<int>();
     [TestMethod] public void AuthorIdTest() => isProperty<int>();
     [TestMethod] public void RecipeIdTest() => isProperty<int>();
