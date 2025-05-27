@@ -46,7 +46,7 @@ public abstract class DbBaseTests<TClass, TBaseClass, TObject, TData>:
     [TestMethod] public void CanCreateDbContextTest() => notNull(dbContext);
     [TestMethod] public void HasDbSetTest() => notNull(dbSet);
     [TestMethod] public void DbSetHasDataTest() => isTrue(dbSet!.Any());
-    internal protected void seedData(){
+    internal protected virtual void seedData(){
          var l = new List<TData>();
          for (var i = 0; i < Random.UInt8(20, 30); i++) l.Add(createData());
          dbSet?.AddRange(l);
