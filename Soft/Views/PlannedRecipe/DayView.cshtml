@@ -1,6 +1,5 @@
 @using RecipeMvc.Data
 @using RecipeMvc.Aids
-
 @model IEnumerable<PlannedRecipeView>
 @{
     ViewData["Title"] = "Päeva toitumiskava";
@@ -9,101 +8,12 @@
     var recipes = ViewBag.AllRecipes as List<RecipeData> ?? new List<RecipeData>();
     var selectedDay = ViewBag.Day as Days?;
     var currentFilter = ViewBag.CurrentFilter as string;
-    var Calories= ViewBag.Calories as int? ?? 0;
+    var Calories = ViewBag.Calories as int? ?? 0;
 }
 
-<h2>@date.ToShortDateString()</h2>
-
-<form asp-action="DayView" method="get" class="mb-3">
-    <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" />
-    <input type="text" name="searchString" value="@currentFilter" placeholder="Search by recipe or meal type" class="form-control d-inline w-auto" style="width: 250px; display: inline-block;" />
-    <button type="submit" class="btn btn-outline-secondary btn-sm ms-2">Search</button>
-</form>
-
-<nav aria-label="Day navigation" class="mb-3">
-    <ul class="pagination justify-content-center">
-        @foreach (Days day in Enum.GetValues(typeof(Days)))
-        {
-            var isActive = selectedDay.HasValue && selectedDay.Value == day;
-            <li class="page-item @(isActive ? "active" : "")">
-                <form asp-action="DayView" method="get" style="display:inline;">
-                    <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" />
-                    <input type="hidden" name="day" value="@day" />
-                    <button type="submit" class="page-link">@day</button>
-                </form>
-            </li>
-        }
-    </ul>
-</nav>
-
-@if (selectedDay.HasValue)
-{
-    <form asp-action="AddToDay" method="post" class="mb-4">
-        <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" />
-        <input type="hidden" name="day" value="@selectedDay.Value" />
-        <div class="row mb-2">
-            <div class="col">
-                <select name="recipeId" class="form-select">
-                    @if (recipes.Count == 0)
-                    {
-                        <option value="">No recipes available</option>
-                    }
-                    else
-                    {
-                        @foreach (var r in recipes)
-                        {
-                            <option value="@r.Id">@r.Title</option>
-                        }
-                    }
-                </select>
-            </div>
-            <div class="col">
-                <select name="mealType" class="form-select">
-                    @foreach (var type in Enum.GetValues(typeof(MealType)))
-                    {
-                        <option value="@type">@type</option>
-                    }
-                </select>
-            </div>
-            <div class="col">
-                <button class="btn btn-success" type="submit">Lisa</button>
-            </div>
-        </div>
-    </form>
-}
-
-@await Html.PartialAsync("_WeekNavigation", new {
-    Date = date,
-    Action = "DayView",
-    SelectedDay = selectedDay,
-    CurrentFilter = currentFilter
-})
-
-@if (!Model.Any())
-{
-    <div class="alert alert-info">No planned recipes for this day.</div>
-}
-else
-{
-    <div class="row">
-        @foreach (var planned in Model)
-        {
-            <div class="col-md-4 mb-3">
-                <div class="card h-100 shadow shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">@planned.RecipeTitle</h5>
-                        <p class="card-text text-muted">@planned.MealType</p>
-                        <p class="card-text text-muted" style="font-size: 0.9em;">Kalorid: @planned.Calories</p>
-                        <p class="card-text"><small class="text-muted">@planned.Day</small></p>
-                        <form asp-action="RemoveFromDay" method="post">
-                            <input type="hidden" name="id" value="@planned.Id" />
-                            <input type="hidden" name="date" value="@planned.DateOfMeal.ToString("yyyy-MM-dd")" />
-                            <input type="hidden" name="day" value="@planned.Day" />
-                            <button type="submit" class="btn btn-danger w-100">Eemalda</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-}
+@await Html.PartialAsync("_DayHeader", date)
+@await Html.PartialAsync("_DaySearchForm", new { Date = date, CurrentFilter = currentFilter })
+@await Html.PartialAsync("_DayNavigation", new { Date = date, SelectedDay = selectedDay })
+@await Html.PartialAsync("_AddRecipeToDayForm", new { Date = date, SelectedDay = selectedDay, Recipes = recipes })
+<div class="mb-2"><strong>Calories:</strong> @Calories</div>
+@await Html.PartialAsync("_PlannedRecipeList", Model)

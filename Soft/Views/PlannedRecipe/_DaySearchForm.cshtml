@@ -1,0 +1,6 @@
+@* Otsinguvorm, ainult kuupäeva valikuga, ilma searchboxita *@
+@model dynamic
+<form asp-action="DayView" method="get" class="mb-3 d-flex align-items-center gap-2" style="max-width: 350px;">
+    <input type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" class="form-control" style="min-width: 180px;" />
+    <button type="submit" class="btn btn-success">Show Day</button>
+</form>

@@ -48,11 +48,17 @@ namespace RecipeMvc.Soft.Controllers
             return View(grouped);
         }
 
+        // Sum calories for planned recipes
+        private int GetTotalCalories(List<PlannedRecipeView> plannedViews)
+        {
+            if (plannedViews == null || plannedViews.Count == 0) return 0;
+            return (int)plannedViews.Sum(p => p.Calories);
+        }
+
         // Show all planned recipes for a specific day
         [HttpGet]
         public async Task<IActionResult> DayView(DateTime? date = null, Days? day = null, string? searchString = null)
         {
-            // Kui kuupäeva pole, kasuta tänast päeva
             var baseDate = date?.Date ?? DateTime.Today;
             DateTime actualDate;
             if (day != null) {
@@ -61,33 +67,57 @@ namespace RecipeMvc.Soft.Controllers
             } else {
                 actualDate = baseDate;
             }
-            // Get logged-in user ID
             var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (!int.TryParse(userIdString, out var userId))
                 return Challenge();
 
-            // Only show planned recipes for the logged-in user
-            var planned = await _db.PlannedRecipes
+            var planned = await GetPlannedRecipesForDay(actualDate, day, userId);
+            planned = FilterPlannedRecipes(planned, searchString);
+            var plannedViews = MapToPlannedRecipeViews(planned);
+
+            ViewBag.Date = actualDate;
+            ViewBag.Day = day;
+            ViewBag.AllRecipes = await _db.Recipes.Where(r => r.AuthorId == userId).ToListAsync();
+            ViewBag.Calories = GetTotalCalories(plannedViews);
+            return View(plannedViews);
+        }
+
+        private async Task<List<PlannedRecipeData>> GetPlannedRecipesForDay(DateTime actualDate, Days? day, int userId)
+        {
+            return await _db.PlannedRecipes
                 .Include(p => p.Author)
                 .Include(p => p.Recipe)
                 .Where(p => p.DateOfMeal.Date == actualDate.Date
                     && (day == null || p.Day == day)
                     && p.AuthorId == userId)
                 .ToListAsync();
+        }
 
-            if (!string.IsNullOrWhiteSpace(searchString))
+        private List<PlannedRecipeData> FilterPlannedRecipes(List<PlannedRecipeData> planned, string? searchString)
+        {
+            if (string.IsNullOrWhiteSpace(searchString)) return planned;
+            var search = searchString.ToLower();
+            DateTime searchDate;
+            // Toeta ainult dd.MM.yyyy formaati
+            bool isCustomDate = DateTime.TryParseExact(searchString, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out searchDate);
+            if (isCustomDate)
             {
-                var search = searchString.ToLower();
-                planned = planned
+                return planned.Where(p => p.DateOfMeal.Date == searchDate.Date).ToList();
+            }
+            else
+            {
+                return planned
                     .Where(p =>
                         (p.Recipe != null && p.Recipe.Title != null && p.Recipe.Title.ToLower().Contains(search)) ||
                         p.MealType.ToString().ToLower().Contains(search) ||
-                        p.DateOfMeal.ToString("yyyy-MM-dd").Contains(search)
+                        p.DateOfMeal.ToString("dd.MM.yyyy").Contains(search)
                     ).ToList();
-                ViewData["CurrentFilter"] = searchString;
             }
+        }
 
-            var plannedViews = planned.Select(p => new PlannedRecipeView
+        private List<PlannedRecipeView> MapToPlannedRecipeViews(List<PlannedRecipeData> planned)
+        {
+            return planned.Select(p => new PlannedRecipeView
             {
                 Id = p.Id,
                 RecipeId = p.RecipeId,
@@ -97,15 +127,8 @@ namespace RecipeMvc.Soft.Controllers
                 DateOfMeal = p.DateOfMeal,
                 Calories = p.Recipe?.Calories ?? 0
             }).ToList();
-
-            ViewBag.Date = actualDate;
-            ViewBag.Day = day;
-            ViewBag.AllRecipes = await _db.Recipes.Where(r => r.AuthorId == userId).ToListAsync();
-            ViewBag.Calories = plannedViews.Sum(p => p.Calories);
-            return View(plannedViews);
         }
 
-        // Add a planned recipe
         [HttpPost]
         public async Task<IActionResult> AddToDay(DateTime date, int recipeId, MealType mealType, Days day, int page = 1)
         {

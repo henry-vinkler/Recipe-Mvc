@@ -34,5 +34,5 @@ public class PlannedRecipeTests : BaseClassTests<PlannedRecipe, Entity<PlannedRe
     [TestMethod] public void AuthorIdTypeTest() => isType(obj?.AuthorId, typeof(int));
     [TestMethod] public void MealTypeTypeTest() => isType(obj?.MealType, typeof(MealType));
     [TestMethod] public void DateOfMealTypeTest() => isType(obj?.DateOfMeal, typeof(DateTime));
-    [TestMethod] public void RecipeTypeTest() => isType(obj?.Recipe, typeof(Recipe));
+    [TestMethod] public void RecipeTypeTest() => isType(obj?.Recipe, typeof(RecipeData));
 }

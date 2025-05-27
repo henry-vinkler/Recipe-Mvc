@@ -1,0 +1,31 @@
+@* Planned recipes list, English UI *@
+@using RecipeMvc.Facade
+@model IEnumerable<PlannedRecipeView>
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No planned recipes for this day.</div>
+}
+else
+{
+    <div class="row">
+        @foreach (var planned in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@planned.RecipeTitle</h5>
+                        <p class="card-text text-muted">@planned.MealType</p>
+                        <p class="card-text text-muted" style="font-size: 0.9em;">Calories: @planned.Calories</p>
+                        <p class="card-text"><small class="text-muted">@planned.Day</small></p>
+                        <form asp-action="RemoveFromDay" method="post">
+                            <input type="hidden" name="id" value="@planned.Id" />
+                            <input type="hidden" name="date" value="@planned.DateOfMeal.ToString("yyyy-MM-dd")" />
+                            <input type="hidden" name="day" value="@planned.Day" />
+                            <button type="submit" class="btn btn-danger w-100">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
