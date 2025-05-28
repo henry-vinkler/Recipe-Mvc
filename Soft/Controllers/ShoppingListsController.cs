@@ -140,4 +140,62 @@ namespace RecipeMvc.Soft.Controllers;
         }
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpPost] [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddRecipeToShoppingList(int recipeId)
+    {
+        var recipe = await _db.Recipes
+            .Include(r => r.RecipeIngredients!)
+                .ThenInclude(ri => ri.Ingredient)
+            .FirstOrDefaultAsync(r => r.Id == recipeId);
+
+        if (recipe == null || recipe.RecipeIngredients == null || !recipe.RecipeIngredients.Any())
+            return NotFound();
+
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+        var shoppingList = new ShoppingListData
+        {
+            Name = $"From the recipe: {recipe.Title}",
+            UserId = userId,
+            IsChecked = false,
+            Notes = "",
+            Ingredients = recipe.RecipeIngredients.Select(ri => new ShoppingListIngredientData
+            {
+                IngredientId = ri.IngredientId,
+                Quantity = ri.Quantity.ToString(),
+                IsChecked = false
+            }).ToList()
+        };
+
+        _db.ShoppingLists.Add(shoppingList);
+        await _db.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Details), new { id = shoppingList.Id });
+    }
+
+    [HttpPost] [ValidateAntiForgeryToken]
+
+        public async Task<IActionResult> UpdateCheckedStatus(int ShoppingListId, List<ShoppingListIngredientView> Ingredients)
+        {
+            var list = await _db.ShoppingLists
+                .Include(l => l.Ingredients)
+                .FirstOrDefaultAsync(l => l.Id == ShoppingListId);
+
+            if (list == null) return NotFound();
+
+            foreach (var item in Ingredients)
+            {
+                var target = list.Ingredients.FirstOrDefault(i => i.IngredientId == item.IngredientId);
+                if (target != null)
+                {
+                    target.IsChecked = item.IsChecked;
+                }
+            }
+
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Details), new { id = ShoppingListId });
+        }
+        
+
 }

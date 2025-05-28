@@ -41,5 +41,9 @@
         <p>No ingredients listed.</p>
     }
 </div>
+<form asp-action="AddRecipeToShoppingList" asp-controller="ShoppingLists" method="post" style="margin-bottom: 20px;">
+    <input type="hidden" name="recipeId" value="@Model.Id" />
+    <button type="submit" class="btn btn-success">Add to Shopping List</button>
+</form>
 
 
