@@ -55,7 +55,9 @@ namespace RecipeMvc.Soft.Controllers;
             {
                 IngredientId = i.IngredientId,
                 Quantity = i.Quantity,
-                IsChecked = i.IsChecked
+                IsChecked = i.IsChecked,
+                IngredientName = i.Ingredient?.Name ?? "",
+                Unit = i.Ingredient?.Unit ?? ""
             }).ToList()
         };
 

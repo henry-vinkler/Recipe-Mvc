@@ -14,7 +14,7 @@ public sealed class ShoppingListIngredientView:EntityView
     [DisplayName("Ingredient")]
     public int IngredientId { get; set; }
     [DisplayName("Name")]
-    public string? IngredientName { get; set; }
+    public string? IngredientName { get; set; } = string.Empty;
 
     [DisplayName("Quantity")]
     [StringLength(40, MinimumLength = 1)]
@@ -22,7 +22,7 @@ public sealed class ShoppingListIngredientView:EntityView
     public string Quantity { get; set; } = string.Empty;
 
     [DisplayName("Unit")]
-    public string? Unit { get; set; }
+    public string? Unit { get; set; } = string.Empty;
 
     [DisplayName("Checked")]
     public bool IsChecked { get; set; } 
