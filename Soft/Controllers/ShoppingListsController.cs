@@ -15,14 +15,24 @@ namespace RecipeMvc.Soft.Controllers;
     public ShoppingListsController(ApplicationDbContext db) => _db = db;
 
     [AllowAnonymous]
-    public async Task<IActionResult> Index() {
+    public async Task<IActionResult> Index(string? search)
+    {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-        var lists = await _db.ShoppingLists
+
+        var query = _db.ShoppingLists
             .Where(l => l.UserId == userId)
             .Include(l => l.Ingredients!)
-            .ToListAsync();
+            .AsQueryable();
 
-        var result = lists.Select(l => new ShoppingListView {
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(l => l.Name.ToLower().Contains(search.ToLower()));
+        }
+
+        var lists = await query.ToListAsync();
+
+        var result = lists.Select(l => new ShoppingListView
+        {
             Id = l.Id,
             Name = l.Name,
             Notes = l.Notes,
@@ -31,6 +41,7 @@ namespace RecipeMvc.Soft.Controllers;
         }).ToList();
 
         return View(result);
+
     }
 
     public async Task<IActionResult> Details(int? id) {
@@ -158,7 +169,7 @@ namespace RecipeMvc.Soft.Controllers;
 
         var shoppingList = new ShoppingListData
         {
-            Name = $"From the recipe: {recipe.Title}",
+            Name = recipe.Title,
             UserId = userId,
             IsChecked = false,
             Notes = "",
