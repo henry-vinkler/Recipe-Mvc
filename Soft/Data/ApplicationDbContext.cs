@@ -25,7 +25,7 @@ public class ApplicationDbContext : IdentityDbContext
         modelBuilder.Entity<ShoppingListIngredientData>()
             .HasOne(i => i.Ingredient)
             .WithMany()
-            .HasForeignKey(i => i.IngredientID)
+            .HasForeignKey(i => i.IngredientId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

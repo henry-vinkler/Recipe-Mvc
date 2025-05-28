@@ -18,7 +18,7 @@ namespace RecipeMvc.Soft.Controllers;
     public async Task<IActionResult> Index() {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
         var lists = await _db.ShoppingLists
-            .Where(l => l.UserID == userId)
+            .Where(l => l.UserId == userId)
             .Include(l => l.Ingredients!)
             .ToListAsync();
 
@@ -27,7 +27,7 @@ namespace RecipeMvc.Soft.Controllers;
             Name = l.Name,
             Notes = l.Notes,
             IsChecked = l.IsChecked,
-            UserID = l.UserID
+            UserId = l.UserId
         }).ToList();
 
         return View(result);
@@ -50,10 +50,10 @@ namespace RecipeMvc.Soft.Controllers;
             Name = list.Name,
             Notes = list.Notes,
             IsChecked = list.IsChecked,
-            UserID = list.UserID,
+            UserId = list.UserId,
             Ingredients = list.Ingredients.Select(i => new ShoppingListIngredientView
             {
-                IngredientID = i.IngredientID,
+                IngredientId = i.IngredientId,
                 Quantity = i.Quantity,
                 IsChecked = i.IsChecked
             }).ToList()
@@ -67,14 +67,14 @@ namespace RecipeMvc.Soft.Controllers;
     public async Task<IActionResult> Create(ShoppingListView model) {
         if (!ModelState.IsValid) return View(model);
 
-        model.UserID = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        model.UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
         var entity = new ShoppingListData
         {
             Name = model.Name,
             Notes = model.Notes,
             IsChecked = model.IsChecked,
-            UserID = model.UserID
+            UserId = model.UserId
         };
 
         _db.ShoppingLists.Add(entity);
@@ -93,7 +93,7 @@ namespace RecipeMvc.Soft.Controllers;
             Name = list.Name,
             Notes = list.Notes,
             IsChecked = list.IsChecked,
-            UserID = list.UserID
+            UserId = list.UserId
         });
     }
 
@@ -122,7 +122,7 @@ namespace RecipeMvc.Soft.Controllers;
             Name = list.Name,
             Notes = list.Notes,
             IsChecked = list.IsChecked,
-            UserID = list.UserID
+            UserId = list.UserId
         });
     }
 

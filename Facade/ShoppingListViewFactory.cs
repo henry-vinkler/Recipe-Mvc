@@ -8,7 +8,7 @@ public sealed class ShoppingListViewFactory
     public ShoppingListView Create(ShoppingListData d) => new ShoppingListView
     {
         Id = d.Id,
-        UserID = d.UserID,
+        UserId = d.UserId,
         Name = d.Name,
         IsChecked = d.IsChecked,
         Notes = d.Notes

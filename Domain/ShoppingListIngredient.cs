@@ -4,11 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace RecipeMvc.Domain;
 
 public class ShoppingListIngredient(ShoppingListIngredientData? d) : Entity<ShoppingListIngredientData>(d) {
-    public int? ShoppingListID => Data?.ShoppingListID;
-    public int? IngredientID => Data?.IngredientID;
+    public int? ShoppingListId => Data?.ShoppingListId;
+    public int? IngredientID => Data?.IngredientId;
     public string Quantity => Data?.Quantity ?? string.Empty;
     public bool IsChecked => Data?.IsChecked ?? false;
 
-    public Ingredient? Ingredient { get; set; }
+    public ICollection<ShoppingListIngredient> Ingredients { get; set; } = new List<ShoppingListIngredient>();
+
 }
 

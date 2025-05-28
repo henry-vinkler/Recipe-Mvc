@@ -9,10 +9,10 @@ namespace RecipeMvc.Facade;
 public sealed class ShoppingListIngredientView:EntityView
 {
     [DisplayName("Shopping List")]
-    public int ShoppingListID { get; set; }
+    public int ShoppingListId { get; set; }
 
     [DisplayName("Ingredient")]
-    public int IngredientID { get; set; }
+    public int IngredientId { get; set; }
     [DisplayName("Name")]
     public string? IngredientName { get; set; }
 

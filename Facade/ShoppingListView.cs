@@ -7,7 +7,7 @@ namespace RecipeMvc.Facade;
 public class ShoppingListView : EntityView
 {
     [DisplayName("User")]
-    public int UserID { get; set; }
+    public int UserId { get; set; }
 
     [DisplayName("Name")]
     [StringLength(50, MinimumLength = 1)]
