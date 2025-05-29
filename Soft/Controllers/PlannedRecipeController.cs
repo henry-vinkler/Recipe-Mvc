@@ -89,7 +89,7 @@ namespace RecipeMvc.Soft.Controllers
                 _db.PlannedRecipes.Remove(item);
                 await _db.SaveChangesAsync();
             }
-            return RedirectToAction("DayView");
+            return RedirectToAction("DayView", new { date = date.ToString("yyyy-MM-dd"), day });;
         }
         [AllowAnonymous]
         public async Task<IActionResult> Index(int page = 1){

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RecipeMvc.Aids;
 using RecipeMvc.Data;
+using RecipeMvc.Facade;
 using RecipeMvc.Soft.Controllers;
 using RecipeMvc.Soft.Data;
 using System.Reflection;
@@ -198,6 +199,58 @@ public class PlannedRecipeControllerTests : ControllerBaseTests<PlannedRecipeCon
         isType(result, typeof(RedirectToActionResult));
     }
 
-    [TestMethod] public void CanCallIndex() =>
-        notNull(obj?.Index(null, 1).Result);
+    [TestMethod]
+    public void GetWeekStartAndEnd_ReturnsCorrectRange()
+    {
+        var ctrl = createObj();
+        var method = ctrl.GetType().GetMethod("GetWeekStartAndEnd", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.IsNotNull(method);
+        var tupleObj = method.Invoke(ctrl, new object?[] { new DateTime(2025, 5, 26), 1 });
+        Assert.IsNotNull(tupleObj);
+        var tuple = ((DateTime, DateTime))tupleObj;
+        var (start, end) = tuple;
+        Assert.AreEqual(new DateTime(2025, 5, 26).AddDays(-((int)new DateTime(2025, 5, 26).DayOfWeek - (int)DayOfWeek.Monday)), start);
+        Assert.AreEqual(start.AddDays(7), end);
+    }
+
+    [TestMethod]
+    public void MapToPlannedRecipeViews_MapsCorrectly()
+    {
+        var ctrl = createObj();
+        var planned = new List<PlannedRecipeData> {
+            new PlannedRecipeData {
+                Id = 1,
+                RecipeId = 2,
+                MealType = MealType.Lunch,
+                Day = Days.Wednesday,
+                DateOfMeal = new DateTime(2025, 5, 26),
+                AuthorId = 1
+            }
+        };
+        var method = ctrl.GetType().GetMethod("MapToPlannedRecipeViews", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.IsNotNull(method);
+        var resultObj = method.Invoke(ctrl, new object?[] { planned });
+        Assert.IsNotNull(resultObj);
+        var result = resultObj as List<PlannedRecipeView>;
+        notNull(result);
+        Assert.AreEqual(1, result!.Count);
+        Assert.AreEqual(1, result[0].Id);
+        Assert.AreEqual(2, result[0].RecipeId);
+    }
+
+    [TestMethod]
+    public void GetTotalCalories_ReturnsSum()
+    {
+        var ctrl = createObj();
+        var views = new List<PlannedRecipeView> {
+            new PlannedRecipeView { Calories = 100 },
+            new PlannedRecipeView { Calories = 200 }
+        };
+        var method = ctrl.GetType().GetMethod("GetTotalCalories", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.IsNotNull(method);
+        var sumObj = method.Invoke(ctrl, new object?[] { views });
+        Assert.IsNotNull(sumObj);
+        var sum = (int)sumObj;
+        Assert.AreEqual(300, sum);
+    }
 }
