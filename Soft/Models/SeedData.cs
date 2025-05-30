@@ -131,6 +131,7 @@ public static class SeedData
                     );
                 }
                 context.SaveChanges();
+                
             }
 
             context.SaveChanges();

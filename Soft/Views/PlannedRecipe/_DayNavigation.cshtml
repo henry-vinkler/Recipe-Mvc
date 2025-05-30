@@ -1,0 +1,31 @@
+@* Päevade navigeerimine koos kuupäevadega *@
+@using RecipeMvc.Data
+@using RecipeMvc.Aids
+@model dynamic
+@{
+    var date = (DateTime)Model.Date;
+    // Arvuta nädala algus (esmaspäev)
+    var weekStart = date.AddDays(-((int)date.DayOfWeek - (int)DayOfWeek.Monday));
+    var navColor = "#495057"; // tumehall, sobib hästi tumedama navbariga
+    var activeBg = "#e9ecef"; // helehall aktiivsele nupule
+}
+<nav aria-label="Day navigation" class="mb-3">
+    <ul class="pagination justify-content-center">
+        @foreach (Days day in Enum.GetValues(typeof(Days)))
+        {
+            var isActive = (Model?.SelectedDay == day);
+            var dayOffset = (int)day;
+            var dayDate = weekStart.AddDays(dayOffset);
+            <li class="page-item @(isActive ? "active" : "")">
+                <form asp-action="DayView" method="get" style="display:inline;">
+                    <input type="hidden" name="date" value="@dayDate.ToString("yyyy-MM-dd")" />
+                    <input type="hidden" name="day" value="@day" />
+                    <button type="submit" class="page-link" style="color:@navColor; background:@(isActive ? activeBg : "#fff"); border-color:@navColor;">
+                        @day
+                        <div style="font-size:0.8em; color:#888; line-height:1;">@dayDate.ToString("dd.MM.yyyy")</div>
+                    </button>
+                </form>
+            </li>
+        }
+    </ul>
+</nav>

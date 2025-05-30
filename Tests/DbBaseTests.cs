@@ -26,14 +26,16 @@ public abstract class DbBaseTests<TClass, TBaseClass, TObject, TData>:
     protected abstract TObject? createEntity(Func<TData> getData);
     protected TObject? createEntity() => entity = createEntity(createData);
     [TestInitialize] public override void Initialize() {
-    var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-      .UseSqlite("DataSource=:memory:")
-      .Options;
-       dbContext = new ApplicationDbContext(options); 
-       dbSet = dbContext!.Set<TData>();
-       seedData();
-       base.Initialize();
-   }
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseSqlite("DataSource=:memory:")
+            .Options;
+        dbContext = new ApplicationDbContext(options);
+        dbContext.Database.OpenConnection(); // For in-memory SQLite
+        dbContext.Database.EnsureCreated();  // Ensure tables exist
+        dbSet = dbContext!.Set<TData>();
+        seedData();
+        base.Initialize();
+    }
     [TestCleanup] public override void Cleanup() {
        base.Cleanup();
        dbContext = null;
@@ -44,7 +46,7 @@ public abstract class DbBaseTests<TClass, TBaseClass, TObject, TData>:
     [TestMethod] public void CanCreateDbContextTest() => notNull(dbContext);
     [TestMethod] public void HasDbSetTest() => notNull(dbSet);
     [TestMethod] public void DbSetHasDataTest() => isTrue(dbSet!.Any());
-    internal protected void seedData(){
+    internal protected virtual void seedData(){
          var l = new List<TData>();
          for (var i = 0; i < Random.UInt8(20, 30); i++) l.Add(createData());
          dbSet?.AddRange(l);
