@@ -5,4 +5,6 @@ public class RecipeIngredient(RecipeIngredientData? d) : Entity<RecipeIngredient
     public int? RecipeId => Data?.RecipeId;
     public int? IngredientId => Data?.IngredientId;
     public float? Quantity => Data?.Quantity;
+    public RecipeData? Recipe { get; set; }
+    public IngredientData? Ingredient { get; set; }
 }
