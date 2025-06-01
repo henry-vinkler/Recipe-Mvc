@@ -76,30 +76,5 @@ public abstract class HostTests<TController, TData> : BaseTests
           equal(r, html);
     }
 
-   // //[TestMethod] public async Task CreatePostIsOkTest() {
-    //    var r = await client!.GetAsync(BaseUrl);
-    //    r.EnsureSuccessStatusCode();
-    //    var html = await r.Content.ReadAsStringAsync();
-    //    isTrue(html.Contains("<table") || html.Contains("class=\"list\""));
-    //}
-    //[TestMethod] public async Task CreatePostNotOkTest() {
-    //    var r = await client!.GetAsync(BaseUrl);
-    //    r.EnsureSuccessStatusCode();
-    //    var html = await r.Content.ReadAsStringAsync();
-    //    isTrue(html.Contains("<table") || html.Contains("class=\"list\""));
-    //}
+   
 }
-// [TestClass] public class CourseAssignmentsHostTests :
-//    HostTests<CourseAssignmentsController, CourseAssignmentData> { }
-// [TestClass] public class CoursesHostTests : HostTests<CoursesController, CourseData> { }
-// [TestClass] public class DepartmentsHostTests : HostTests<DepartmentsController, DepartmentData> { }
-// [TestClass] public class EnrollmentsHostTests : HostTests<EnrollmentsController, EnrollmentData> { }
-// [TestClass] public class InstructorsHostTests : HostTests<InstructorsController, InstructorData> { }
-// [TestClass] public class MovieRolesHostTests : HostTests<MovieRolesController, MovieRoleData> { }
-// [TestClass] public class MoviesHostTests : HostTests<MoviesController, MovieData> { }
-// [TestClass] public class OfficeAssignmentsHostTests :
-//    HostTests<OfficeAssignmentsController, OfficeAssignmentData> { }
-// [TestClass] public class PersonNamesHostTests : HostTests<PersonNamesController, PersonNameData> { }
-// [TestClass] public class StudentsHostTests : HostTests<StudentsController, StudentData> { }
-// [TestClass] public class TestingHostTests : HostTests<TestingController, TestingData> { }
-

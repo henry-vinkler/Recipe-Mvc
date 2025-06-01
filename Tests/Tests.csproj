@@ -10,12 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Domain\**" />
-    <Compile Remove="Facade\**" />
-    <EmbeddedResource Remove="Domain\**" />
-    <EmbeddedResource Remove="Facade\**" />
-    <None Remove="Domain\**" />
-    <None Remove="Facade\**" />
+    <!-- <Compile Remove="Domain\**" /> -->
+    <!-- <Compile Remove="Facade\**" /> -->
+    <!-- <EmbeddedResource Remove="Domain\**" /> -->
+    <!-- <EmbeddedResource Remove="Facade\**" /> -->
+    <!-- <None Remove="Domain\**" /> -->
+    <!-- <None Remove="Facade\**" /> -->
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +26,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Soft\Soft.csproj" />
+    <ProjectReference Include="..\Facade\Facade.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

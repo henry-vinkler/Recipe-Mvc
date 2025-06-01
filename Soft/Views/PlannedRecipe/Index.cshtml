@@ -1,11 +1,25 @@
-@model IEnumerable<PlannedRecipeView>
-@using RecipeMvc.Core.Editors
-@using RecipeMvc.Domain
+@model IDictionary<RecipeMvc.Aids.Days, List<RecipeMvc.Facade.PlannedRecipeView>>
+@using RecipeMvc.Aids
 @using RecipeMvc.Facade
-
+@using RecipeMvc.Data
 @{
-    Layout = "~/Views/Shared/_Index.cshtml";
+    ViewData["Title"] = "Planned Recipes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var weekStart = ViewData["WeekStart"] as DateTime?;
+    var weekEnd = ViewData["WeekEnd"] as DateTime?;
+    var allRecipes = ViewBag.AllRecipes as IEnumerable<RecipeData>;
 }
 
-@Html.ShowTable(Model)
+<h2>Planned Recipes for the Week</h2>
+@if (weekStart != null && weekEnd != null) {
+    <h4>@weekStart.Value.ToString("yyyy-MM-dd") - @weekEnd.Value.ToString("yyyy-MM-dd")</h4>
+}
 
+@foreach (var day in Enum.GetValues(typeof(Days)).Cast<Days>()) {
+    var plannedForDay = Model.ContainsKey(day) ? Model[day] : new List<PlannedRecipeView>();
+    ViewBag.DayName = day.ToString();
+    ViewBag.Date = weekStart?.AddDays((int)day);
+    ViewBag.AllRecipes = allRecipes;
+    ViewBag.ShowAddForm = false;
+    @await Html.PartialAsync("_PlannedRecipeDayGroup", plannedForDay)
+}
