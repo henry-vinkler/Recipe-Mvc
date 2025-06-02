@@ -38,4 +38,3 @@ namespace RecipeMvc.Tests.Data;
         [TestMethod] public void NotesTest() => isProperty<string>();
         [TestMethod] public void IngredientsTest() => isProperty<ICollection<ShoppingListIngredientData>>();
     }
-}

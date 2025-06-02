@@ -6,7 +6,6 @@ namespace RecipeMvc.Tests.Facade;
 public class ShoppingListViewTests : SealedTests<ShoppingListView, EntityView>
 {
     [TestMethod] public override void DisplayNameTest() => isDisplayName("Shopping List");
-
     [TestMethod] public void IdTest() => isProperty<int>();
     [TestMethod] public void UserIdTest() => isProperty<int>();
     [TestMethod] public void NameTest() => isProperty<string>();
