@@ -6,8 +6,7 @@ namespace RecipeMvc.Tests.Data;
 public class RecipeIngredientDataTests : SealedTests<RecipeIngredientData, EntityData<RecipeIngredientData>> {
 
     [TestInitialize]
-    public override void Initialize()
-    {
+    public override void Initialize() {
         base.Initialize();
         if (obj == null) return;
 
@@ -29,8 +28,4 @@ public class RecipeIngredientDataTests : SealedTests<RecipeIngredientData, Entit
 
     [TestMethod]
     public void UnitTest() => isProperty<string>();
-
-
-
-
 }
