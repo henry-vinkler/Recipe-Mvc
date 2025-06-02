@@ -19,7 +19,7 @@ public abstract class BaseController<TObject, TData, TView>(DbContext c,
         var v = f.CreateView(o?.Data);
         return o == null? NotFound(): View(viewName, v);
     }
-    public async Task<IActionResult> Index(int pageIdx = 0, string? orderBy = null, string? filter = null) {
+    public virtual async Task<IActionResult> Index(int pageIdx = 0, string? orderBy = null, string? filter = null) {
         ViewBag.PageIdx = pageIdx;
         ViewBag.PageCount = await r.PageCount(pageSize, filter);
         ViewBag.OrderBy = orderBy;
@@ -27,17 +27,17 @@ public abstract class BaseController<TObject, TData, TView>(DbContext c,
         return View((await r.GetAsync(pageIdx, pageSize, orderBy, filter)).Select(x => f.CreateView(x?.Data)));
     }
     public async Task<IActionResult> Details(int? id) => await showAsync(nameof(Details), id);
-    public IActionResult Create() => View(new TView());
+    public virtual async Task<IActionResult> Create() => await Task.FromResult(View(new TView()));
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(TView v) {
+    public virtual async Task<IActionResult> Create(TView v) {
         if (! ModelState.IsValid) return View(v);
         var d = f.CreateData(v);
         await r.AddAsync(createObject(d));
         return RedirectToAction(nameof(Index));
     }
-    public async Task<IActionResult> Edit(int? id) => await showAsync(nameof(Edit), id);
+    public virtual async Task<IActionResult> Edit(int? id) => await showAsync(nameof(Edit), id);
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, TView v) {
+    public virtual async Task<IActionResult> Edit(int id, TView v) {
         if (id != v.Id) return NotFound();
         if ( ! ModelState.IsValid) return View(v);
         var d = f.CreateData(v);
