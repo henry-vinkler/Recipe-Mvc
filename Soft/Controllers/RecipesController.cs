@@ -117,14 +117,14 @@ namespace RecipeMvc.Soft.Controllers;
         int authorId = int.Parse(userIdClaim.Value);
 
         string imagePath = null;
-        if (model.ImageFile != null && model.ImageFile.Length > 0) {
+        if (model.ImageFile != null && model.ImageFile.Size > 0) {
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "recipes");
             Directory.CreateDirectory(uploadsFolder);
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.Name);
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create)) {
-                await model.ImageFile.CopyToAsync(stream);
+                await model.ImageFile.OpenReadStream().CopyToAsync(stream);
             }
             imagePath = "/images/recipes/" + uniqueFileName;
         }
@@ -212,13 +212,13 @@ namespace RecipeMvc.Soft.Controllers;
         recipe.Description = model.Description;
         recipe.Tags = model.Tags;
 
-        if (model.ImageFile != null && model.ImageFile.Length > 0) {
+        if (model.ImageFile != null && model.ImageFile.Size > 0) {
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "recipes");
             Directory.CreateDirectory(uploadsFolder);
-            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.FileName);
+            var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(model.ImageFile.Name);
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
             using (var stream = new FileStream(filePath, FileMode.Create)) {
-                await model.ImageFile.CopyToAsync(stream);
+                await model.ImageFile.OpenReadStream().CopyToAsync(stream);
             }
             recipe.ImagePath = "/images/recipes/" + uniqueFileName;
         }
