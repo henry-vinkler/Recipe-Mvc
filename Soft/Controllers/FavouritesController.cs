@@ -33,9 +33,13 @@ public class FavouritesController : Controller {
 
     [HttpPost] public async Task<IActionResult> Add(int recipeId) {
 
-        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userIdStr == null) return Unauthorized();
+        if (!User.Identity?.IsAuthenticated ?? false)
+        {
+            TempData["FavouriteMessage"] = "You must log in to add recipes to favourites.";
+            return RedirectToAction("Index", "Recipes");
+        }
 
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
         int userId = int.Parse(userIdStr);
 
         bool alreadyExists = await _db.Favourites
