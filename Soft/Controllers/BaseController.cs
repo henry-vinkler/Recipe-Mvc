@@ -26,7 +26,7 @@ public abstract class BaseController<TObject, TData, TView>(DbContext c,
         ViewBag.Filter = filter;
         return View((await r.GetAsync(pageIdx, pageSize, orderBy, filter)).Select(x => f.CreateView(x?.Data)));
     }
-    public async Task<IActionResult> Details(int? id) => await showAsync(nameof(Details), id);
+    public virtual async Task<IActionResult> Details(int? id) => await showAsync(nameof(Details), id);
     public virtual async Task<IActionResult> Create() => await Task.FromResult(View(new TView()));
     [HttpPost, ValidateAntiForgeryToken]
     public virtual async Task<IActionResult> Create(TView v) {

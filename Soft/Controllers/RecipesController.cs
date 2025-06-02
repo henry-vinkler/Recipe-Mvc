@@ -88,6 +88,16 @@ namespace RecipeMvc.Soft.Controllers;
         await SaveRecipeIngredientsAsync(recipeData.Id, model.Ingredients);
         return RedirectToAction(nameof(Index));
     }
+    public override async Task<IActionResult> Details(int? id) {
+        if (id == null) return NotFound();
+        var recipe = await _db.Recipes
+            .Include(r => r.Author)
+            .FirstOrDefaultAsync(r => r.Id == id);
+        if (recipe == null) return NotFound();
+        var ingredients = await GetRecipeIngredientsAsync(recipe.Id);
+        var model = CreateRecipeView(recipe, ingredients, recipe.Author?.Username);
+        return View(model);
+    }
     public override async Task<IActionResult> Edit(int? id) {
         if (id == null) return NotFound();
         var recipe = await _db.Recipes.FirstOrDefaultAsync(r => r.Id == id);
@@ -165,13 +175,14 @@ namespace RecipeMvc.Soft.Controllers;
                 .FirstOrDefault() * ing.Quantity
         );
     }
-    private RecipeView CreateRecipeView(RecipeData recipe, IList<RecipeIngredientView> ingredients) {
+    private RecipeView CreateRecipeView(RecipeData recipe, IList<RecipeIngredientView> ingredients, string? authorUsername=null) {
         return new RecipeView {
             Id = recipe.Id,
             Title = recipe.Title,
             Description = recipe.Description,
             Tags = recipe.Tags,
             AuthorId = recipe.AuthorId,
+            AuthorUsername = authorUsername,
             ImagePath = string.IsNullOrEmpty(recipe.ImagePath) ? null : recipe.ImagePath.StartsWith("/images/recipes/") ? recipe.ImagePath : "/images/recipes/" + recipe.ImagePath,
             Calories = recipe.Calories,
             Ingredients = ingredients
