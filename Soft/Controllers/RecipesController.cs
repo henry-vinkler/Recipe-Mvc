@@ -6,7 +6,6 @@ using RecipeMvc.Domain;
 using RecipeMvc.Facade.Recipe;
 using RecipeMvc.Soft.Data;
 using System.Security.Claims;
-
 namespace RecipeMvc.Soft.Controllers;
 
 [Authorize] public class RecipesController: BaseController<Recipe, RecipeData, RecipeView> {
@@ -16,7 +15,6 @@ namespace RecipeMvc.Soft.Controllers;
     public RecipesController(ApplicationDbContext db): base(db, _viewFactory, d => new Recipe(d)){
         _db = db;
     }
-
     [AllowAnonymous] public override async Task<IActionResult> Index(int page = 1, string? orderBy = null, string? filter = null) {
         var recipesQuery = _db.Recipes.Include(r => r.Author).AsQueryable();
         if (!string.IsNullOrWhiteSpace(filter)) {
@@ -100,17 +98,7 @@ namespace RecipeMvc.Soft.Controllers;
         };
         _db.Recipes.Add(recipeData);
         await _db.SaveChangesAsync();
-        if (model.Ingredients != null) {
-            var groupedIngredients = model.Ingredients
-                .GroupBy(i => i.IngredientId)
-                .Select(g => new RecipeIngredientData {
-                    RecipeId = recipeData.Id,
-                    IngredientId = g.Key,
-                    Quantity = g.Sum(i => i.Quantity)
-                });
-            await _db.RecipeIngredients.AddRangeAsync(groupedIngredients);
-            await _db.SaveChangesAsync();
-        }
+        await SaveRecipeIngredientsAsync(recipeData.Id, model.Ingredients);
         return RedirectToAction(nameof(Index));
     }
     public override async Task<IActionResult> Edit(int? id) {
@@ -155,17 +143,7 @@ namespace RecipeMvc.Soft.Controllers;
         if (!string.IsNullOrEmpty(imagePath))
             recipe.ImagePath = imagePath;
         _db.RecipeIngredients.RemoveRange(recipe.RecipeIngredients);
-        if (model.Ingredients != null) {
-            var groupedIngredients = model.Ingredients
-                .Where(i => i.IngredientId > 0 && i.Quantity > 0)
-                .GroupBy(i => i.IngredientId)
-                .Select(g => new RecipeIngredientData {
-                    RecipeId = recipe.Id,
-                    IngredientId = g.Key,
-                    Quantity = g.Sum(i => i.Quantity)
-                });
-            await _db.RecipeIngredients.AddRangeAsync(groupedIngredients);
-        }
+        await SaveRecipeIngredientsAsync(recipe.Id, model.Ingredients);
         recipe.Calories = await _db.RecipeIngredients
             .Where(ri => ri.RecipeId == recipe.Id)
             .Join(_db.Ingredients,
@@ -196,5 +174,18 @@ namespace RecipeMvc.Soft.Controllers;
             await imageFile.CopyToAsync(stream);
         }
         return "/images/recipes/" + uniqueFileName;
+    }
+    private async Task SaveRecipeIngredientsAsync(int recipeId, IList<RecipeIngredientView>? ingredients) {
+        if (ingredients == null) return;
+        var groupedIngredients = ingredients
+            .Where(i => i.IngredientId > 0 && i.Quantity > 0)
+            .GroupBy(i => i.IngredientId)
+            .Select(g => new RecipeIngredientData {
+                RecipeId = recipeId,
+                IngredientId = g.Key,
+                Quantity = g.Sum(i => i.Quantity)
+            });
+        await _db.RecipeIngredients.AddRangeAsync(groupedIngredients);
+        await _db.SaveChangesAsync();
     }
 }
