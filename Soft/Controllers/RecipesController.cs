@@ -51,24 +51,13 @@ namespace RecipeMvc.Soft.Controllers;
                 })
             .GroupBy(x => x.RecipeId)
             .ToDictionaryAsync(g => g.Key, g => g.Select(x => x.Ingredient).ToList());
-        var recipeViews = baseRecipes.Select(r => new RecipeView {
-            Id = r.Id,
-            Title = r.Title,
-            Description = r.Description,
-            Tags = r.Tags,
-            AuthorId = r.AuthorId,
-            ImagePath = string.IsNullOrEmpty(r.ImagePath) ? null :
-                r.ImagePath.StartsWith("/images/recipes/") ? r.ImagePath : "/images/recipes/" + r.ImagePath,
-            Ingredients = ingredientMap.ContainsKey(r.Id) ? ingredientMap[r.Id] : new List<RecipeIngredientView>()
-        }).ToList();
+        var recipeViews = new List<RecipeView>();
+        foreach (var r in baseRecipes) {
+            var ingredients = await GetRecipeIngredientsAsync(r.Id);
+            recipeViews.Add(CreateRecipeView(r, ingredients));
+        }
         foreach (var recipe in recipeViews) {
-            recipe.Calories = recipe.Ingredients.Sum(ing => {
-                var calories = _db.Ingredients
-                    .Where(i => i.Id == ing.IngredientId)
-                    .Select(i => i.Calories)
-                    .FirstOrDefault();
-                return calories * ing.Quantity;
-            });
+            recipe.Calories = CalculateCalories(recipe.Ingredients);
         }
         ViewData["CurrentPage"] = page;
         ViewData["TotalPages"] = (int)Math.Ceiling(totalCount / (double)pageSize);
@@ -92,9 +81,7 @@ namespace RecipeMvc.Soft.Controllers;
             Tags = model.Tags,
             AuthorId = authorId,
             ImagePath = imagePath,
-            Calories = model.Ingredients?.Sum(ing =>
-                _db.Ingredients.Where(i => i.Id == ing.IngredientId).Select(i => i.Calories).FirstOrDefault() * ing.Quantity
-            ) ?? 0
+            Calories = CalculateCalories(model.Ingredients)
         };
         _db.Recipes.Add(recipeData);
         await _db.SaveChangesAsync();
@@ -105,26 +92,8 @@ namespace RecipeMvc.Soft.Controllers;
         if (id == null) return NotFound();
         var recipe = await _db.Recipes.FirstOrDefaultAsync(r => r.Id == id);
         if (recipe == null) return NotFound();
-        var ingredients = await _db.RecipeIngredients
-            .Where(ri => ri.RecipeId == recipe.Id)
-            .Join(_db.Ingredients,
-                ri => ri.IngredientId,
-                ing => ing.Id,
-                (ri, ing) => new RecipeIngredientView {
-                    IngredientId = ing.Id,
-                    IngredientName = ing.Name,
-                    Quantity = ri.Quantity,
-                    Unit = ing.Unit
-                })
-            .ToListAsync();
-        var model = new RecipeView {
-            Id = recipe.Id,
-            Title = recipe.Title,
-            Description = recipe.Description,
-            Tags = recipe.Tags,
-            Calories = recipe.Calories,
-            Ingredients = ingredients
-        };
+        var ingredients = await GetRecipeIngredientsAsync(recipe.Id);
+        var model = CreateRecipeView(recipe, ingredients);  
         await SetAvailableIngredientsAsync();
         return View(model);
     }
@@ -187,5 +156,39 @@ namespace RecipeMvc.Soft.Controllers;
             });
         await _db.RecipeIngredients.AddRangeAsync(groupedIngredients);
         await _db.SaveChangesAsync();
+    }
+    private float CalculateCalories(IList<RecipeIngredientView>? ingredients) {
+        if (ingredients == null) return 0;
+        return ingredients.Sum(ing =>
+            _db.Ingredients.Where(i => i.Id == ing.IngredientId)
+                .Select(i => i.Calories)
+                .FirstOrDefault() * ing.Quantity
+        );
+    }
+    private RecipeView CreateRecipeView(RecipeData recipe, IList<RecipeIngredientView> ingredients) {
+        return new RecipeView {
+            Id = recipe.Id,
+            Title = recipe.Title,
+            Description = recipe.Description,
+            Tags = recipe.Tags,
+            AuthorId = recipe.AuthorId,
+            ImagePath = string.IsNullOrEmpty(recipe.ImagePath) ? null : recipe.ImagePath.StartsWith("/images/recipes/") ? recipe.ImagePath : "/images/recipes/" + recipe.ImagePath,
+            Calories = recipe.Calories,
+            Ingredients = ingredients
+        };
+    }
+    private async Task<IList<RecipeIngredientView>> GetRecipeIngredientsAsync(int recipeId) {
+        return await _db.RecipeIngredients
+            .Where(ri => ri.RecipeId == recipeId)
+            .Join(_db.Ingredients,
+                ri => ri.IngredientId,
+                ing => ing.Id,
+                (ri, ing) => new RecipeIngredientView {
+                    IngredientId = ing.Id,
+                    IngredientName = ing.Name,
+                    Quantity = ri.Quantity,
+                    Unit = ing.Unit
+                })
+            .ToListAsync();
     }
 }
