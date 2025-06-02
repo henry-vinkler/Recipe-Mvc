@@ -1,6 +1,6 @@
 using RecipeMvc.Facade.Recipe;
 using RecipeMvc.Facade;
-using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Http;
 
 namespace RecipeMvc.Tests.Facade;
 
@@ -11,7 +11,7 @@ namespace RecipeMvc.Tests.Facade;
     [TestMethod] public void AuthorUsernameTest() => isProperty<string>();
     [TestMethod] public void TitleTest() => isProperty<string>();
     [TestMethod] public void DescriptionTest() => isProperty<string>();
-    [TestMethod] public void ImageFileTest() => isProperty<IBrowserFile?>();
+    [TestMethod] public void ImageFileTest() => isProperty<IFormFile?>();
     [TestMethod] public void ImagePathTest() => isProperty<string?>();
     [TestMethod] public void CaloriesTest() => isProperty<float>();
     [TestMethod] public void TagsTest() => isProperty<string>();
