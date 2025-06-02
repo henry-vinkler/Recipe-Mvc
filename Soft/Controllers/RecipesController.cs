@@ -16,15 +16,13 @@ namespace RecipeMvc.Soft.Controllers;
     }
 
     [AllowAnonymous] public async Task<IActionResult> Index(string? searchString, bool mine = false, int page = 1) {
-        var recipes = _db.Recipes
+        var recipesQuery = _db.Recipes
             .Include(r => r.Author)
-            .Include(r => r.RecipeIngredients)
-                .ThenInclude(ri => ri.Ingredient)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchString)) {
             var search = searchString.ToLower();
-            recipes = recipes.Where(r => 
+            recipesQuery = recipesQuery.Where(r => 
                 r.Title.ToLower().Contains(search) ||
                 r.Tags.ToLower().Contains(search));
             ViewData["CurrentFilter"] = searchString;
@@ -32,39 +30,61 @@ namespace RecipeMvc.Soft.Controllers;
 
         if (mine && User.Identity.IsAuthenticated) {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            recipes = recipes.Where(r => r.AuthorId == userId);
+            recipesQuery = recipesQuery.Where(r => r.AuthorId == userId);
         }
 
-        var totalCount = await recipes.CountAsync();
-        var recipeViews = await recipes
+        var totalCount = await recipesQuery.CountAsync();
+        var baseRecipes = await recipesQuery
             .OrderByDescending(r => r.Id)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(r => new RecipeView {
-                Id = r.Id,
-                Title = r.Title,
-                Description = r.Description,
-                Tags = r.Tags,
-                AuthorId = r.AuthorId,
-                ImagePath = string.IsNullOrEmpty(r.ImagePath) ? null :
-                    r.ImagePath.StartsWith("/images/recipes/")
-                        ? r.ImagePath
-                        : "/images/recipes/" + r.ImagePath,
-                Ingredients = r.RecipeIngredients.Select(ri => new RecipeIngredientView {
-                    IngredientId = ri.IngredientId,
-                    IngredientName = ri.Ingredient.Name,
-                    Quantity = ri.Quantity,
-                    Unit = ri.Ingredient.Unit
-                }).ToList()
-            }).ToListAsync();
+            .ToListAsync();
+
+        var recipeIds = baseRecipes.Select(r => r.Id).ToList();
+
+        var ingredientMap = await _db.RecipeIngredients
+        .Where(ri => recipeIds.Contains(ri.RecipeId))
+        .Join(_db.Ingredients,
+              ri => ri.IngredientId,
+              ing => ing.Id,
+              (ri, ing) => new
+              {
+                  ri.RecipeId,
+                  Ingredient = new RecipeIngredientView
+                  {
+                      IngredientId = ing.Id,
+                      IngredientName = ing.Name,
+                      Quantity = ri.Quantity,
+                      Unit = ing.Unit
+                  }
+              })
+        .GroupBy(x => x.RecipeId)
+        .ToDictionaryAsync(g => g.Key, g => g.Select(x => x.Ingredient).ToList());
+
+
+
+        var recipeViews = baseRecipes.Select(r => new RecipeView
+        {
+            Id = r.Id,
+            Title = r.Title,
+            Description = r.Description,
+            Tags = r.Tags,
+            AuthorId = r.AuthorId,
+            ImagePath = string.IsNullOrEmpty(r.ImagePath) ? null :
+                r.ImagePath.StartsWith("/images/recipes/")
+                    ? r.ImagePath
+                    : "/images/recipes/" + r.ImagePath,
+            Ingredients = ingredientMap.ContainsKey(r.Id) ? ingredientMap[r.Id] : new List<RecipeIngredientView>()
+        }).ToList();
+            
 
         foreach (var recipe in recipeViews){
             recipe.Calories = recipe.Ingredients.Sum(ing => {
-                var ingredientCalories = _db.Ingredients
+                var calories = _db.Ingredients
                     .Where(i => i.Id == ing.IngredientId)
                     .Select(i => i.Calories)
                     .FirstOrDefault();
-                return ingredientCalories * ing.Quantity;
+                return calories * ing.Quantity;
             });
         }
         ViewData["CurrentPage"] = page;
@@ -146,27 +166,35 @@ namespace RecipeMvc.Soft.Controllers;
 
     public async Task<IActionResult> Edit(int? id) {
         if (id == null) return NotFound();
-        var recipe = await _db.Recipes
-            .Include(r => r.RecipeIngredients)
-            .ThenInclude(ri => ri.Ingredient)
-            .FirstOrDefaultAsync(r => r.Id == id);
+        var recipe = await _db.Recipes.FirstOrDefaultAsync(r => r.Id == id);
         if (recipe == null) return NotFound();
-        var model = new RecipeView {
+        var ingredients = await _db.RecipeIngredients
+            .Where(ri => ri.RecipeId == recipe.Id)
+            .Join(_db.Ingredients,
+            ri => ri.IngredientId,
+              ing => ing.Id,
+              (ri, ing) => new RecipeIngredientView
+              {
+                  IngredientId = ing.Id,
+                  IngredientName = ing.Name,
+                  Quantity = ri.Quantity,
+                  Unit = ing.Unit
+              })
+        .ToListAsync();
+
+        var model = new RecipeView
+        {
             Id = recipe.Id,
             Title = recipe.Title,
             Description = recipe.Description,
             Calories = recipe.Calories,
             Tags = recipe.Tags,
-            Ingredients = recipe.RecipeIngredients
-                .Select(ri => new RecipeIngredientView {
-                    IngredientId = ri.IngredientId,
-                    IngredientName = ri.Ingredient.Name,
-                    Quantity = ri.Quantity,
-                    Unit = ri.Ingredient.Unit
-                }).ToList()
+            Ingredients = ingredients
         };
+
         await SetAvailableIngredientsAsync();
         return View(model);
+
     }
 
     [HttpPost][ValidateAntiForgeryToken] public async Task<IActionResult> Edit(RecipeView model) {
@@ -210,13 +238,13 @@ namespace RecipeMvc.Soft.Controllers;
         }
         await _db.SaveChangesAsync();
         float totalCalories = 0f;
-        var recipeIngredients = await _db.RecipeIngredients
-            .Where(ri => ri.RecipeId == recipe.Id)
-            .Include(ri => ri.Ingredient)
-            .ToListAsync();
-        foreach (var ri in recipeIngredients) {
-            totalCalories += (ri.Ingredient?.Calories ?? 0) * ri.Quantity;
-        }
+        totalCalories = await _db.RecipeIngredients
+    .Where(ri => ri.RecipeId == recipe.Id)
+    .Join(_db.Ingredients,
+          ri => ri.IngredientId,
+          ing => ing.Id,
+          (ri, ing) => ing.Calories * ri.Quantity)
+    .SumAsync();
         recipe.Calories = totalCalories;
         await _db.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
@@ -226,11 +254,25 @@ namespace RecipeMvc.Soft.Controllers;
         if (id == null) return NotFound();
         var recipe = await _db.Recipes
             .Include(r => r.Author)
-            .Include(r => r.RecipeIngredients)
-            .ThenInclude(ri => ri.Ingredient)
             .FirstOrDefaultAsync(r => r.Id == id);
         if (recipe == null) return NotFound();
-        var model = new RecipeView {
+
+        var ingredients = await _db.RecipeIngredients
+        .Where(ri => ri.RecipeId == recipe.Id)
+        .Join(_db.Ingredients,
+              ri => ri.IngredientId,
+              ing => ing.Id,
+              (ri, ing) => new RecipeIngredientView
+              {
+                  IngredientId = ing.Id,
+                  IngredientName = ing.Name,
+                  Quantity = ri.Quantity,
+                  Unit = ing.Unit
+              })
+        .ToListAsync();
+
+        var model = new RecipeView
+       {
             Id = recipe.Id,
             Title = recipe.Title,
             Description = recipe.Description,
@@ -238,14 +280,11 @@ namespace RecipeMvc.Soft.Controllers;
             Tags = recipe.Tags,
             AuthorId = recipe.AuthorId,
             AuthorUsername = recipe.Author?.Username,
-            Ingredients = recipe.RecipeIngredients
-                .Select(ri => new RecipeIngredientView {
-                    IngredientId = ri.IngredientId,
-                    IngredientName = ri.Ingredient?.Name,
-                    Quantity = ri.Quantity,
-                    Unit = ri.Ingredient.Unit
-                }).ToList(), };
+            Ingredients = ingredients
+        };
+
         return View(model);
+
     }
 
     public async Task<IActionResult> Delete(int? id) {

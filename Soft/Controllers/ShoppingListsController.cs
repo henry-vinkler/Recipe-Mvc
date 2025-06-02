@@ -157,12 +157,14 @@ namespace RecipeMvc.Soft.Controllers;
     [HttpPost] [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddRecipeToShoppingList(int recipeId)
     {
-        var recipe = await _db.Recipes
-            .Include(r => r.RecipeIngredients!)
-                .ThenInclude(ri => ri.Ingredient)
-            .FirstOrDefaultAsync(r => r.Id == recipeId);
+        var recipe = await _db.Recipes.FirstOrDefaultAsync(r => r.Id == recipeId);
+        if (recipe == null) return NotFound();
 
-        if (recipe == null || recipe.RecipeIngredients == null || !recipe.RecipeIngredients.Any())
+        var recipeIngredients = await _db.RecipeIngredients
+            .Where(ri => ri.RecipeId == recipeId)
+            .ToListAsync();
+
+        if (!recipeIngredients.Any())
             return NotFound();
 
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -173,7 +175,7 @@ namespace RecipeMvc.Soft.Controllers;
             UserId = userId,
             IsChecked = false,
             Notes = "",
-            Ingredients = recipe.RecipeIngredients.Select(ri => new ShoppingListIngredientData
+            Ingredients = recipeIngredients.Select(ri => new ShoppingListIngredientData
             {
                 IngredientId = ri.IngredientId,
                 Quantity = ri.Quantity.ToString(),

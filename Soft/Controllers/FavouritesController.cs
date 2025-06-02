@@ -6,7 +6,6 @@ using RecipeMvc.Soft.Data;
 using System;
 using System.Security.Claims;
 
-
 public class FavouritesController : Controller {
 
     private readonly ApplicationDbContext _db; 
@@ -23,9 +22,10 @@ public class FavouritesController : Controller {
 
         var recipes = await _db.Favourites
             .Where(f => f.UserId == userId)
-            .Include(f => f.Recipe)
-            .Select(f => f.Recipe)
-            .Where(r => r != null)
+            .Join(_db.Recipes,
+            fav => fav.RecipeId,
+            recipe => recipe.Id,
+            (fav, recipe) => recipe)
             .ToListAsync();
 
         return View(recipes);
@@ -55,20 +55,17 @@ public class FavouritesController : Controller {
         return RedirectToAction("Index", "Recipes");
     }
 
-    [HttpPost] public async Task<IActionResult> Remove(int recipeId)
-    {
+    [HttpPost] public async Task<IActionResult> Remove(int recipeId) {
 
         var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userIdStr == null) return Unauthorized();
 
         int userId = int.Parse(userIdStr);
 
-
         var fav = await _db.Favourites
             .FirstOrDefaultAsync(f => f.UserId == userId && f.RecipeId == recipeId);
 
-        if (fav != null)
-        {
+        if (fav != null) {
             _db.Favourites.Remove(fav);
             await _db.SaveChangesAsync();
         }

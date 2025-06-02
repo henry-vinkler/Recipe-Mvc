@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RecipeMvc.Soft.Data;
 
@@ -10,9 +11,11 @@ using RecipeMvc.Soft.Data;
 namespace RecipeMvc.Soft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250602000650_FixRecipeIngredientForeignKeys")]
+    partial class FixRecipeIngredientForeignKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.4");
@@ -328,12 +331,17 @@ namespace RecipeMvc.Soft.Migrations
                     b.Property<float>("Quantity")
                         .HasColumnType("REAL");
 
+                    b.Property<int?>("RecipeDataId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("RecipeId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.HasIndex("IngredientId");
+
+                    b.HasIndex("RecipeDataId");
 
                     b.HasIndex("RecipeId");
 
@@ -518,6 +526,10 @@ namespace RecipeMvc.Soft.Migrations
 
                     b.HasOne("RecipeMvc.Data.RecipeData", null)
                         .WithMany("RecipeIngredients")
+                        .HasForeignKey("RecipeDataId");
+
+                    b.HasOne("RecipeMvc.Data.RecipeData", null)
+                        .WithMany()
                         .HasForeignKey("RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

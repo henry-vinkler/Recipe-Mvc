@@ -27,6 +27,22 @@ public class ApplicationDbContext : IdentityDbContext
             .WithMany()
             .HasForeignKey(i => i.IngredientId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<RecipeIngredientData>()
+       .HasKey(ri => ri.Id); 
+
+        modelBuilder.Entity<RecipeIngredientData>()
+            .HasOne<RecipeData>()
+            .WithMany(r => r.RecipeIngredients)
+            .HasForeignKey(ri => ri.RecipeId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<RecipeIngredientData>()
+            .HasOne<IngredientData>()
+            .WithMany()
+            .HasForeignKey(ri => ri.IngredientId)
+            .OnDelete(DeleteBehavior.Restrict);
+
     }
 }
 
