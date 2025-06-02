@@ -5,8 +5,6 @@ namespace RecipeMvc.Domain;
 public class Recipe(RecipeData? d) : Entity<RecipeData>(d)
 {
     public int AuthorId => Data.AuthorId;
-    public UserAccount Author => author;
-    internal UserAccount author;
     public string Title => Data.Title;
     public string Description => Data.Description;
     public string? ImagePath => Data.ImagePath;
