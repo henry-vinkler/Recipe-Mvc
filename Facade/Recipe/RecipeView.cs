@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,8 +13,8 @@ public sealed class RecipeView : EntityView {
 
     [StringLength(1000, MinimumLength = 3)] [Required(ErrorMessage = "Add a description.")]
     public string Description { get; set; }
-    public IBrowserFile ?ImageFile { get; set; }
-    public string ?ImagePath { get; set; }
+    public IFormFile? ImageFile { get; set; }
+    public string? ImagePath { get; set; }
 
     [Range(0, 10000, ErrorMessage = "Calories must be between 0 and 10000.")]
     public float Calories { get; set; }

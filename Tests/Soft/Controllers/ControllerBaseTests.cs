@@ -125,8 +125,7 @@ public abstract class ControllerBaseTests<TController, TObject, TData, TView> :
                 Description = "Description 1",
                 ImagePath = null,
                 Calories = 100,
-                Tags = "tag",
-                RecipeIngredients = new List<RecipeMvc.Data.RecipeIngredientData>()
+                Tags = "tag"
             };
             dbContext.Recipes.Add(recipe);
             dbContext.SaveChanges();

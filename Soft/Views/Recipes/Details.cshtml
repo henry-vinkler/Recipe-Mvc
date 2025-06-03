@@ -4,41 +4,20 @@
 	Layout = "_Details";
 }
 
-@if (!string.IsNullOrEmpty(Model.ImagePath))
-{
-    <img src="@Model.ImagePath" alt="Recipe Image" style="max-width: 400px; margin-bottom: 20px;" />
-}
-
 @{
     await Html.RenderPartialAsync("_ShowRecipe", Model);
 }
-
+<b>Ingredients</b>
 <div>
-    @if (Model.Ingredients != null && Model.Ingredients.Any())
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Ingredient</th>
-                    <th>Quantity</th>
-                    <th>Unit</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var ingredient in Model.Ingredients)
-                {
-                    <tr>
-                        <td>@ingredient.IngredientName</td>
-                        <td>@ingredient.Quantity</td>
-                        <td>@ingredient.Unit</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    @if (Model.Ingredients != null && Model.Ingredients.Any()) {
+        <ul>
+            @foreach (var ing in Model.Ingredients) {
+                <li>@ing.IngredientName (@ing.Quantity @ing.Unit)</li>
+            }
+        </ul>
     }
-    else
-    {
-        <p>No ingredients listed.</p>
+    else {
+        <p>No ingredients listed</p>
     }
 </div>
 <form asp-action="AddRecipeToShoppingList" asp-controller="ShoppingLists" method="post" style="margin-bottom: 20px;">

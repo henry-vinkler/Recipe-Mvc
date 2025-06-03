@@ -92,8 +92,7 @@ public class PlannedRecipeControllerTests : ControllerBaseTests<PlannedRecipeCon
                 Description = $"Description {i}",
                 ImagePath = null,
                 Calories = 100 * i,
-                Tags = "tag",
-                RecipeIngredients = new List<RecipeIngredientData>()
+                Tags = "tag"
             });
         }
         dbContext!.Recipes.AddRange(recipes);

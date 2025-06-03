@@ -14,10 +14,6 @@ namespace RecipeMvc.Tests.Data;
         obj.ImagePath = "ImagePath.jpg";
         obj.Calories = 50f;
         obj.Tags = "Tag one, tag two";
-        obj.RecipeIngredients = new List<RecipeIngredientData> {
-         new RecipeIngredientData { Id = 1, RecipeId = 1, IngredientId = 1, Quantity = 2.5f },
-         new RecipeIngredientData { Id = 2, RecipeId = 1, IngredientId = 2, Quantity = 3.0f }
-        };
     }
 
     [TestMethod] public void CloneTest() {
@@ -31,8 +27,6 @@ namespace RecipeMvc.Tests.Data;
         equal(obj.ImagePath, d?.ImagePath);
         equal(obj.Calories, d?.Calories);
         equal(obj.Tags, d?.Tags);
-        notNull(d?.RecipeIngredients);
-        equal(obj.RecipeIngredients.Count, d?.RecipeIngredients.Count);
     }
     [TestMethod] public void TitleTest() => isProperty<string>();
     [TestMethod] public void DescriptionTest() => isProperty<string>();
