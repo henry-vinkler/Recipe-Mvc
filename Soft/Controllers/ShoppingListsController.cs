@@ -158,16 +158,17 @@ namespace RecipeMvc.Soft.Controllers;
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddRecipeToShoppingList(int recipeId)
     {
-        var recipe = await _db.Recipes
-            .Include(r => r.RecipeIngredients!)
- 
-            .FirstOrDefaultAsync(r => r.Id == recipeId);
+        var recipeIngredients = await _db.RecipeIngredients
+            .Where(ri => ri.RecipeId == recipeId)
+            .ToListAsync();
 
-        if (recipe == null || recipe.RecipeIngredients == null || !recipe.RecipeIngredients.Any())
+        if (!recipeIngredients.Any())
         {
             TempData["Error"] = "Recipe not found or has no ingredients.";
             return RedirectToAction("Details", "Recipes", new { id = recipeId });
         }
+
+        var recipe = await _db.Recipes.FirstOrDefaultAsync(r => r.Id == recipeId);
 
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
@@ -177,7 +178,7 @@ namespace RecipeMvc.Soft.Controllers;
             UserId = userId,
             IsChecked = false,
             Notes = "",
-            Ingredients = recipe.RecipeIngredients.Select(ri => new ShoppingListIngredientData
+            Ingredients = recipeIngredients.Select(ri => new ShoppingListIngredientData
             {
                 IngredientId = ri.IngredientId,
                 Quantity = ri.Quantity.ToString(),
