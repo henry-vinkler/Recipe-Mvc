@@ -33,7 +33,7 @@ public class ApplicationDbContext : IdentityDbContext
 
         modelBuilder.Entity<RecipeIngredientData>()
             .HasOne<RecipeData>()
-            .WithMany(r => r.RecipeIngredients)
+            .WithMany()
             .HasForeignKey(ri => ri.RecipeId)
             .OnDelete(DeleteBehavior.Cascade);
 

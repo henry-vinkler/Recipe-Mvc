@@ -113,7 +113,7 @@ namespace RecipeMvc.Soft.Controllers;
             await SetAvailableIngredientsAsync();
             return View(model);
         }
-        var recipe = await _db.Recipes.Include(r => r.RecipeIngredients).FirstOrDefaultAsync(r => r.Id == model.Id);
+        var recipe = await _db.Recipes.FirstOrDefaultAsync(r => r.Id == model.Id);
         if (recipe == null) return NotFound();
         recipe.Title = model.Title;
         recipe.Description = model.Description;
@@ -121,7 +121,8 @@ namespace RecipeMvc.Soft.Controllers;
         string? imagePath = await SaveRecipeImageAsync(model.ImageFile);
         if (!string.IsNullOrEmpty(imagePath))
             recipe.ImagePath = imagePath;
-        _db.RecipeIngredients.RemoveRange(recipe.RecipeIngredients);
+        var existingIngredients = await _db.RecipeIngredients.Where(ri => ri.RecipeId == recipe.Id).ToListAsync();
+        _db.RecipeIngredients.RemoveRange(existingIngredients);
         await SaveRecipeIngredientsAsync(recipe.Id, model.Ingredients);
         recipe.Calories = await _db.RecipeIngredients
             .Where(ri => ri.RecipeId == recipe.Id)
