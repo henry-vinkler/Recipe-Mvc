@@ -359,7 +359,7 @@ namespace RecipeMvc.Soft.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserID")
+                    b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -373,7 +373,7 @@ namespace RecipeMvc.Soft.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("IngredientID")
+                    b.Property<int>("IngredientId")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsChecked")
@@ -386,10 +386,12 @@ namespace RecipeMvc.Soft.Migrations
                     b.Property<int?>("ShoppingListDataId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ShoppingListID")
+                    b.Property<int>("ShoppingListId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IngredientId");
 
                     b.HasIndex("ShoppingListDataId");
 
@@ -540,9 +542,17 @@ namespace RecipeMvc.Soft.Migrations
 
             modelBuilder.Entity("RecipeMvc.Data.ShoppingListIngredientData", b =>
                 {
+                    b.HasOne("RecipeMvc.Data.IngredientData", "Ingredient")
+                        .WithMany()
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("RecipeMvc.Data.ShoppingListData", null)
                         .WithMany("Ingredients")
                         .HasForeignKey("ShoppingListDataId");
+
+                    b.Navigation("Ingredient");
                 });
 
             modelBuilder.Entity("RecipeMvc.Data.RecipeData", b =>

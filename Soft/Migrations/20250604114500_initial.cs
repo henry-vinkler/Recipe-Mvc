@@ -66,28 +66,12 @@ namespace RecipeMvc.Soft.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ShoppingListIngredients",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ShoppingListID = table.Column<int>(type: "INTEGER", nullable: false),
-                    IngredientID = table.Column<int>(type: "INTEGER", nullable: false),
-                    Quantity = table.Column<string>(type: "TEXT", nullable: false),
-                    IsChecked = table.Column<bool>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ShoppingListIngredients", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ShoppingLists",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    UserID = table.Column<int>(type: "INTEGER", nullable: false),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     IsChecked = table.Column<bool>(type: "INTEGER", nullable: false),
                     Notes = table.Column<string>(type: "TEXT", nullable: false)
@@ -218,6 +202,34 @@ namespace RecipeMvc.Soft.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ShoppingListIngredients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ShoppingListId = table.Column<int>(type: "INTEGER", nullable: false),
+                    IngredientId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Quantity = table.Column<string>(type: "TEXT", nullable: false),
+                    IsChecked = table.Column<bool>(type: "INTEGER", nullable: false),
+                    ShoppingListDataId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShoppingListIngredients", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShoppingListIngredients_Ingredients_IngredientId",
+                        column: x => x.IngredientId,
+                        principalTable: "Ingredients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ShoppingListIngredients_ShoppingLists_ShoppingListDataId",
+                        column: x => x.ShoppingListDataId,
+                        principalTable: "ShoppingLists",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -387,6 +399,16 @@ namespace RecipeMvc.Soft.Migrations
                 name: "IX_Recipes_AuthorId",
                 table: "Recipes",
                 column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShoppingListIngredients_IngredientId",
+                table: "ShoppingListIngredients",
+                column: "IngredientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShoppingListIngredients_ShoppingListDataId",
+                table: "ShoppingListIngredients",
+                column: "ShoppingListDataId");
         }
 
         /// <inheritdoc />
@@ -420,19 +442,19 @@ namespace RecipeMvc.Soft.Migrations
                 name: "ShoppingListIngredients");
 
             migrationBuilder.DropTable(
-                name: "ShoppingLists");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
+                name: "Recipes");
+
+            migrationBuilder.DropTable(
                 name: "Ingredients");
 
             migrationBuilder.DropTable(
-                name: "Recipes");
+                name: "ShoppingLists");
 
             migrationBuilder.DropTable(
                 name: "UserAccounts");
