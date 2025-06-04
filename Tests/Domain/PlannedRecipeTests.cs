@@ -17,10 +17,16 @@ public class PlannedRecipeTests : BaseClassTests<PlannedRecipe, Entity<PlannedRe
             MealPlanId = 4,
             MealType = MealType.Lunch,
             Day = Days.Wednesday,
-            DateOfMeal = new DateTime(2025, 5, 26)
+            DateOfMeal = new DateTime(2025, 5, 26),
+            Recipe = new RecipeData { Id = 3, Title = "Test Recipe" }
         };
-        return new PlannedRecipe(d);
+        var plannedRecipe = new PlannedRecipe(d)
+        {
+            Recipe = new Recipe(new RecipeData { Id = 3, Title = "Test Recipe" })
+        };
+        return plannedRecipe;
     }
+
 
     [TestMethod] public void IdTest() => equal(1, obj?.Id);
     [TestMethod] public void AuthorIdTest() => equal(2, obj?.AuthorId);
@@ -34,5 +40,5 @@ public class PlannedRecipeTests : BaseClassTests<PlannedRecipe, Entity<PlannedRe
     [TestMethod] public void AuthorIdTypeTest() => isType(obj?.AuthorId, typeof(int));
     [TestMethod] public void MealTypeTypeTest() => isType(obj?.MealType, typeof(MealType));
     [TestMethod] public void DateOfMealTypeTest() => isType(obj?.DateOfMeal, typeof(DateTime));
-    [TestMethod] public void RecipeTypeTest() => isType(obj?.Recipe, typeof(RecipeData));
+    [TestMethod] public void RecipeTypeTest() => isType(obj?.Recipe, typeof(Recipe));
 }

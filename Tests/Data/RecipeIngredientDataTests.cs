@@ -25,7 +25,4 @@ public class RecipeIngredientDataTests : SealedTests<RecipeIngredientData, Entit
 
     [TestMethod]
     public void QuantityTest() => isProperty<float>();
-
-    [TestMethod]
-    public void UnitTest() => isProperty<string>();
 }

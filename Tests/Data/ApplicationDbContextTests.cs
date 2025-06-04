@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RecipeMvc.Data.DbContext;
 using RecipeMvc.Data.Entities;
 
-namespace RecipeMvc.Tests.Soft.Data; 
+namespace RecipeMvc.Tests.Data; 
 [TestClass] public class ApplicationDbContextTests :
     BaseClassTests<ApplicationDbContext, IdentityDbContext> {
    protected override ApplicationDbContext createObj() {
