@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace RecipeMvc.Soft.Migrations
+namespace RecipeMvc.Data.Migrations
 {
     /// <inheritdoc />
     public partial class FixRecipeIngredientForeignKeys : Migration

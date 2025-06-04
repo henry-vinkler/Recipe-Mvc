@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RecipeMvc.Soft.Data;
+using RecipeMvc.Data.Data;
 
 #nullable disable
 
-namespace RecipeMvc.Soft.Migrations
+namespace RecipeMvc.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250602221138_AddIngredientRelationToRecipeIngredient")]
-    partial class AddIngredientRelationToRecipeIngredient
+    [Migration("20250602001318_FixRecipeIngredientMapping")]
+    partial class FixRecipeIngredientMapping
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -328,9 +328,6 @@ namespace RecipeMvc.Soft.Migrations
                     b.Property<int>("IngredientId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("IngredientId1")
-                        .HasColumnType("INTEGER");
-
                     b.Property<float>("Quantity")
                         .HasColumnType("REAL");
 
@@ -340,8 +337,6 @@ namespace RecipeMvc.Soft.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IngredientId");
-
-                    b.HasIndex("IngredientId1");
 
                     b.HasIndex("RecipeId");
 
@@ -524,19 +519,11 @@ namespace RecipeMvc.Soft.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("RecipeMvc.Data.IngredientData", "Ingredient")
-                        .WithMany()
-                        .HasForeignKey("IngredientId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("RecipeMvc.Data.RecipeData", null)
                         .WithMany("RecipeIngredients")
                         .HasForeignKey("RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Ingredient");
                 });
 
             modelBuilder.Entity("RecipeMvc.Data.ShoppingListIngredientData", b =>

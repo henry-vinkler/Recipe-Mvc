@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RecipeMvc.Data;
+using RecipeMvc.Data.Data;
 using RecipeMvc.Facade.Recipe;
 using RecipeMvc.Soft.Controllers;
-using RecipeMvc.Soft.Data;
 using Xunit;
 
 namespace RecipeMvc.Tests.Soft.Controllers;

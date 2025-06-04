@@ -10,7 +10,7 @@ using RecipeMvc.Infra;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using RecipeMvc.Facade.Account;
-using RecipeMvc.Soft.Data;
+using RecipeMvc.Data.Data;
 
 namespace RecipeMvc.Soft.Controllers
 {

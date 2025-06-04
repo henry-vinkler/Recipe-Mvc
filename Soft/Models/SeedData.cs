@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RecipeMvc.Data;
-using RecipeMvc.Soft.Data;
 using Microsoft.AspNetCore.Identity;
+using RecipeMvc.Data.Data;
 
 namespace RecipeMvc.Models;
 

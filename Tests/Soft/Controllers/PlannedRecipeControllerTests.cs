@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RecipeMvc.Aids;
 using RecipeMvc.Data;
+using RecipeMvc.Data.Data;
 using RecipeMvc.Facade;
 using RecipeMvc.Soft.Controllers;
-using RecipeMvc.Soft.Data;
 using System.Reflection;
 
 namespace RecipeMvc.Tests.Soft.Controllers;

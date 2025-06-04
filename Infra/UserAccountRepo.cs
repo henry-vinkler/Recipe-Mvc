@@ -1,10 +1,11 @@
-﻿using RecipeMvc.Data;
+﻿using RecipeMvc.Data.Data;
 using RecipeMvc.Domain;
 using Microsoft.EntityFrameworkCore;
+using RecipeMvc.Data;
 
 namespace RecipeMvc.Infra
 {
-    public sealed class UserAccountRepo(DbContext db)
+    public sealed class UserAccountRepo(ApplicationDbContext db)
         : Repo<UserAccount, UserAccountData>(db, d => new(d)), IUserAccountRepo
     {
         protected internal override string selectTextField => nameof(UserAccountData.Username);

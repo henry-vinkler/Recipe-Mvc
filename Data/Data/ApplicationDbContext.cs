@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using RecipeMvc.Data;
 
-namespace RecipeMvc.Soft.Data;
+namespace RecipeMvc.Data.Data;
 
 public class ApplicationDbContext : IdentityDbContext
 {

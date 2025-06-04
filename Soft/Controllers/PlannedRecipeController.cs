@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RecipeMvc.Data;
-using RecipeMvc.Soft.Data;
 using RecipeMvc.Aids;
 using RecipeMvc.Facade;
 using Microsoft.AspNetCore.Authorization;
+using RecipeMvc.Data.Data;
 
 namespace RecipeMvc.Soft.Controllers
 {

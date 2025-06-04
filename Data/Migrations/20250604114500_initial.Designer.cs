@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RecipeMvc.Soft.Data;
+using RecipeMvc.Data.Data;
 
 #nullable disable
 
-namespace RecipeMvc.Soft.Migrations
+namespace RecipeMvc.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250602001318_FixRecipeIngredientMapping")]
-    partial class FixRecipeIngredientMapping
+    [Migration("20250604114500_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -229,6 +229,8 @@ namespace RecipeMvc.Soft.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RecipeId");
 
                     b.ToTable("Favourites");
                 });
@@ -481,6 +483,17 @@ namespace RecipeMvc.Soft.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RecipeMvc.Data.FavouriteData", b =>
+                {
+                    b.HasOne("RecipeMvc.Data.RecipeData", "Recipe")
+                        .WithMany()
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Recipe");
+                });
+
             modelBuilder.Entity("RecipeMvc.Data.PlannedRecipeData", b =>
                 {
                     b.HasOne("RecipeMvc.Data.UserAccountData", "Author")
@@ -513,17 +526,21 @@ namespace RecipeMvc.Soft.Migrations
 
             modelBuilder.Entity("RecipeMvc.Data.RecipeIngredientData", b =>
                 {
-                    b.HasOne("RecipeMvc.Data.IngredientData", null)
+                    b.HasOne("RecipeMvc.Data.IngredientData", "Ingredient")
                         .WithMany()
                         .HasForeignKey("IngredientId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RecipeMvc.Data.RecipeData", null)
+                    b.HasOne("RecipeMvc.Data.RecipeData", "Recipe")
                         .WithMany("RecipeIngredients")
                         .HasForeignKey("RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Ingredient");
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("RecipeMvc.Data.ShoppingListIngredientData", b =>
