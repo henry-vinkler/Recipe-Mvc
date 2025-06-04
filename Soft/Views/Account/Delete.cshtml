@@ -1,0 +1,22 @@
+﻿@model RecipeMvc.Facade.Account.DeleteUserAccountView
+
+@{
+    ViewData["Title"] = "Delete Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Delete Account</h2>
+<p class="text-danger">
+    Are you sure you want to delete your account? This action cannot be undone.
+</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Password">Confirm your password to delete:</label>
+        <input asp-for="Password" class="form-control" type="password" required />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-danger">Delete Account</button>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Cancel</a>
+</form>

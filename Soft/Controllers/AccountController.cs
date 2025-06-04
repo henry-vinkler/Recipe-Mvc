@@ -203,5 +203,48 @@ namespace RecipeMvc.Soft.Controllers
                 new ClaimsPrincipal(claimsIdentity)
             );
         }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            // Only allow the logged-in user to delete their own account
+            var username = User.Identity?.Name;
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Id == id && (u.Username == username || u.Email == username));
+            if (user == null)
+                return RedirectToAction("Login");
+
+            var model = new DeleteUserAccountView { Id = user.Id };
+            return View(model);
+        }
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(DeleteUserAccountView model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var username = User.Identity?.Name;
+            var user = _context.UserAccounts.FirstOrDefault(u => u.Id == model.Id && (u.Username == username || u.Email == username));
+            if (user == null)
+                return RedirectToAction("Login");
+
+            var passwordHasher = new PasswordHasher<UserAccountData>();
+            var result = passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);
+
+            if (result != PasswordVerificationResult.Success)
+            {
+                ModelState.AddModelError("Password", "Incorrect password.");
+                return View(model);
+            }
+
+            _context.UserAccounts.Remove(user);
+            await _context.SaveChangesAsync();
+
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return RedirectToAction("Index", "Home");
+        }
     }
 }
