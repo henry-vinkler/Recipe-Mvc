@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RecipeMvc.Data;
+using RecipeMvc.Data.Entities;
 using RecipeMvc.Domain;
 using RecipeMvc.Facade;
 using RecipeMvc.Infra;

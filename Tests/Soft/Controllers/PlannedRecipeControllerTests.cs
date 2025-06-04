@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RecipeMvc.Aids;
-using RecipeMvc.Data;
-using RecipeMvc.Facade;
+using RecipeMvc.Data.DbContext;
+using RecipeMvc.Data.Entities;
+using RecipeMvc.Facade.PlannedRecipe;
 using RecipeMvc.Soft.Controllers;
-using RecipeMvc.Soft.Data;
 using System.Reflection;
 
 namespace RecipeMvc.Tests.Soft.Controllers;

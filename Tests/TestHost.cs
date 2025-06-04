@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using RecipeMvc.Data;
+using RecipeMvc.Data.Entities;
 using Random = RecipeMvc.Aids.Random;
 
 namespace RecipeMvc.Tests;

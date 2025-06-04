@@ -1,13 +1,15 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using RecipeMvc.Soft.Data;
 using RecipeMvc.Models;
 using RecipeMvc.Domain;
 using RecipeMvc.Infra;
+using RecipeMvc.Data.DbContext;
 
-internal partial class Program {
-    private static void Main(string[] args) {
+internal partial class Program
+{
+    private static void Main(string[] args)
+    {
         var builder = WebApplication.CreateBuilder(args);
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -19,20 +21,22 @@ internal partial class Program {
         builder.Services.AddControllersWithViews();
 
         builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
-        builder.Services.AddScoped<IUserAccountRepo>(provider =>
-            new UserAccountRepo(provider.GetRequiredService<ApplicationDbContext>()));
 
+        // Register UserAccountRepo for DI using the interface
+        builder.Services.AddScoped<IUserAccountRepo, UserAccountRepo>();
 
         var app = builder.Build();
 
-        using (var scope = app.Services.CreateScope()) {
+        using (var scope = app.Services.CreateScope())
+        {
             var services = scope.ServiceProvider;
             SeedData.Initialize(services);
         }
 
         app.UseStaticFiles();
 
-        if (!app.Environment.IsDevelopment()) {
+        if (!app.Environment.IsDevelopment())
+        {
             app.UseExceptionHandler("/Home/Error");
             app.UseHsts();
         }
@@ -41,7 +45,7 @@ internal partial class Program {
         app.UseRouting();
 
         app.UseAuthentication();
-        app.UseAuthorization();      
+        app.UseAuthorization();
 
         app.MapStaticAssets();
         app.MapControllerRoute(
@@ -53,4 +57,3 @@ internal partial class Program {
         app.Run();
     }
 }
-

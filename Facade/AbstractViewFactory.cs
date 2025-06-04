@@ -1,5 +1,5 @@
 using RecipeMvc.Aids;
-using RecipeMvc.Data;
+using RecipeMvc.Data.Entities;
 
 namespace RecipeMvc.Facade;
 public abstract class AbstractViewFactory<TData, TView>

@@ -1,4 +1,5 @@
 using RecipeMvc.Facade;
+using RecipeMvc.Facade.PlannedRecipe;
 
 namespace RecipeMvc.Tests.Facade;
 

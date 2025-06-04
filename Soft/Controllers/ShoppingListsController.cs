@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RecipeMvc.Data;
-using RecipeMvc.Soft.Data;
-using RecipeMvc.Facade;
+using RecipeMvc.Data.Entities;
 using System.Security.Claims;
+using RecipeMvc.Data.DbContext;
+using RecipeMvc.Facade.ShoppingList;
 
 
 namespace RecipeMvc.Soft.Controllers;

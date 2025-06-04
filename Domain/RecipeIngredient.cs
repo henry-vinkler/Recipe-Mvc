@@ -1,4 +1,4 @@
-﻿using RecipeMvc.Data;
+﻿using RecipeMvc.Data.Entities;
 namespace RecipeMvc.Domain;
 
 public class RecipeIngredient(RecipeIngredientData? d) : Entity<RecipeIngredientData>(d) {

@@ -1,6 +1,7 @@
 using RecipeMvc.Facade;
-using RecipeMvc.Data;
 using RecipeMvc.Aids;
+using RecipeMvc.Data.Entities;
+using RecipeMvc.Facade.PlannedRecipe;
 
 namespace RecipeMvc.Tests.Facade;
 

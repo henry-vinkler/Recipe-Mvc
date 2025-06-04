@@ -1,7 +1,9 @@
-@model IDictionary<RecipeMvc.Aids.Days, List<RecipeMvc.Facade.PlannedRecipeView>>
+@model IDictionary<RecipeMvc.Aids.Days, List<PlannedRecipeView>>
 @using RecipeMvc.Aids
-@using RecipeMvc.Facade
 @using RecipeMvc.Data
+@using RecipeMvc.Data.Entities
+@using RecipeMvc.Facade
+@using RecipeMvc.Facade.PlannedRecipe
 @{
     ViewData["Title"] = "Planned Recipes";
     Layout = "~/Views/Shared/_Layout.cshtml";

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RecipeMvc.Data;
+using RecipeMvc.Data.Entities;
 using RecipeMvc.Domain;
 using RecipeMvc.Facade;
 using RecipeMvc.Soft.Controllers;
@@ -107,7 +107,7 @@ public abstract class ControllerBaseTests<TController, TObject, TData, TView> :
     }
     protected internal override void seedData() {
         if (typeof(TData).Name == "PlannedRecipeData") {
-            var user = new RecipeMvc.Data.UserAccountData {
+            var user = new RecipeMvc.Data.Entities.UserAccountData {
                 Id = 1,
                 FirstName = "Test",
                 LastName = "User",
@@ -118,7 +118,7 @@ public abstract class ControllerBaseTests<TController, TObject, TData, TView> :
             dbContext!.UserAccounts.Add(user);
             dbContext.SaveChanges();
 
-            var recipe = new RecipeMvc.Data.RecipeData {
+            var recipe = new RecipeMvc.Data.Entities.RecipeData {
                 Id = 1,
                 AuthorId = 1,
                 Title = "Recipe 1",
@@ -130,7 +130,7 @@ public abstract class ControllerBaseTests<TController, TObject, TData, TView> :
             dbContext.Recipes.Add(recipe);
             dbContext.SaveChanges();
 
-            var plannedRecipe = new RecipeMvc.Data.PlannedRecipeData {
+            var plannedRecipe = new RecipeMvc.Data.Entities.PlannedRecipeData {
                 Id = 1,
                 AuthorId = 1,
                 RecipeId = 1,
