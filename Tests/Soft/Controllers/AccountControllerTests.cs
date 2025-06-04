@@ -1,260 +1,271 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using RecipeMvc.Domain;
-using RecipeMvc.Data.Entities;
-using RecipeMvc.Infra;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using RecipeMvc.Facade.Account;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using RecipeMvc.Data.DbContext;
+using RecipeMvc.Data.Entities;
+using RecipeMvc.Facade.Account;
+using RecipeMvc.Soft.Controllers;
+using RecipeMvc.Infra;
+using RecipeMvc.Domain;
 
-namespace RecipeMvc.Soft.Controllers
+namespace RecipeMvc.Tests.Soft.Controllers
 {
-    public class AccountController : Controller
+    [TestClass]
+    public class AccountControllerTests
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserAccountRepo _userRepo;
+        private ApplicationDbContext dbContext;
+        private IUserAccountRepo userRepo;
+        private AccountController controller;
+        private List<UserAccountData> users = new();
 
-        public AccountController(ApplicationDbContext context)
+        [TestInitialize]
+        public void Setup()
         {
-            _context = context;
-            _userRepo = new UserAccountRepo(_context);
-        }
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseSqlite("DataSource=:memory:")
+                .Options;
 
-        public IActionResult Registration()
-        {
-            return View();
-        }
+            dbContext = new ApplicationDbContext(options);
+            dbContext.Database.OpenConnection();
+            dbContext.Database.EnsureCreated();
 
-        [HttpPost]
-        public async Task<IActionResult> Registration(RegistrationView model)
-        {
-            if (ModelState.IsValid)
+            userRepo = new UserAccountRepo(dbContext);
+            SeedUsers(1);
+
+            controller = new AccountController(userRepo);
+
+            // Set up a fake authenticated user for actions that require it
+            var user = new System.Security.Claims.ClaimsPrincipal(
+                new System.Security.Claims.ClaimsIdentity(new[]
+                {
+                    new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, "testuser1")
+                }, "mock"));
+
+            var httpContext = new DefaultHttpContext { User = user };
+
+            // Register authentication, TempData, and UrlHelper services
+            var services = new ServiceCollection();
+
+            services.AddLogging();
+            services.AddAuthentication("Cookies")
+                .AddCookie("Cookies");
+            services.AddAuthorization();
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<ITempDataProvider, TempDataProviderStub>();
+            services.AddSingleton<ITempDataDictionaryFactory, TempDataDictionaryFactory>();
+            services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+            httpContext.RequestServices = services.BuildServiceProvider();
+
+            controller.ControllerContext = new ControllerContext
             {
-                if (await UsernameOrEmailExists(model.Username, null))
-                {
-                    ModelState.AddModelError("Username", "Username is already taken.");
-                    return View(model);
-                }
-                if (await UsernameOrEmailExists(null, model.Email))
-                {
-                    ModelState.AddModelError("Email", "Email is already registered.");
-                    return View(model);
-                }
+                HttpContext = httpContext
+            };
 
-                var userAccountData = new UserAccountData
-                {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email,
-                    Username = model.Username
-                };
-                var userAccount = new UserAccount(userAccountData);
-                var passwordHasher = new PasswordHasher<UserAccount>();
-                userAccount.Password = passwordHasher.HashPassword(userAccount, model.Password);
+            controller.TempData = new TempDataDictionary(httpContext, httpContext.RequestServices.GetService<ITempDataProvider>());
 
-                try
-                {
-                    await _userRepo.AddAsync(userAccount);
-                    var createdUser = await GetByUsernameOrEmailAsync(model.Username);
-                    if (createdUser != null)
-                    {
-                        await SignInUserAsync(createdUser);
-                        return RedirectToAction("Index", "Home");
-                    }
-                    ModelState.AddModelError("", "Registration failed. Please try again.");
-                }
-                catch
-                {
-                    ModelState.AddModelError("", "An error occurred while saving. Please try again.");
-                }
-            }
-            return View(model);
+            var actionContext = new ActionContext(httpContext, new Microsoft.AspNetCore.Routing.RouteData(), new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor());
+            var urlHelperFactory = httpContext.RequestServices.GetService<IUrlHelperFactory>();
+            controller.Url = urlHelperFactory?.GetUrlHelper(actionContext);
         }
 
-        public IActionResult Login()
+        [TestCleanup]
+        public void Cleanup()
         {
-            return View();
+            dbContext.Database.CloseConnection();
+            dbContext.Dispose();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginView model)
+        private void SeedUsers(int count = 1)
         {
-            if (ModelState.IsValid)
+            users.Clear();
+            for (int i = 1; i <= count; i++)
             {
-                var user = await GetByUsernameOrEmailAsync(model.UsernameOrEmail);
-                if (user != null)
+                users.Add(new UserAccountData
                 {
-                    var passwordHasher = new PasswordHasher<UserAccount>();
-                    var result = passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);
-
-                    if (result == PasswordVerificationResult.Success)
-                    {
-                        await SignInUserAsync(user);
-                        return RedirectToAction("Index", "Home");
-                    }
-                }
-                ModelState.AddModelError("", "Invalid username/email or password.");
+                    Id = i,
+                    FirstName = $"Test{i}",
+                    LastName = $"User{i}",
+                    Email = $"test{i}@example.com",
+                    Username = $"testuser{i}",
+                    Password = new Microsoft.AspNetCore.Identity.PasswordHasher<UserAccountData>().HashPassword(null, "password")
+                });
             }
-            return View(model);
+            dbContext.UserAccounts.AddRange(users);
+            dbContext.SaveChanges();
         }
 
-        public IActionResult Logout()
+        [TestMethod]
+        public void CanCallRegistrationGet()
         {
-            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "Home");
+            var result = controller.Registration();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(ViewResult));
         }
 
-        [Authorize]
-        public IActionResult AccountInfo()
+        [TestMethod]
+        public async Task Registration_Successful()
         {
-            ViewData["Title"] = "AccountInfo";
-            var username = User.Identity?.Name;
-            if (string.IsNullOrEmpty(username))
-                return RedirectToAction("Login");
-
-            var user = _context.UserAccounts.FirstOrDefault(u => u.Username == username || u.Email == username);
-            if (user == null)
-                return RedirectToAction("Login");
-
-            return View(user);
+            var model = new RegistrationView
+            {
+                FirstName = "New",
+                LastName = "User",
+                Email = "new@example.com",
+                Username = "newuser",
+                Password = "password",
+                ConfirmPassword = "password"
+            };
+            var actionResult = await controller.Registration(model);
+            var result = actionResult as RedirectToActionResult;
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Index", result.ActionName);
         }
 
-        [Authorize]
-        public IActionResult Edit()
+        [TestMethod]
+        public async Task Registration_UsernameTaken()
         {
-            var username = User.Identity?.Name;
-            if (string.IsNullOrEmpty(username))
-                return RedirectToAction("Login");
+            var model = new RegistrationView
+            {
+                FirstName = "Test",
+                LastName = "User",
+                Email = "unique@example.com",
+                Username = "testuser1",
+                Password = "password",
+                ConfirmPassword = "password"
+            };
+            var actionResult = await controller.Registration(model);
+            var result = actionResult as ViewResult;
+            Assert.IsNotNull(result);
+            Assert.IsFalse(controller.ModelState.IsValid);
+        }
 
-            var user = _context.UserAccounts.FirstOrDefault(u => u.Username == username || u.Email == username);
-            if (user == null)
-                return RedirectToAction("Login");
+        [TestMethod]
+        public async Task Login_Successful()
+        {
+            var model = new LoginView
+            {
+                UsernameOrEmail = "testuser1",
+                Password = "password"
+            };
+            var actionResult = await controller.Login(model);
+            var result = actionResult as RedirectToActionResult;
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Index", result.ActionName);
+        }
 
+        [TestMethod]
+        public async Task Login_Failure()
+        {
+            var model = new LoginView
+            {
+                UsernameOrEmail = "testuser1",
+                Password = "wrongpassword"
+            };
+            var actionResult = await controller.Login(model);
+            var result = actionResult as ViewResult;
+            Assert.IsNotNull(result);
+            Assert.IsFalse(controller.ModelState.IsValid);
+        }
+
+        [TestMethod]
+        public async Task Logout_RedirectsToHome()
+        {
+            var actionResult = await controller.Logout();
+            var result = actionResult as RedirectToActionResult;
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Index", result.ActionName);
+        }
+
+        [TestMethod]
+        public async Task AccountInfo_AuthenticatedUser()
+        {
+            var actionResult = await controller.AccountInfo();
+            var result = actionResult as ViewResult;
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result.Model, typeof(UserAccount));
+        }
+
+        [TestMethod]
+        public async Task Edit_Get_ReturnsView()
+        {
+            var actionResult = await controller.Edit();
+            var result = actionResult as ViewResult;
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result.Model, typeof(EditUserAccountView));
+        }
+
+        [TestMethod]
+        public async Task Edit_Post_UpdatesUser()
+        {
             var model = new EditUserAccountView
             {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                Username = user.Username
+                Id = 1,
+                FirstName = "Updated",
+                LastName = "User",
+                Email = "test1@example.com",
+                Username = "testuser1"
             };
-            return View(model);
+            var actionResult = await controller.Edit(model);
+            var result = actionResult as RedirectToActionResult;
+            Assert.IsNotNull(result);
+            Assert.AreEqual("AccountInfo", result.ActionName);
+            var updated = dbContext.UserAccounts.Find(1);
+            Assert.AreEqual("Updated", updated.FirstName);
         }
 
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> Edit(EditUserAccountView model)
+        [TestMethod]
+        public async Task Delete_Get_ReturnsView()
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            var actionResult = await controller.Delete(1);
+            var result = actionResult as ViewResult;
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result.Model, typeof(DeleteUserAccountView));
+        }
 
-            var user = await _userRepo.GetAsync(model.Id);
-            if (user == null)
-                return RedirectToAction("Login");
-
-            if (!string.Equals(user.Username, model.Username, System.StringComparison.OrdinalIgnoreCase) &&
-                await UsernameOrEmailExists(model.Username, null, model.Id))
+        [TestMethod]
+        public async Task Delete_Post_CorrectPassword_DeletesUser()
+        {
+            var model = new DeleteUserAccountView
             {
-                ModelState.AddModelError("Username", "Username is already taken.");
-                return View(model);
-            }
-
-            if (!string.Equals(user.Email, model.Email, System.StringComparison.OrdinalIgnoreCase) &&
-                await UsernameOrEmailExists(null, model.Email, model.Id))
-            {
-                ModelState.AddModelError("Email", "Email is already registered.");
-                return View(model);
-            }
-
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.Email = model.Email;
-            user.Username = model.Username;
-
-            await _userRepo.UpdateAsync(user);
-            await SignInUserAsync(user);
-            return RedirectToAction("AccountInfo");
-        }
-
-        private async Task<bool> UsernameOrEmailExists(string? username, string? email, int? excludeUserId = null)
-        {
-            var users = await _userRepo.GetAsync();
-            return users.Any(u =>
-                ((username != null && u.Username == username) ||
-                 (email != null && u.Email == email)) &&
-                (!excludeUserId.HasValue || u.Id != excludeUserId.Value)
-            );
-        }
-
-        private async Task<UserAccount?> GetByUsernameOrEmailAsync(string usernameOrEmail)
-        {
-            var users = await _userRepo.GetAsync();
-            return users.FirstOrDefault(u =>
-                u.Username == usernameOrEmail || u.Email == usernameOrEmail);
-        }
-
-        private async Task SignInUserAsync(UserAccount user)
-        {
-            var claims = new List<Claim>
-            {
-                new(ClaimTypes.NameIdentifier, (user.Id ?? 0).ToString()),
-                new(ClaimTypes.Name, user.Username),
-                new(ClaimTypes.Email, user.Email),
-                new("FirstName", user.FirstName),
-                new(ClaimTypes.Role, "User"),
+                Id = 1,
+                Password = "password"
             };
-
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity)
-            );
+            var actionResult = await controller.Delete(model);
+            var result = actionResult as RedirectToActionResult;
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Index", result.ActionName);
+            var deleted = dbContext.UserAccounts.Find(1);
+            Assert.IsNull(deleted);
         }
 
-        [Authorize]
-        [HttpGet]
-        public IActionResult Delete(int id)
+        [TestMethod]
+        public async Task Delete_Post_WrongPassword_ShowsError()
         {
-            var username = User.Identity?.Name;
-            var user = _context.UserAccounts.FirstOrDefault(u => u.Id == id && (u.Username == username || u.Email == username));
-            if (user == null)
-                return RedirectToAction("Login");
-
-            var model = new DeleteUserAccountView { Id = user.Id };
-            return View(model);
-        }
-
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(DeleteUserAccountView model)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            var username = User.Identity?.Name;
-            var user = await _userRepo.GetAsync(model.Id);
-            if (user == null || (user.Username != username && user.Email != username))
-                return RedirectToAction("Login");
-
-            var passwordHasher = new PasswordHasher<UserAccount>();
-            var result = passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);
-
-            if (result != PasswordVerificationResult.Success)
+            var model = new DeleteUserAccountView
             {
-                ModelState.AddModelError("Password", "Incorrect password.");
-                return View(model);
-            }
+                Id = 1,
+                Password = "wrongpassword"
+            };
+            var actionResult = await controller.Delete(model);
+            var result = actionResult as ViewResult;
+            Assert.IsNotNull(result);
+            Assert.IsFalse(controller.ModelState.IsValid);
+            var stillExists = dbContext.UserAccounts.Find(1);
+            Assert.IsNotNull(stillExists);
+        }
 
-            await _userRepo.DeleteAsync(user.Id ?? 0);
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-            return RedirectToAction("Index", "Home");
+        // In-memory TempData provider for tests
+        private class TempDataProviderStub : ITempDataProvider
+        {
+            private Dictionary<string, object> _data = new();
+            public IDictionary<string, object> LoadTempData(HttpContext context) => _data;
+            public void SaveTempData(HttpContext context, IDictionary<string, object> values) => _data = new(values);
         }
     }
 }
