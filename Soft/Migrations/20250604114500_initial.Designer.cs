@@ -11,8 +11,8 @@ using RecipeMvc.Soft.Data;
 namespace RecipeMvc.Soft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250522082849_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250604114500_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -362,7 +362,7 @@ namespace RecipeMvc.Soft.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserID")
+                    b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -376,7 +376,7 @@ namespace RecipeMvc.Soft.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("IngredientID")
+                    b.Property<int>("IngredientId")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsChecked")
@@ -386,10 +386,17 @@ namespace RecipeMvc.Soft.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ShoppingListID")
+                    b.Property<int?>("ShoppingListDataId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ShoppingListId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IngredientId");
+
+                    b.HasIndex("ShoppingListDataId");
 
                     b.ToTable("ShoppingListIngredients");
                 });
@@ -536,9 +543,29 @@ namespace RecipeMvc.Soft.Migrations
                     b.Navigation("Recipe");
                 });
 
+            modelBuilder.Entity("RecipeMvc.Data.ShoppingListIngredientData", b =>
+                {
+                    b.HasOne("RecipeMvc.Data.IngredientData", "Ingredient")
+                        .WithMany()
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RecipeMvc.Data.ShoppingListData", null)
+                        .WithMany("Ingredients")
+                        .HasForeignKey("ShoppingListDataId");
+
+                    b.Navigation("Ingredient");
+                });
+
             modelBuilder.Entity("RecipeMvc.Data.RecipeData", b =>
                 {
                     b.Navigation("RecipeIngredients");
+                });
+
+            modelBuilder.Entity("RecipeMvc.Data.ShoppingListData", b =>
+                {
+                    b.Navigation("Ingredients");
                 });
 
             modelBuilder.Entity("RecipeMvc.Data.UserAccountData", b =>
