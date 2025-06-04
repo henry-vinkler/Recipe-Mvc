@@ -1,81 +1,92 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RecipeMvc.Soft.Data;
-using RecipeMvc.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using RecipeMvc.Domain;
+using RecipeMvc.Data;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using RecipeMvc.Facade.Account;
+using RecipeMvc.Infra;
 
 namespace RecipeMvc.Soft.Controllers
 {
-    public class AccountController(ApplicationDbContext context) : Controller
+    public class AccountController : Controller
     {
-        private readonly ApplicationDbContext _context = context;
+        private readonly IUserAccountRepo _userRepo;
+
+        public AccountController(IUserAccountRepo userRepo)
+        {
+            _userRepo = userRepo;
+        }
+
         public IActionResult Registration()
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Registration(RegistrationView model)
-
         {
             if (ModelState.IsValid)
             {
-                if (UsernameOrEmailExists(model.Username, null))
+                if (await UsernameOrEmailExists(model.Username, null))
                 {
                     ModelState.AddModelError("Username", "Username is already taken.");
                     return View(model);
                 }
-                if (UsernameOrEmailExists(null, model.Email))
+                if (await UsernameOrEmailExists(null, model.Email))
                 {
                     ModelState.AddModelError("Email", "Email is already registered.");
                     return View(model);
                 }
 
-                var passwordHasher = new PasswordHasher<UserAccountData>();
-                UserAccountData account = new()
+                var userAccountData = new UserAccountData
                 {
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     Email = model.Email,
                     Username = model.Username
                 };
-                account.Password = passwordHasher.HashPassword(account, model.Password);
+                var userAccount = new UserAccount(userAccountData);
+                var passwordHasher = new PasswordHasher<UserAccount>();
+                userAccount.Password = passwordHasher.HashPassword(userAccount, model.Password);
 
                 try
                 {
-                    _context.UserAccounts.Add(account);
-                    _context.SaveChanges();
-
-                    await SignInUserAsync(account);
-                    return RedirectToAction("Index", "Home");
+                    await _userRepo.AddAsync(userAccount);
+                    var createdUser = await _userRepo.GetByUsernameOrEmailAsync(model.Username);
+                    if (createdUser != null)
+                    {
+                        await SignInUserAsync(createdUser);
+                        return RedirectToAction("Index", "Home");
+                    }
+                    ModelState.AddModelError("", "Registration failed. Please try again.");
                 }
-                catch (DbUpdateException)
+                catch
                 {
                     ModelState.AddModelError("", "An error occurred while saving. Please try again.");
-                    return View(model);
                 }
             }
             return View(model);
         }
+
         public IActionResult Login()
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Login(LoginView model)
         {
             if (ModelState.IsValid)
             {
-                var user = _context.UserAccounts
-                    .FirstOrDefault(u => u.Username == model.UsernameOrEmail || u.Email == model.UsernameOrEmail);
-
+                var user = await _userRepo.GetByUsernameOrEmailAsync(model.UsernameOrEmail);
                 if (user != null)
                 {
-                    var passwordHasher = new PasswordHasher<UserAccountData>();
+                    var passwordHasher = new PasswordHasher<UserAccount>();
                     var result = passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);
 
                     if (result == PasswordVerificationResult.Success)
@@ -83,57 +94,48 @@ namespace RecipeMvc.Soft.Controllers
                         await SignInUserAsync(user);
                         return RedirectToAction("Index", "Home");
                     }
-                    else
-                    {
-                        ModelState.AddModelError("", "Invalid username/email or password.");
-                    }
                 }
-                else
-                {
-                    ModelState.AddModelError("", "Invalid username/email or password.");
-                }
+                ModelState.AddModelError("", "Invalid username/email or password.");
             }
             return View(model);
         }
-        public IActionResult Logout()
+
+        public async Task<IActionResult> Logout()
         {
-            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
+
         [Authorize]
-        public IActionResult AccountInfo()
+        public async Task<IActionResult> AccountInfo()
         {
             ViewData["Title"] = "AccountInfo";
-
             var username = User.Identity?.Name;
             if (string.IsNullOrEmpty(username))
-            {
                 return RedirectToAction("Login");
-            }
 
-            var user = _context.UserAccounts.FirstOrDefault(u => u.Username == username || u.Email == username);
+            var user = await _userRepo.GetByUsernameOrEmailAsync(username);
             if (user == null)
-            {
                 return RedirectToAction("Login");
-            }
 
+            await user.LoadLazy();
             return View(user);
         }
 
         [Authorize]
-        public IActionResult Edit()
+        public async Task<IActionResult> Edit()
         {
             var username = User.Identity?.Name;
             if (string.IsNullOrEmpty(username))
                 return RedirectToAction("Login");
 
-            var user = _context.UserAccounts.FirstOrDefault(u => u.Username == username || u.Email == username);
+            var user = await _userRepo.GetByUsernameOrEmailAsync(username);
             if (user == null)
                 return RedirectToAction("Login");
 
             var model = new EditUserAccountView
             {
-                Id = user.Id,
+                Id = user.Id ?? 0,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
@@ -149,19 +151,19 @@ namespace RecipeMvc.Soft.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = _context.UserAccounts.FirstOrDefault(u => u.Id == model.Id);
+            var user = await _userRepo.GetAsync(model.Id);
             if (user == null)
                 return RedirectToAction("Login");
 
-            if (!string.Equals(user.Username, model.Username, StringComparison.OrdinalIgnoreCase) &&
-                UsernameOrEmailExists(model.Username, null, model.Id))
+            if (!string.Equals(user.Username, model.Username, System.StringComparison.OrdinalIgnoreCase) &&
+                await UsernameOrEmailExists(model.Username, null, model.Id))
             {
                 ModelState.AddModelError("Username", "Username is already taken.");
                 return View(model);
             }
 
-            if (!string.Equals(user.Email, model.Email, StringComparison.OrdinalIgnoreCase) &&
-                UsernameOrEmailExists(null, model.Email, model.Id))
+            if (!string.Equals(user.Email, model.Email, System.StringComparison.OrdinalIgnoreCase) &&
+                await UsernameOrEmailExists(null, model.Email, model.Id))
             {
                 ModelState.AddModelError("Email", "Email is already registered.");
                 return View(model);
@@ -172,25 +174,26 @@ namespace RecipeMvc.Soft.Controllers
             user.Email = model.Email;
             user.Username = model.Username;
 
-            _context.SaveChanges();
+            await _userRepo.UpdateAsync(user);
             await SignInUserAsync(user);
             return RedirectToAction("AccountInfo");
         }
 
-        private bool UsernameOrEmailExists(string? username, string? email, int? excludeUserId = null)
+        private async Task<bool> UsernameOrEmailExists(string? username, string? email, int? excludeUserId = null)
         {
-            return _context.UserAccounts.Any(u =>
+            var users = await _userRepo.GetAsync();
+            return users.Any(u =>
                 ((username != null && u.Username == username) ||
                  (email != null && u.Email == email)) &&
                 (!excludeUserId.HasValue || u.Id != excludeUserId.Value)
             );
         }
 
-        private async Task SignInUserAsync(UserAccountData user)
+        private async Task SignInUserAsync(UserAccount user)
         {
             var claims = new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.NameIdentifier, (user.Id ?? 0).ToString()),
                 new(ClaimTypes.Name, user.Username),
                 new(ClaimTypes.Email, user.Email),
                 new("FirstName", user.FirstName),
@@ -206,17 +209,17 @@ namespace RecipeMvc.Soft.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            // Only allow the logged-in user to delete their own account
             var username = User.Identity?.Name;
-            var user = _context.UserAccounts.FirstOrDefault(u => u.Id == id && (u.Username == username || u.Email == username));
-            if (user == null)
+            var user = await _userRepo.GetAsync(id);
+            if (user == null || (user.Username != username && user.Email != username))
                 return RedirectToAction("Login");
 
-            var model = new DeleteUserAccountView { Id = user.Id };
+            var model = new DeleteUserAccountView { Id = user.Id ?? 0 };
             return View(model);
         }
+
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -226,11 +229,11 @@ namespace RecipeMvc.Soft.Controllers
                 return View(model);
 
             var username = User.Identity?.Name;
-            var user = _context.UserAccounts.FirstOrDefault(u => u.Id == model.Id && (u.Username == username || u.Email == username));
-            if (user == null)
+            var user = await _userRepo.GetAsync(model.Id);
+            if (user == null || (user.Username != username && user.Email != username))
                 return RedirectToAction("Login");
 
-            var passwordHasher = new PasswordHasher<UserAccountData>();
+            var passwordHasher = new PasswordHasher<UserAccount>();
             var result = passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);
 
             if (result != PasswordVerificationResult.Success)
@@ -239,9 +242,7 @@ namespace RecipeMvc.Soft.Controllers
                 return View(model);
             }
 
-            _context.UserAccounts.Remove(user);
-            await _context.SaveChangesAsync();
-
+            await _userRepo.DeleteAsync(user.Id ?? 0);
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return RedirectToAction("Index", "Home");
