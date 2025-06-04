@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RecipeMvc.Data;
-using RecipeMvc.Domain;
 using RecipeMvc.Soft.Data;
-using System;
 using System.Security.Claims;
 
 public class FavouritesController : Controller {

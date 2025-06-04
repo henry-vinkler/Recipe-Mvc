@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace RecipeMvc.Tests;
 
 public abstract class ClassTests<TClass, TBaseClass> : BaseClassTests<TClass, TBaseClass> 

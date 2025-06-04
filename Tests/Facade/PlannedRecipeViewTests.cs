@@ -1,6 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RecipeMvc.Facade;
-using RecipeMvc.Data;
 
 namespace RecipeMvc.Tests.Facade;
 

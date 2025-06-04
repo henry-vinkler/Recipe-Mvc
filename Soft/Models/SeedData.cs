@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using RecipeMvc.Data;
 using RecipeMvc.Soft.Data;
 using Microsoft.AspNetCore.Identity;

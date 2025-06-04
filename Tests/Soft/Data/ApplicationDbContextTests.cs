@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using RecipeMvc.Data;
 using RecipeMvc.Soft.Data;
-using RecipeMvc.Tests;
 
 namespace RecipeMvc.Tests.Soft.Data; 
 [TestClass] public class ApplicationDbContextTests :

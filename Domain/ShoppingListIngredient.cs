@@ -1,5 +1,4 @@
 ﻿using RecipeMvc.Data;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RecipeMvc.Domain;
 

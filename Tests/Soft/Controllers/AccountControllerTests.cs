@@ -5,13 +5,10 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RecipeMvc.Data;
 using RecipeMvc.Facade.Account;
 using RecipeMvc.Soft.Controllers;
 using RecipeMvc.Soft.Data;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace RecipeMvc.Tests.Soft.Controllers
 {

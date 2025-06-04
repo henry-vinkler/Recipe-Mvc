@@ -2,9 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using RecipeMvc.Data;
-using RecipeMvc.Soft.Controllers;
 using RecipeMvc.Soft.Data;
-using RecipeMvc.Tests;
 
 namespace RecipeMvc.Tests.Soft.Views;
 

@@ -4,8 +4,6 @@ using RecipeMvc.Data;
 using RecipeMvc.Soft.Data;
 using RecipeMvc.Aids;
 using RecipeMvc.Facade;
-
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
 namespace RecipeMvc.Soft.Controllers

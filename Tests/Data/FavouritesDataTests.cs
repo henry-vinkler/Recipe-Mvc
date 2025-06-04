@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RecipeMvc.Data;
+﻿using RecipeMvc.Data;
 
 namespace RecipeMvc.Tests.Data;
 
