@@ -1,5 +1,4 @@
 ﻿using RecipeMvc.Domain;
-using Microsoft.EntityFrameworkCore;
 using RecipeMvc.Data.DbContext;
 using RecipeMvc.Data.Entities;
 

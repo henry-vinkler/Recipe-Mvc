@@ -6,10 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using RecipeMvc.Domain;
 using RecipeMvc.Data.Entities;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using RecipeMvc.Facade.Account;
-using RecipeMvc.Infra;
 
 namespace RecipeMvc.Soft.Controllers
 {
