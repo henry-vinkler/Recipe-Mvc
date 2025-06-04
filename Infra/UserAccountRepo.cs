@@ -26,5 +26,22 @@ namespace RecipeMvc.Infra
                 (!excludeUserId.HasValue || u.Id != excludeUserId.Value)
             );
         }
+
+        public async Task UpdateAsync(UserAccount o)
+        {
+            var d = o?.Data;
+            if (d is null) return;
+
+            var tracked = await db.UserAccounts.FindAsync(d.Id);
+            if (tracked is not null)
+            {
+                db.Entry(tracked).CurrentValues.SetValues(d);
+            }
+            else
+            {
+                db.UserAccounts.Update(d);
+            }
+            await db.SaveChangesAsync();
+        }
     }
 }
