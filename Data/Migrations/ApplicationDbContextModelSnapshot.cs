@@ -15,7 +15,7 @@ namespace RecipeMvc.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.4");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.5");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -213,7 +213,7 @@ namespace RecipeMvc.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.FavouriteData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.FavouriteData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -230,7 +230,7 @@ namespace RecipeMvc.Data.Migrations
                     b.ToTable("Favourites");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.IngredientData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.IngredientData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -252,7 +252,7 @@ namespace RecipeMvc.Data.Migrations
                     b.ToTable("Ingredients");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.PlannedRecipeData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.PlannedRecipeData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -285,7 +285,7 @@ namespace RecipeMvc.Data.Migrations
                     b.ToTable("PlannedRecipes");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.RecipeData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.RecipeData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -316,7 +316,7 @@ namespace RecipeMvc.Data.Migrations
                     b.ToTable("Recipes");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.RecipeIngredientData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.RecipeIngredientData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -340,7 +340,7 @@ namespace RecipeMvc.Data.Migrations
                     b.ToTable("RecipeIngredients");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.ShoppingListData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.ShoppingListData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -365,7 +365,7 @@ namespace RecipeMvc.Data.Migrations
                     b.ToTable("ShoppingLists");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.ShoppingListIngredientData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.ShoppingListIngredientData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -396,7 +396,7 @@ namespace RecipeMvc.Data.Migrations
                     b.ToTable("ShoppingListIngredients");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.UserAccountData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.UserAccountData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -478,15 +478,15 @@ namespace RecipeMvc.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.PlannedRecipeData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.PlannedRecipeData", b =>
                 {
-                    b.HasOne("RecipeMvc.Data.UserAccountData", "Author")
+                    b.HasOne("RecipeMvc.Data.Entities.UserAccountData", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RecipeMvc.Data.RecipeData", "Recipe")
+                    b.HasOne("RecipeMvc.Data.Entities.RecipeData", "Recipe")
                         .WithMany()
                         .HasForeignKey("RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -497,9 +497,9 @@ namespace RecipeMvc.Data.Migrations
                     b.Navigation("Recipe");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.RecipeData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.RecipeData", b =>
                 {
-                    b.HasOne("RecipeMvc.Data.UserAccountData", "Author")
+                    b.HasOne("RecipeMvc.Data.Entities.UserAccountData", "Author")
                         .WithMany("Recipes")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -508,47 +508,42 @@ namespace RecipeMvc.Data.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.RecipeIngredientData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.RecipeIngredientData", b =>
                 {
-                    b.HasOne("RecipeMvc.Data.IngredientData", null)
+                    b.HasOne("RecipeMvc.Data.Entities.IngredientData", null)
                         .WithMany()
                         .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("RecipeMvc.Data.RecipeData", null)
-                        .WithMany("RecipeIngredients")
+                    b.HasOne("RecipeMvc.Data.Entities.RecipeData", null)
+                        .WithMany()
                         .HasForeignKey("RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.ShoppingListIngredientData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.ShoppingListIngredientData", b =>
                 {
-                    b.HasOne("RecipeMvc.Data.IngredientData", "Ingredient")
+                    b.HasOne("RecipeMvc.Data.Entities.IngredientData", "Ingredient")
                         .WithMany()
                         .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("RecipeMvc.Data.ShoppingListData", null)
+                    b.HasOne("RecipeMvc.Data.Entities.ShoppingListData", null)
                         .WithMany("Ingredients")
                         .HasForeignKey("ShoppingListDataId");
 
                     b.Navigation("Ingredient");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.RecipeData", b =>
-                {
-                    b.Navigation("RecipeIngredients");
-                });
-
-            modelBuilder.Entity("RecipeMvc.Data.ShoppingListData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.ShoppingListData", b =>
                 {
                     b.Navigation("Ingredients");
                 });
 
-            modelBuilder.Entity("RecipeMvc.Data.UserAccountData", b =>
+            modelBuilder.Entity("RecipeMvc.Data.Entities.UserAccountData", b =>
                 {
                     b.Navigation("Recipes");
                 });

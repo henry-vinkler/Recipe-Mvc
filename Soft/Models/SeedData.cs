@@ -88,9 +88,9 @@ public static class SeedData
                     new() { Title = "Salad", Description = "Fresh salad with vegetables", Tags = "Salad, Vegetables", Calories = 200, AuthorId = 1 },
                     new() { Title = "Pizza", Description = "Cheesy pizza with pepperoni", Tags = "Pizza, Cheese, Pepperoni", Calories = 800, AuthorId = 1 },
                     new() { Title = "Burger", Description = "Juicy burger with lettuce and tomato", Tags = "Burger, Lettuce, Tomato", Calories = 600, AuthorId = 1 },
-                    new() { Title = "Sushi", Description = "Sushi rolls with fish and rice", Tags = "Sushi, Fish, Rice", Calories = 300, AuthorId = 2 },
-                    new() { Title = "Tacos", Description = "Spicy tacos with beef and salsa", Tags = "Tacos, Beef, Salsa", Calories = 400, AuthorId = 2 },
-                    new() { Title = "Ice Cream", Description = "Creamy ice cream with chocolate", Tags = "Ice Cream, Chocolate", Calories = 250, AuthorId = 2 },
+                    new() { Title = "Sushi", Description = "Sushi rolls with fish and rice", Tags = "Sushi, Fish, Rice", Calories = 300, AuthorId = 1 },
+                    new() { Title = "Tacos", Description = "Spicy tacos with beef and salsa", Tags = "Tacos, Beef, Salsa", Calories = 400, AuthorId = 1 },
+                    new() { Title = "Ice Cream", Description = "Creamy ice cream with chocolate", Tags = "Ice Cream, Chocolate", Calories = 250, AuthorId = 1 },
                 };
                 context.Recipes.AddRange(recipes);
                 context.SaveChanges();
