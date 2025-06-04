@@ -1,5 +1,5 @@
 using RecipeMvc.Core;
-using RecipeMvc.Data;
+using RecipeMvc.Data.Entities;
 
 namespace RecipeMvc.Domain;
 

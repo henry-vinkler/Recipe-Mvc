@@ -1,4 +1,4 @@
-﻿using RecipeMvc.Data;
+﻿using RecipeMvc.Data.Entities;
 using RecipeMvc.Domain;
 
 namespace RecipeMvc.Tests.Domain;

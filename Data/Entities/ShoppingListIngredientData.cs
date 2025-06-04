@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace RecipeMvc.Data
+namespace RecipeMvc.Data.Entities
 {
     public sealed class ShoppingListIngredientData:EntityData<ShoppingListIngredientData>
     {

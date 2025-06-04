@@ -1,5 +1,5 @@
 using RecipeMvc.Aids;
-using RecipeMvc.Data;
+using RecipeMvc.Data.Entities;
 using RecipeMvc.Domain;
 
 public class PlannedRecipe(PlannedRecipeData? d) : Entity<PlannedRecipeData>(d)

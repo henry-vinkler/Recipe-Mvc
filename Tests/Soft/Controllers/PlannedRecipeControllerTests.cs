@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RecipeMvc.Aids;
-using RecipeMvc.Data;
-using RecipeMvc.Data.Data;
-using RecipeMvc.Facade;
+using RecipeMvc.Data.DbContext;
+using RecipeMvc.Data.Entities;
+using RecipeMvc.Facade.PlannedRecipe;
 using RecipeMvc.Soft.Controllers;
 using System.Reflection;
 

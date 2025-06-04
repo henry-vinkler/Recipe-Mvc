@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using RecipeMvc.Domain;
-using RecipeMvc.Data;
+using RecipeMvc.Data.Entities;
 using RecipeMvc.Infra;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using RecipeMvc.Facade.Account;
-using RecipeMvc.Data.Data;
+using RecipeMvc.Data.DbContext;
 
 namespace RecipeMvc.Soft.Controllers
 {

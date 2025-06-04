@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-namespace RecipeMvc.Facade;
+namespace RecipeMvc.Facade.Favorite;
 
 [DisplayName("Favourite")]
 public sealed class FavouriteView : EntityView {

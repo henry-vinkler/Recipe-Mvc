@@ -1,7 +1,8 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using RecipeMvc.Data.Entities;
 
-namespace RecipeMvc.Data.Data;
+namespace RecipeMvc.Data.DbContext;
 
 public class DbInitializer(ApplicationDbContext? c)
 {

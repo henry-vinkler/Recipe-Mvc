@@ -1,4 +1,4 @@
-﻿using RecipeMvc.Data;
+﻿using RecipeMvc.Data.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

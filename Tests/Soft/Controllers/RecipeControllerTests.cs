@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RecipeMvc.Data;
-using RecipeMvc.Data.Data;
+using RecipeMvc.Data.Entities;
+using RecipeMvc.Data.DbContext;
 using RecipeMvc.Facade.Recipe;
 using RecipeMvc.Soft.Controllers;
 using Xunit;

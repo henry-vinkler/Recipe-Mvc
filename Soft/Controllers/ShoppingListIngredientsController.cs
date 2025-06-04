@@ -1,7 +1,8 @@
-﻿using RecipeMvc.Data;
-using RecipeMvc.Data.Data;
+﻿using RecipeMvc.Data.DbContext;
+using RecipeMvc.Data.Entities;
 using RecipeMvc.Domain;
 using RecipeMvc.Facade;
+using RecipeMvc.Facade.ShoppingList;
 
 namespace RecipeMvc.Soft.Controllers;
 

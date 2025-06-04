@@ -1,9 +1,8 @@
-﻿
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 
-namespace RecipeMvc.Facade;
+namespace RecipeMvc.Facade.ShoppingList;
 
 [DisplayName("Shopping List Ingredient")]
 public sealed class ShoppingListIngredientView:EntityView

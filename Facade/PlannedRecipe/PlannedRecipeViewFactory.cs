@@ -1,5 +1,6 @@
-using RecipeMvc.Data;
+using RecipeMvc.Data.Entities;
 using RecipeMvc.Facade;
+using RecipeMvc.Facade.PlannedRecipe;
 
 public sealed class PlannedRecipeViewFactory 
     : AbstractViewFactory<PlannedRecipeData, PlannedRecipeView>

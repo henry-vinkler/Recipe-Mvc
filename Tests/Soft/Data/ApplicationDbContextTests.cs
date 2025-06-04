@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using RecipeMvc.Data;
-using RecipeMvc.Data.Data;
+using RecipeMvc.Data.DbContext;
+using RecipeMvc.Data.Entities;
 
 namespace RecipeMvc.Tests.Soft.Data; 
 [TestClass] public class ApplicationDbContextTests :

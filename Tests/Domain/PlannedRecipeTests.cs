@@ -1,6 +1,6 @@
-using RecipeMvc.Data;
 using RecipeMvc.Domain;
 using RecipeMvc.Aids;
+using RecipeMvc.Data.Entities;
 
 namespace RecipeMvc.Tests.Domain;
 

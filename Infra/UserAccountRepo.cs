@@ -1,7 +1,7 @@
-﻿using RecipeMvc.Data.Data;
-using RecipeMvc.Domain;
+﻿using RecipeMvc.Domain;
 using Microsoft.EntityFrameworkCore;
-using RecipeMvc.Data;
+using RecipeMvc.Data.DbContext;
+using RecipeMvc.Data.Entities;
 
 namespace RecipeMvc.Infra
 {

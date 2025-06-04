@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using RecipeMvc.Models;
 using RecipeMvc.Domain;
 using RecipeMvc.Infra;
-using RecipeMvc.Data.Data;
+using RecipeMvc.Data.DbContext;
 
 internal partial class Program
 {

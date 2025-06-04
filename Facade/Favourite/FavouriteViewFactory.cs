@@ -1,5 +1,5 @@
-﻿using RecipeMvc.Data;
-namespace RecipeMvc.Facade;
+﻿using RecipeMvc.Data.Entities;
+namespace RecipeMvc.Facade.Favorite;
 public sealed class FavouriteViewFactory : AbstractViewFactory<FavouriteData, FavouriteView> {
     public FavouriteView Create(FavouriteData d) => new FavouriteView {
        UserId = d.UserId,

@@ -1,4 +1,4 @@
-﻿namespace RecipeMvc.Data;
+﻿namespace RecipeMvc.Data.Entities;
 
 public sealed class RecipeIngredientData : EntityData<RecipeIngredientData> {
     public int RecipeId { get; set; }

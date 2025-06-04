@@ -1,6 +1,6 @@
-﻿using RecipeMvc.Data;
+﻿using RecipeMvc.Data.Entities;
 
-namespace RecipeMvc.Facade;
+namespace RecipeMvc.Facade.ShoppingList;
 
 public sealed class ShoppingListIngredientViewFactory
     : AbstractViewFactory<ShoppingListIngredientData, ShoppingListIngredientView>

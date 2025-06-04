@@ -1,4 +1,4 @@
-﻿namespace RecipeMvc.Data
+﻿namespace RecipeMvc.Data.Entities
 {
     public sealed class IngredientData : EntityData<IngredientData>
     {

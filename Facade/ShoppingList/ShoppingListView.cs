@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace RecipeMvc.Facade;
+namespace RecipeMvc.Facade.ShoppingList;
 
 [DisplayName("Shopping list")]
 public class ShoppingListView : EntityView

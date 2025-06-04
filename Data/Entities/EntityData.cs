@@ -1,6 +1,6 @@
 using RecipeMvc.Aids.GoF.Crea;
 
-namespace RecipeMvc.Data;
+namespace RecipeMvc.Data.Entities;
 
 public abstract class EntityData {
     public int Id { get; set; }

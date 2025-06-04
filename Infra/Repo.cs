@@ -1,7 +1,7 @@
 using System.Linq.Dynamic.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using RecipeMvc.Data;
+using RecipeMvc.Data.Entities;
 using RecipeMvc.Domain;
 
 namespace RecipeMvc.Infra;

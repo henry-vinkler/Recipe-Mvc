@@ -1,6 +1,6 @@
 using RecipeMvc.Aids;
 
-namespace RecipeMvc.Facade {
+namespace RecipeMvc.Facade.PlannedRecipe {
     public sealed class PlannedRecipeView : EntityView
     {
         public int AuthorId { get; set; }

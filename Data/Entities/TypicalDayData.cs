@@ -1,4 +1,4 @@
-using RecipeMvc.Data;
+using RecipeMvc.Data.Entities;
 
 public class TypicalDayData : EntityData<TypicalDayData>
 {

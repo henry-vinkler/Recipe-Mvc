@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using RecipeMvc.Data;
-using RecipeMvc.Data.Data;
+using RecipeMvc.Data.DbContext;
+using RecipeMvc.Data.Entities;
 using RecipeMvc.Domain;
 using Random = RecipeMvc.Aids.Random;
 

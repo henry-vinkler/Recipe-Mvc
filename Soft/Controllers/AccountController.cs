@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using RecipeMvc.Domain;
-using RecipeMvc.Data;
+using RecipeMvc.Data.Entities;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using RecipeMvc.Facade.Account;
