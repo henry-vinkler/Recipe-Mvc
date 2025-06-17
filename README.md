@@ -1,7 +1,7 @@
-Minu osa (Henry Vinkler):
+My part (Henry Vinkler):
 
-Lõin üksi kõik mis on seotud UserAccounti, sisselogimisega ning nende testimisega
+I single-handedly created everything related to UserAccount, login functionality, and their testing.
 
-Lisaks:
-- Tegelesin enamasti merge conflictide lahendamisega
-- Aitasin lahendada vigu Recipe ja PlannedRecipe controllerites
+Additionally:
+- I mostly handled resolving merge conflicts
+- I helped fix issues in the Recipe and PlannedRecipe controllers
